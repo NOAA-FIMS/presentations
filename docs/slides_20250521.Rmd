@@ -212,7 +212,7 @@ Figure source: .hyperlink-style[[GeeksforGeeks](https://www.geeksforgeeks.org/ty
 # from top to bottom
 DiagrammeR::DiagrammeR("
    graph TB
-   a[Types of FIMS Testing]-->A[Mannual Testing]
+   a[Types of FIMS Testing]-->A[Manual Testing]
    a-->B[Automation Testing]
    A-->C[Functional Testing]
    A-->D[Non-Functional Testing]
@@ -249,9 +249,9 @@ test_summary <- tibble::tibble(
     "Test individual modules",
     "Test interactions between modules",
     "Evaluate the overall functionality of a complete FIMS model",
-    "Ensure system perform properly under their expected workload",
+    "Ensure the system performs properly under its expected workload",
     "Assess user interface effectiveness",
-    "Check FIMS compatibility on different operating systems"
+    "Check FIMS compatibility across different operating systems"
   ),
   `GoogleTest (C++)` = c("✔️", "✔️", "❌", "❌", "❌", "✔️"),
   `testthat (R)`     = c("✔️", "✔️", "❌", "✔️", "❌", "✔️"),
@@ -374,7 +374,7 @@ Figure source: .hyperlink-style[[FIMS tests](https://github.com/NOAA-FIMS/FIMS/b
 ---
 # Performance testing
 .pull-left[
-- Ensure system perform properly under their expected workload
+- Ensure the system performs properly under its expected workload
   - Ensure the speed, load capability, and accuracy of the system
   - Identify bottlenecks in the systems 
 ]
@@ -422,9 +422,9 @@ knitr::include_url("https://noaa-fims.github.io/case-studies/content/NEFSC-yello
 ---
 # Compatibility testing
 
-- Check FIMS compatibility (running capability) on different operating systems
+- Check FIMS compatibility (running capability) across different operating systems
   - Provide service across multiple operating systems
-  - Identifying bugs during the development process
+  - Identify bugs during the development process
 
 ```{r, echo=FALSE, fig.height=1, fig.width=1}
 knitr::include_graphics("https://raw.githubusercontent.com/EgoistDeveloper/operating-system-logos/master/src/128x128/WIN.png")
@@ -446,7 +446,7 @@ Figure source: .hyperlink-style[[ngeenx/operating-system-logos](https://github.c
 # Test design and evaluation
 
 - Use snapshot tests (also known as .hyperlink-style[[golden tests](https://ro-che.info/articles/2017-12-04-golden-tests)]) to capture FIMS output in human-readable files and track changes over time
-- Use test fixtures to supply input data and expected results to multiple tests, reducing redundancy and improving maintainability
+- Use test fixtures to provide input data and expected results for multiple tests, reducing redundancy and improving maintainability
 - Use built-in functions (e.g., expect_equal()) to compare computed values against known reference values (e.g., unit tests or deterministic integration tests)
 - Relax tolerance criteria for model estimates: ensure that no more than 5% of estimates deviate from expected values by more than 2 standard errors (e.g., estimation tests)
 
@@ -619,7 +619,7 @@ test_functions
 .pull-left[
 - Ensure testing efforts are aligned with project goals
 - Regularly review test coverage reports and identify gaps
-- Use code club meetings to refactor, reorganize, and expand test suit
+- Use code club meetings to refactor, reorganize, and expand test suite
 - Future improvement: use GitHub Actions to create an issue on a regular basis*<sup>1</sup>*
 ]
 

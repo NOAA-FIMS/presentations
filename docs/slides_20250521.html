@@ -154,8 +154,8 @@ Figure source: .hyperlink-style[[GeeksforGeeks](https://www.geeksforgeeks.org/ty
 ---
 # Types of tests implemented
 
-<div class="DiagrammeR html-widget html-fill-item" id="htmlwidget-4987c5f864cd924c105c" style="width:100%;height:504px;"></div>
-<script type="application/json" data-for="htmlwidget-4987c5f864cd924c105c">{"x":{"diagram":"\n   graph TB\n   a[Types of FIMS Testing]-->A[Mannual Testing]\n   a-->B[Automation Testing]\n   A-->C[Functional Testing]\n   A-->D[Non-Functional Testing]\n   C-->E[Unit Testing]\n   C-->F[Integration Testing]\n   C-->G[System Testing]\n   D-->H[Performance Testing]\n   D-->I[Usability Testing]\n   D-->J[Compatibility Testing]\n   style a fill:#C6E6F0\n   style A fill:#90DFE3\n   style B fill:#90DFE3\n   style C fill:#B1DC6B\n   style D fill:#B1DC6B\n   style E fill:#A8B8FF\n   style F fill:#A8B8FF\n   style G fill:#A8B8FF\n   style H fill:#A8B8FF\n   style I fill:#A8B8FF\n   style J fill:#A8B8FF\n"},"evals":[],"jsHooks":[]}</script>
+<div class="DiagrammeR html-widget html-fill-item" id="htmlwidget-b976687919a0096e297c" style="width:100%;height:504px;"></div>
+<script type="application/json" data-for="htmlwidget-b976687919a0096e297c">{"x":{"diagram":"\n   graph TB\n   a[Types of FIMS Testing]-->A[Manual Testing]\n   a-->B[Automation Testing]\n   A-->C[Functional Testing]\n   A-->D[Non-Functional Testing]\n   C-->E[Unit Testing]\n   C-->F[Integration Testing]\n   C-->G[System Testing]\n   D-->H[Performance Testing]\n   D-->I[Usability Testing]\n   D-->J[Compatibility Testing]\n   style a fill:#C6E6F0\n   style A fill:#90DFE3\n   style B fill:#90DFE3\n   style C fill:#B1DC6B\n   style D fill:#B1DC6B\n   style E fill:#A8B8FF\n   style F fill:#A8B8FF\n   style G fill:#A8B8FF\n   style H fill:#A8B8FF\n   style I fill:#A8B8FF\n   style J fill:#A8B8FF\n"},"evals":[],"jsHooks":[]}</script>
 
 ---
 # Types of tests implemented
@@ -214,7 +214,7 @@ Figure source: .hyperlink-style[[GeeksforGeeks](https://www.geeksforgeeks.org/ty
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; Performance Testing &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; Ensure system perform properly under their expected workload &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Ensure the system performs properly under its expected workload &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; ❌ &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; ✔️ &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; ✔️ &lt;/td&gt;
@@ -236,7 +236,7 @@ Figure source: .hyperlink-style[[GeeksforGeeks](https://www.geeksforgeeks.org/ty
   &lt;/tr&gt;
   &lt;tr&gt;
    &lt;td style="text-align:left;"&gt; Compatibility Testing &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; Check FIMS compatibility on different operating systems &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Check FIMS compatibility across different operating systems &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; ✔️ &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; ✔️ &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; ❌ &lt;/td&gt;
@@ -344,7 +344,7 @@ Figure source: .hyperlink-style[[FIMS tests](https://github.com/NOAA-FIMS/FIMS/b
 ---
 # Performance testing
 .pull-left[
-- Ensure system perform properly under their expected workload
+- Ensure the system performs properly under its expected workload
   - Ensure the speed, load capability, and accuracy of the system
   - Identify bottlenecks in the systems 
 ]
@@ -384,9 +384,9 @@ Figure source: .hyperlink-style[[FIMS parallel tests](https://github.com/NOAA-FI
 ---
 # Compatibility testing
 
-- Check FIMS compatibility (running capability) on different operating systems
+- Check FIMS compatibility (running capability) across different operating systems
   - Provide service across multiple operating systems
-  - Identifying bugs during the development process
+  - Identify bugs during the development process
 
 ![](https://raw.githubusercontent.com/EgoistDeveloper/operating-system-logos/master/src/128x128/WIN.png)&lt;!-- --&gt;![](https://raw.githubusercontent.com/EgoistDeveloper/operating-system-logos/master/src/128x128/MAC.png)&lt;!-- --&gt;![](https://raw.githubusercontent.com/EgoistDeveloper/operating-system-logos/master/src/128x128/LIN.png)&lt;!-- --&gt;
 
@@ -404,7 +404,7 @@ Figure source: .hyperlink-style[[ngeenx/operating-system-logos](https://github.c
 # Test design and evaluation
 
 - Use snapshot tests (also known as .hyperlink-style[[golden tests](https://ro-che.info/articles/2017-12-04-golden-tests)]) to capture FIMS output in human-readable files and track changes over time
-- Use test fixtures to supply input data and expected results to multiple tests, reducing redundancy and improving maintainability
+- Use test fixtures to provide input data and expected results for multiple tests, reducing redundancy and improving maintainability
 - Use built-in functions (e.g., expect_equal()) to compare computed values against known reference values (e.g., unit tests or deterministic integration tests)
 - Relax tolerance criteria for model estimates: ensure that no more than 5% of estimates deviate from expected values by more than 2 standard errors (e.g., estimation tests)
 
@@ -553,7 +553,7 @@ Figure source: .hyperlink-style[[FIMS testhat template](https://github.com/NOAA-
 .pull-left[
 - Ensure testing efforts are aligned with project goals
 - Regularly review test coverage reports and identify gaps
-- Use code club meetings to refactor, reorganize, and expand test suit
+- Use code club meetings to refactor, reorganize, and expand test suite
 - Future improvement: use GitHub Actions to create an issue on a regular basis*&lt;sup&gt;1&lt;/sup&gt;*
 ]
 
