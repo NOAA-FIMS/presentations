@@ -1,0 +1,662 @@
+---
+title: "Software testing for Fisheries <br> Integrated Modeling System <br> (FIMS): strategies, challenges, <br> and opportunities"
+author: "Bai Li <br><br> Contractor with ECS Federal LLC in support of <br> NOAA Fisheries Office of Science and Technology <br> Email: bai.li@noaa.gov"
+institute: RSE Testing Working Group Meeting
+date: 2025/05/21
+output:
+  xaringan::moon_reader:
+    css: ["xaringan-themer.css"]
+    lib_dir: libs
+    nature:
+      ratio: '4:3'
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      slideNumberFormat: "Page %current%"
+---
+
+layout: true
+  
+```{r xaringanthemer, include=FALSE, warning=FALSE}
+required_pkg <- c("xaringanthemer", "remotes", "webshot2", "xfun")
+pkg_to_install <- required_pkg[!(required_pkg %in%
+                                   installed.packages()[, "Package"])]
+if (length(pkg_to_install)) install.packages(pkg_to_install)
+lapply(required_pkg, library, character.only = TRUE)
+
+remotes::install_github("nmfs-ost/nmfspalette")
+library(nmfspalette)
+
+style_xaringan(
+
+  base_font_size = "15px",
+  text_font_size = "1.5rem",
+
+  title_slide_background_color = unname(nmfs_cols("darkblue")),
+  title_slide_text_color = unname(nmfs_cols("white")),
+  title_slide_background_size = "cover",
+  title_slide_background_image = file.path("static", "slideswooshver.png"),
+
+  background_image = file.path("static", "slideswoosh.PNG"),
+  background_size = "cover",
+  background_color = unname(nmfs_cols("white")),
+
+  header_font_google = google_font("Arimo"),
+  header_color = unname(nmfs_cols("darkblue")),
+
+  text_color = unname(nmfs_cols("darkblue")),
+  # text_font_google = google_font("Carlito", "300", "300i"),
+  text_slide_number_color = unname(nmfs_cols("lightteal")),
+
+  code_font_google = google_font("Source Code Pro"),
+  code_highlight_color = unname(nmfs_cols("medteal")),
+
+  inverse_background_color = unname(nmfs_cols("processblue")),
+  inverse_text_color = unname(nmfs_cols("supltgray")),
+
+  footnote_font_size = "0.6em",
+  footnote_color = unname(nmfs_cols("darkblue")),
+  footnote_position_bottom = "10px",
+
+  link_color = unname(nmfs_cols("medteal")),
+
+
+  extra_css = list(
+    ".remark-slide-number" = list(
+      "font-size" = "0.4em",
+      "font-weight" = "bold",
+      "margin" = "0px 840px -2px 0px"),
+
+    ".title-slide h1, h2, h3" = list(
+      "text-align" = "right"), 
+    
+    ".hyperlink-style" = list(
+      "color" = "blue")
+  )
+)
+```
+
+.footnote[U.S. Department of Commerce | National Oceanic and Atmospheric Administration | National Marine Fisheries Service]
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+```
+
+---
+# Disclaimer
+
+.pull-left[
+Previous workflow
+```{r, echo=FALSE, out.width="80%"}
+webshot2::webshot(
+  url = "https://www.pipinghotdata.com/posts/2021-11-23-getting-started-with-unit-testing-in-r/img/tidy-tools-workflow-no-unit-testing.PNG",
+  cliprect = c(50, 100, 850, 600),
+  file = file.path("static", "webshot.png")
+)
+```
+]
+
+.pull-right[
+Current workflow
+```{r, echo=FALSE, out.width="80%"}
+webshot2::webshot(
+  url = "https://www.pipinghotdata.com/posts/2021-11-23-getting-started-with-unit-testing-in-r/img/tidy-tools-workflow-testing-1.PNG",
+  cliprect = c(50, 100, 850, 600),
+  file = file.path("static", "webshot.png")
+)
+```
+]
+
+- I’ve been learning about software testing since 2020.
+
+--
+- I’d like to share what has and hasn’t worked well for testing in the FIMS project.
+
+--
+- The examples I’ll present focus on R and C++ code developed by the FIMS implementation team (.hyperlink-style[[https://noaa-fims.github.io/FIMS/authors.html](https://noaa-fims.github.io/FIMS/authors.html)]).
+
+--
+- Comments and suggestions are very welcome!
+
+.footnote[
+Figure source: .hyperlink-style[[Getting started with unit testing in R](https://www.pipinghotdata.com/posts/2021-11-23-getting-started-with-unit-testing-in-r/)]
+]
+
+---
+# Outline
+- Introduction to FIMS
+
+--
+- Overview of FIMS testing
+  - Types of tests implemented
+  - Testing frameworks and tools used
+  - Team roles and responsibilities
+
+--
+- Test design and evaluation
+
+--
+- Test coverage and reporting
+
+--
+- Automation testing
+
+--
+- Current challenges
+  - How to define tolerance criteria for statistical models?
+  - How to better manage tests location and execution time?
+- Opportunities for improvement
+  - Standardize test templates
+  - Improve execution helpers
+  - Establish a quarterly review process
+
+---
+# Introduction to FIMS
+
+.left-column[
+**Fisheries Integrated Modeling System**
+```{r, echo=FALSE, out.width="80%"}
+knitr::include_graphics(file.path("static", "FIMS_hexlogo.png"))
+```
+] 
+
+.right-column[
+**What is FIMS?**
+
+A flexible suite of software tools to support sustainable fishery management
+
+- A suite of software tools.
+- Fisheries stock assessment*<sup>1,2</sup>* at core. 
+- Connects to ecosystem, climate, and economic models/data.
+- Flexible for innovative future modeling work.
+- Collaborative community effort.
+- Addresses numerous priorities. 
+]
+
+.footnote[
+.hyperlink-style[[FIMS landing page](https://noaa-fims.github.io/FIMS/)] | .hyperlink-style[[FIMS GitHub repo](https://github.com/noaa-fims/fims/)]<br>
+[1] .hyperlink-style[[Fishery stock assessment:](https://www.fisheries.noaa.gov/insight/stock-assessment-model-descriptions)] The scientific process of collecting, analyzing, and reporting on the condition <br> of a fish stock and estimating its sustainable yield.<br>
+[2] .hyperlink-style[[Stock assessment model:](https://www.fisheries.noaa.gov/insight/stock-assessment-model-descriptions)] The mathematical and statistical techniques stock assessments use to analyze <br> and understand the impact of fisheries and environmental factors on fish stocks.
+]
+
+---
+# Introduction to FIMS
+```{r, echo=FALSE, out.width="80%"}
+knitr::include_graphics(file.path("static", "fims_path_simple.png"))
+```
+- FIMS modules are written in C++ and linked to R*<sup>1</sup>* using Rcpp*<sup>2</sup>*
+- Template Model Builder*<sup>3</sup>* (TMB) serves as the statistical inference engine for FIMS
+
+.footnote[
+
+[1] .hyperlink-style[[R:](https://www.r-project.org/)] A programming language and free software environment for statistical computing and graphics.<br>
+[2] .hyperlink-style[[Rcpp:](https://cran.r-project.org/web/packages/Rcpp/index.html)] An R package that provides R functions as well as C++ classes which offer a seamless<br> integration of R and C++.<br>
+[3] .hyperlink-style[[Template Model Builder:](https://kaskr.github.io/adcomp/Introduction.html)] An R package for fitting statistical latent variable models to data.
+]
+
+---
+# Overview of FIMS testing
+
+```{r, echo=FALSE, out.width="80%"}
+knitr::include_graphics("https://media.geeksforgeeks.org/wp-content/uploads/20240730150406/Software-Testing-768-copy.webp")
+```
+
+.footnote[
+Figure source: .hyperlink-style[[GeeksforGeeks](https://www.geeksforgeeks.org/types-software-testing/)]
+]
+
+---
+# Types of tests implemented
+
+```{r, echo=FALSE, out.width="100%"}
+# from top to bottom
+DiagrammeR::DiagrammeR("
+   graph TB
+   a[Types of FIMS Testing]-->A[Mannual Testing]
+   a-->B[Automation Testing]
+   A-->C[Functional Testing]
+   A-->D[Non-Functional Testing]
+   C-->E[Unit Testing]
+   C-->F[Integration Testing]
+   C-->G[System Testing]
+   D-->H[Performance Testing]
+   D-->I[Usability Testing]
+   D-->J[Compatibility Testing]
+   style a fill:#C6E6F0
+   style A fill:#90DFE3
+   style B fill:#90DFE3
+   style C fill:#B1DC6B
+   style D fill:#B1DC6B
+   style E fill:#A8B8FF
+   style F fill:#A8B8FF
+   style G fill:#A8B8FF
+   style H fill:#A8B8FF
+   style I fill:#A8B8FF
+   style J fill:#A8B8FF
+")
+```
+
+---
+# Types of tests implemented
+```{r, echo=FALSE, fig.width=100}
+# Base table data
+test_summary <- tibble::tibble(
+  `Test Type` = c(
+    "Unit Testing", "Integration Testing", "System Testing",
+    "Performance Testing", "Usability Testing", "Compatibility Testing"
+  ),
+  Description = c(
+    "Test individual modules",
+    "Test interactions between modules",
+    "Evaluate the overall functionality of a complete FIMS model",
+    "Ensure system perform properly under their expected workload",
+    "Assess user interface effectiveness",
+    "Check FIMS compatibility on different operating systems"
+  ),
+  `GoogleTest (C++)` = c("✔️", "✔️", "❌", "❌", "❌", "✔️"),
+  `testthat (R)`     = c("✔️", "✔️", "❌", "✔️", "❌", "✔️"),
+  `Case Studies`     = c("❌", "❌", "✔️", "✔️", "✔️", "❌"),
+  `Developers`       = c("✔️", "✔️", "❌", "❌", "❌", "❌"),
+  `Testers`          = c("❌", "✔️", "✔️", "✔️", "✔️", "❌"),
+  `Users`            = c("❌", "❌", "✔️", "✔️", "✔️", "❌"),
+  `GHA`              = c("✔️", "✔️", "✔️", "✔️", "✔️", "✔️")
+) |>
+  knitr::kable("html", escape = FALSE) |>
+  kableExtra::add_header_above(c(
+    "Tests" = 2,  # Test Type + Description
+    "Testing Frameworks and Tools" = 3,
+    "Roles and Responsibilities" = 4
+  )) |>
+  kableExtra::kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover"), font_size = 12)
+
+test_summary
+  
+```
+
+---
+# Unit testing
+
+- Test individual modules 
+  - Identify bugs early in the development process
+  - Promote modular and maintainable code
+
+.pull-left[
+```{r, echo=FALSE}
+webshot2::webshot(
+  url = "https://github.com/NOAA-FIMS/FIMS/blob/main/tests/testthat/test-rcpp-selectivity.R",
+  cliprect = c(50, 660, 550, 540),
+  file = file.path("static", "webshot.png")
+)
+```
+]
+
+.footnote[
+Figure source: .hyperlink-style[[FIMS selectivity Rcpp tests](https://github.com/NOAA-FIMS/FIMS/blob/main/tests/testthat/test-rcpp-selectivity.R)]
+]
+
+???
+- Testing frameworks and tools
+  - Use **GoogleTest** to test C++ code
+  - Use **testthat** to test R code
+- Roles and responsibilities
+  - Module developers write tests and execute them locally
+  - GitHub Actions (GHA) automatically runs all tests before each Pull Request (PR) as a safeguard 
+  
+---
+# Integration testing
+
+- Test how different modules interact with each other
+  - Ensure that different modules work together as intended
+  - Identify issues that may arise when different modules are combined
+
+```{r, echo=FALSE}
+webshot2::webshot(
+  url = "https://github.com/NOAA-FIMS/FIMS/blob/main/tests/testthat/test-rcpp-fleet-interface.R",
+  cliprect = c(50, 660, 600, 380),
+  file = file.path("static", "webshot.png")
+)
+```
+
+.footnote[
+Figure source: .hyperlink-style[[FIMS fleet Rcpp tests](https://github.com/NOAA-FIMS/FIMS/blob/main/tests/testthat/test-rcpp-fleet-interface.R)]
+]
+
+???
+- Testing frameworks and tools
+  - Use **GoogleTest** to test C++ code
+  - Use **testthat** to test R code
+- Roles and responsibilities
+  - Developers or testers write tests and execute them locally
+  - GHA automatically runs all tests before each PR as a safeguard 
+
+---
+# System testing
+
+- Evaluate the overall functionality of a complete FIMS model
+  - Check the entire functionality of the system
+  - Check if the product meets the technical and business requirements of clients
+
+```{r, echo=FALSE}
+
+# Create table data
+estimation_tests <- tibble::tibble(
+  `Test Type` = c(
+    "Deterministic Test",
+    "Estimation Test 1",
+    "Estimation Test 2",
+    "Estimation Test 3",
+    "Estimation Test 4"
+  ),
+  Description = c(
+    'Fix parameters at "true" values from the operating model.',
+    "Estimate using age composition input only.",
+    "Estimate using length composition input only.",
+    "Estimate using both age and length composition input.",
+    "Estimate with NAs in the input data."
+  )
+)|>
+  knitr::kable("html", escape = FALSE) |>
+  kableExtra::kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover"), font_size = 12)
+estimation_tests
+```
+
+.footnote[
+Figure source: .hyperlink-style[[FIMS tests](https://github.com/NOAA-FIMS/FIMS/blob/main/tests/testthat/test-integration-caa-mle-wrappers.R)]
+]
+
+???
+- Testing frameworks and tools
+  - Use case studies to test FIMS in a separate repo
+- Roles and responsibilities
+  - Tester/users write tests and execute them locally
+  - GHA automatically runs all test cases 
+
+---
+# Performance testing
+.pull-left[
+- Ensure system perform properly under their expected workload
+  - Ensure the speed, load capability, and accuracy of the system
+  - Identify bottlenecks in the systems 
+]
+
+.pull-right[
+```{r, echo=FALSE}
+webshot2::webshot(
+  url = "https://github.com/NOAA-FIMS/FIMS/blob/main/tests/testthat/test-parallel-caa-mle-wrappers.R",
+  cliprect = c(50, 1850, 550, 1860),
+  file = file.path("static", "webshot.png")
+)
+```
+]
+
+.footnote[
+Figure source: .hyperlink-style[[FIMS parallel tests](https://github.com/NOAA-FIMS/FIMS/blob/main/tests/testthat/test-parallel-caa-mle-wrappers.R)]
+]
+
+???
+- Testing frameworks and tools
+  - Use **testthat** to check if FIMS can be run in parallel
+  - Use case studies to test FIMS in a separate repo
+- Roles and responsibilities
+  - Tester/users write tests and execute them locally
+  - GHA automatically runs all test cases 
+  
+---
+# Usability testing
+
+- Done from an end user’s perspective to determine if the system is easily usable
+  - Evaluate the effectiveness of the user interface design 
+  - Identify user pain points
+  
+```{r, echo=FALSE, fig.height=1, fig.width=1}
+knitr::include_url("https://noaa-fims.github.io/case-studies/content/NEFSC-yellowtail.html")
+```
+
+???
+- Testing frameworks and tools
+  - Use case studies to test FIMS in a separate repo
+- Roles and responsibilities
+  - Tester/users write tests and execute them locally
+  - GHA automatically runs all test cases
+
+---
+# Compatibility testing
+
+- Check FIMS compatibility (running capability) on different operating systems
+  - Provide service across multiple operating systems
+  - Identifying bugs during the development process
+
+```{r, echo=FALSE, fig.height=1, fig.width=1}
+knitr::include_graphics("https://raw.githubusercontent.com/EgoistDeveloper/operating-system-logos/master/src/128x128/WIN.png")
+knitr::include_graphics("https://raw.githubusercontent.com/EgoistDeveloper/operating-system-logos/master/src/128x128/MAC.png")
+knitr::include_graphics("https://raw.githubusercontent.com/EgoistDeveloper/operating-system-logos/master/src/128x128/LIN.png")
+```
+
+.footnote[
+Figure source: .hyperlink-style[[ngeenx/operating-system-logos](https://github.com/ngeenx/operating-system-logos)]
+]
+
+???
+- Testing frameworks and tools
+  - Run C++ and R tests on Windows, MacOS, and Ubuntu
+- Roles and responsibilities
+  - GHA automatically runs all tests
+
+---
+# Test design and evaluation
+
+- Use snapshot tests (also known as .hyperlink-style[[golden tests](https://ro-che.info/articles/2017-12-04-golden-tests)]) to capture FIMS output in human-readable files and track changes over time
+- Use test fixtures to supply input data and expected results to multiple tests, reducing redundancy and improving maintainability
+- Use built-in functions (e.g., expect_equal()) to compare computed values against known reference values (e.g., unit tests or deterministic integration tests)
+- Relax tolerance criteria for model estimates: ensure that no more than 5% of estimates deviate from expected values by more than 2 standard errors (e.g., estimation tests)
+
+---
+# Test coverage and reporting
+- Use Codecov to track and report code coverage
+- Rely on coverage metrics from the R side, as R code also triggers the underlying C++ code
+- Coverage has remained between 65% and 95% since 2022
+- Coverage changes are automatically reported in each pull request
+
+.pull-left[
+```{r, echo=FALSE}
+webshot2::webshot(
+  url = "https://app.codecov.io/gh/NOAA-FIMS/FIMS?search=&branch=main&trend=all%20time",
+  delay = 1,
+  file = file.path("static", "webshot.png")
+) 
+```
+]
+
+.pull-right[
+```{r, echo=FALSE}
+webshot2::webshot(
+  url = "https://github.com/NOAA-FIMS/FIMS/pull/837",
+  cliprect = c(10, 1980, 650, 1980),
+  delay = 1,
+  file = file.path("static", "webshot.png")
+) 
+```
+]
+
+.footnote[
+Figure source: .hyperlink-style[[FIMS codecov](https://app.codecov.io/gh/NOAA-FIMS/FIMS?search=&trend=all%20time)] |
+.hyperlink-style[[Pull request codecov](https://github.com/NOAA-FIMS/FIMS/pull/837)]
+]
+
+---
+# Automation testing
+- Use appropriate automation tools (e.g., GitHub Actions) to run tests for FIMS
+- C++ and R tests are automatically executed on every commit push.
+- Code coverage results are reported for every pull request
+
+```{r, echo=FALSE}
+webshot2::webshot(
+  url = "https://github.com/NOAA-FIMS/FIMS/actions/workflows/run-googletest.yml",
+  cliprect = c(10, 70, 1000, 470),
+  file = file.path("static", "webshot.png")
+) 
+```
+
+
+.footnote[
+Figure source: .hyperlink-style[[FIMS GitHub Actions](https://github.com/NOAA-FIMS/FIMS/actions/workflows/run-googletest.yml)]
+]
+
+---
+# Current challenges
+
+```{r, echo=FALSE, fig.height=1, fig.width=1}
+knitr::include_graphics("https://static7.depositphotos.com/1026550/780/i/600/depositphotos_7809833-stock-photo-challenges-ahead-road-sign.jpg")
+```
+
+---
+# How to define tolerance criteria for statistical models?
+
+.pull-left[
+- 95% of the estimates within two standard error of the expected values
+- What is an acceptable range for model estimates under different modeling conditions?
+- If a single model run fails the tolerance check, should we explore alternative input data or flag it as an issue?
+- How can we manage tolerance testing across both maximum likelihood and Bayesian estimation frameworks within the same suite?
+]
+
+.pull-right[
+```{r, echo=FALSE, out.width="80%"}
+knitr::include_graphics("https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Standard_deviation_diagram.svg/330px-Standard_deviation_diagram.svg.png")
+```
+]
+
+.footnote[
+Figure source: .hyperlink-style[[Wikipedia](https://en.wikipedia.org/wiki/Standard_error)]
+]
+
+---
+# How to better manage tests location and execution time?
+.pull-left[
+- Current R test suites can take up to 10 minutes to run
+- Which tests should run locally vs. remotely to balance speed and reliability?
+- Should we separate core vs. extended tests into different repositories?
+- Where and how should we define dynamic test input data that isn’t based on fixed values?
+]
+
+.pull-right[
+```{r, echo=FALSE, out.width="80%"}
+knitr::include_graphics("https://nexwebsites.com/images/service/software-testing-services.svg")
+```
+]
+
+???
+- Create a developer function to run only unit tests locally
+- How frequently should external tests be executed and maintained?
+---
+# Opportunities for improvement
+```{r, echo=FALSE, fig.height=1, fig.width=1}
+knitr::include_graphics("https://static7.depositphotos.com/1000376/768/i/600/depositphotos_7688025-stock-photo-opportunity-road-sign-on-background.jpg")
+```
+
+---
+# Standardize test templates
+.pull-left[
+- Provide a reusable test template to help developers write consistent R tests
+- Use FIMS:::use_testthat_template() to generate a new test file
+- The template includes three types of tests: input/output checks, edge cases, and error handling
+- Currently implemented for R, a similar template for C++ is planned
+]
+
+.pull-right[
+```{r, echo=FALSE}
+webshot2::webshot(
+  url = "https://github.com/NOAA-FIMS/FIMS/blob/main/inst/templates/testthat_template.R",
+  cliprect = c(50, 400, 700, 900),
+  file = file.path("static", "webshot.png")
+) 
+```
+]
+
+.footnote[
+Figure source: .hyperlink-style[[FIMS testhat template](https://github.com/NOAA-FIMS/FIMS/blob/main/inst/templates/testthat_template.R)]
+]
+
+???
+- Input and output correctness: ensure that the function behaves as expected with correct inputs and returns the expected outputs
+- Edge-case handling: validate the function's performance with unusual scenarios
+- Built-in errors and warnings: confirm that appropriate error and warning messages are triggered under exceptional conditions
+
+
+---
+# Improve execution helpers
+
+- Create dedicated R functions to run specific types of tests (e.g., C++ tests, R unit tests, R integration tests)
+- Use one wrapper function check_fims() to streamline all test execution before pushing to the remote repo
+
+```{r, echo=FALSE}
+# Create a table with function names and descriptions
+test_functions <- tibble::tibble(
+  `Function` = c(
+    "setup_gtest()",
+    "run_gtest()",
+    "setup_and_run_gtest()",
+    "run_r_unit_tests()",
+    "run_r_integration_tests()",
+    "check_fims()"
+  ),
+  `Description` = c(
+    "Sets up the environment and test files required for running C++ (GoogleTest) tests.",
+    "Executes the C++ tests using the previously configured test environment.",
+    "Convenience wrapper to both set up and run C++ tests in a single call.",
+    "Runs all R unit tests using the testthat framework, typically for individual modules.",
+    "Runs R integration tests to validate interaction between multiple modules.",
+    "Runs a full suite of all tests (C++ and R) before pushing code to the remote repository."
+  )
+) |>
+  knitr::kable("html", escape = FALSE) |>
+  kableExtra::kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover"), font_size = 12)
+
+test_functions
+```
+
+---
+# Establish a quarterly review process
+.pull-left[
+- Ensure testing efforts are aligned with project goals
+- Regularly review test coverage reports and identify gaps
+- Use code club meetings to refactor, reorganize, and expand test suit
+- Future improvement: use GitHub Actions to create an issue on a regular basis*<sup>1</sup>*
+]
+
+.pull-right[
+- Quarterly review (04/01/2025*<sup>2</sup>*)
+```{r, echo=FALSE}
+webshot2::webshot(
+  url = "https://github.com/NOAA-FIMS/FIMS/issues/761",
+  cliprect = c(20, 175, 850, 900),
+  file = file.path("static", "webshot.png")
+)
+```
+]
+
+.footnote[
+[1] .hyperlink-style[[Scheduling issue creation](https://docs.github.com/en/actions/use-cases-and-examples/project-management/scheduling-issue-creation)]<br>
+[2] .hyperlink-style[[FIMS issue #761](https://github.com/NOAA-FIMS/FIMS/issues/761)]
+]
+
+---
+# Summary
+.pull-left[
+- Write tests that include normal use, edge cases, and expected error cases
+- Use code quality tools to verify coverage, formatting, and complexity
+- Do not write tests just to boost code coverage
+- Build a safety net and ensure good growth dynamics of a project
+- Developers and testers need to enjoy their testing achievements
+]
+
+.pull-right[
+![Growth dynamics between projects with good and bad tests](`r "https://drek4537l1klr.cloudfront.net/khorikov/Figures/01fig02_alt.jpg"`)
+]
+
+.footnote[
+Figure source: .hyperlink-style[[(Khorikov, 2020)](https://livebook.manning.com/book/unit-testing/chapter-1/45)]
+]
+
+
+
+
