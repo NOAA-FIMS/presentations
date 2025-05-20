@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Software testing for Fisheries   Integrated Modeling System   (FIMS): strategies, challenges,   and opportunities</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Bai Li    Contractor with ECS Federal LLC in support of   NOAA Fisheries Office of Science and Technology   Email: bai.li@noaa.gov" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/htmltools-fill/fill.css" rel="stylesheet" />
+    <script src="libs/htmlwidgets/htmlwidgets.js"></script>
+    <script src="libs/d3/d3.min.js"></script>
+    <script src="libs/dagre/dagre-d3.min.js"></script>
+    <link href="libs/mermaid/dist/mermaid.css" rel="stylesheet" />
+    <script src="libs/mermaid/dist/mermaid.slim.min.js"></script>
+    <link href="libs/DiagrammeR-styles/styles.css" rel="stylesheet" />
+    <script src="libs/chromatography/chromatography.js"></script>
+    <script src="libs/DiagrammeR-binding/DiagrammeR.js"></script>
+    <script src="libs/kePrint/kePrint.js"></script>
+    <link href="libs/lightable/lightable.css" rel="stylesheet" />
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Software testing for Fisheries <br> Integrated Modeling System <br> (FIMS): strategies, challenges, <br> and opportunities
+]
+.author[
+### Bai Li <br><br> Contractor with ECS Federal LLC in support of <br> NOAA Fisheries Office of Science and Technology <br> Email: <a href="mailto:bai.li@noaa.gov" class="email">bai.li@noaa.gov</a>
+]
+.institute[
+### RSE Testing Working Group Meeting
+]
+.date[
+### 2025/05/21
+]
+
+---
+
+
+layout: true
+  
+
+
+.footnote[U.S. Department of Commerce | National Oceanic and Atmospheric Administration | National Marine Fisheries Service]
+
+
+
+---
+# Disclaimer
+
+.pull-left[
+Previous workflow
+&lt;img src="slides_20250521_files/figure-html/unnamed-chunk-1-1.png" width="80%" /&gt;
+]
+
+.pull-right[
+Current workflow
+&lt;img src="slides_20250521_files/figure-html/unnamed-chunk-2-1.png" width="80%" /&gt;
+]
+
+- I’ve been learning about software testing since 2020.
+
+--
+- I’d like to share what has and hasn’t worked well for testing in the FIMS project.
+
+--
+- The examples I’ll present focus on R and C++ code developed by the FIMS implementation team (.hyperlink-style[[https://noaa-fims.github.io/FIMS/authors.html](https://noaa-fims.github.io/FIMS/authors.html)]).
+
+--
+- Comments and suggestions are very welcome!
+
+.footnote[
+Figure source: .hyperlink-style[[Getting started with unit testing in R](https://www.pipinghotdata.com/posts/2021-11-23-getting-started-with-unit-testing-in-r/)]
+]
+
+---
+# Outline
+- Introduction to FIMS
+
+--
+- Overview of FIMS testing
+  - Types of tests implemented
+  - Testing frameworks and tools used
+  - Team roles and responsibilities
+
+--
+- Test design and evaluation
+
+--
+- Test coverage and reporting
+
+--
+- Automation testing
+
+--
+- Current challenges
+  - How to define tolerance criteria for statistical models?
+  - How to better manage tests location and execution time?
+- Opportunities for improvement
+  - Standardize test templates
+  - Improve execution helpers
+  - Establish a quarterly review process
+
+---
+# Introduction to FIMS
+
+.left-column[
+**Fisheries Integrated Modeling System**
+&lt;img src="static/FIMS_hexlogo.png" width="80%" /&gt;
+] 
+
+.right-column[
+**What is FIMS?**
+
+A flexible suite of software tools to support sustainable fishery management
+
+- A suite of software tools.
+- Fisheries stock assessment*&lt;sup&gt;1,2&lt;/sup&gt;* at core. 
+- Connects to ecosystem, climate, and economic models/data.
+- Flexible for innovative future modeling work.
+- Collaborative community effort.
+- Addresses numerous priorities. 
+]
+
+.footnote[
+.hyperlink-style[[FIMS landing page](https://noaa-fims.github.io/FIMS/)] | .hyperlink-style[[FIMS GitHub repo](https://github.com/noaa-fims/fims/)]&lt;br&gt;
+[1] .hyperlink-style[[Fishery stock assessment:](https://www.fisheries.noaa.gov/insight/stock-assessment-model-descriptions)] The scientific process of collecting, analyzing, and reporting on the condition &lt;br&gt; of a fish stock and estimating its sustainable yield.&lt;br&gt;
+[2] .hyperlink-style[[Stock assessment model:](https://www.fisheries.noaa.gov/insight/stock-assessment-model-descriptions)] The mathematical and statistical techniques stock assessments use to analyze &lt;br&gt; and understand the impact of fisheries and environmental factors on fish stocks.
+]
+
+---
+# Introduction to FIMS
+&lt;img src="static/fims_path_simple.png" width="80%" /&gt;
+- FIMS modules are written in C++ and linked to R*&lt;sup&gt;1&lt;/sup&gt;* using Rcpp*&lt;sup&gt;2&lt;/sup&gt;*
+- Template Model Builder*&lt;sup&gt;3&lt;/sup&gt;* (TMB) serves as the statistical inference engine for FIMS
+
+.footnote[
+
+[1] .hyperlink-style[[R:](https://www.r-project.org/)] A programming language and free software environment for statistical computing and graphics.&lt;br&gt;
+[2] .hyperlink-style[[Rcpp:](https://cran.r-project.org/web/packages/Rcpp/index.html)] An R package that provides R functions as well as C++ classes which offer a seamless&lt;br&gt; integration of R and C++.&lt;br&gt;
+[3] .hyperlink-style[[Template Model Builder:](https://kaskr.github.io/adcomp/Introduction.html)] An R package for fitting statistical latent variable models to data.
+]
+
+---
+# Overview of FIMS testing
+
+&lt;img src="https://media.geeksforgeeks.org/wp-content/uploads/20240730150406/Software-Testing-768-copy.webp" width="80%" /&gt;
+
+.footnote[
+Figure source: .hyperlink-style[[GeeksforGeeks](https://www.geeksforgeeks.org/types-software-testing/)]
+]
+
+---
+# Types of tests implemented
+
+<div class="DiagrammeR html-widget html-fill-item" id="htmlwidget-4987c5f864cd924c105c" style="width:100%;height:504px;"></div>
+<script type="application/json" data-for="htmlwidget-4987c5f864cd924c105c">{"x":{"diagram":"\n   graph TB\n   a[Types of FIMS Testing]-->A[Mannual Testing]\n   a-->B[Automation Testing]\n   A-->C[Functional Testing]\n   A-->D[Non-Functional Testing]\n   C-->E[Unit Testing]\n   C-->F[Integration Testing]\n   C-->G[System Testing]\n   D-->H[Performance Testing]\n   D-->I[Usability Testing]\n   D-->J[Compatibility Testing]\n   style a fill:#C6E6F0\n   style A fill:#90DFE3\n   style B fill:#90DFE3\n   style C fill:#B1DC6B\n   style D fill:#B1DC6B\n   style E fill:#A8B8FF\n   style F fill:#A8B8FF\n   style G fill:#A8B8FF\n   style H fill:#A8B8FF\n   style I fill:#A8B8FF\n   style J fill:#A8B8FF\n"},"evals":[],"jsHooks":[]}</script>
+
+---
+# Types of tests implemented
+&lt;table class="table table-striped table-hover" style="font-size: 12px; width: auto !important; margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+&lt;tr&gt;
+&lt;th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="2"&gt;&lt;div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; "&gt;Tests&lt;/div&gt;&lt;/th&gt;
+&lt;th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="3"&gt;&lt;div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; "&gt;Testing Frameworks and Tools&lt;/div&gt;&lt;/th&gt;
+&lt;th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; " colspan="4"&gt;&lt;div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; "&gt;Roles and Responsibilities&lt;/div&gt;&lt;/th&gt;
+&lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Test Type &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Description &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; GoogleTest (C++) &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; testthat (R) &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Case Studies &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Developers &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Testers &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Users &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; GHA &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Unit Testing &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Test individual modules &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; ✔️ &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; ✔️ &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; ❌ &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; ✔️ &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; ❌ &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; ❌ &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; ✔️ &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Integration Testing &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Test interactions between modules &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; ✔️ &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; ✔️ &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; ❌ &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; ✔️ &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; ✔️ &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; ❌ &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; ✔️ &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; System Testing &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Evaluate the overall functionality of a complete FIMS model &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; ❌ &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; ❌ &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; ✔️ &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; ❌ &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; ✔️ &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; ✔️ &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; ✔️ &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Performance Testing &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Ensure system perform properly under their expected workload &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; ❌ &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; ✔️ &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; ✔️ &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; ❌ &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; ✔️ &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; ✔️ &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; ✔️ &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Usability Testing &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Assess user interface effectiveness &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; ❌ &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; ❌ &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; ✔️ &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; ❌ &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; ✔️ &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; ✔️ &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; ✔️ &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Compatibility Testing &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Check FIMS compatibility on different operating systems &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; ✔️ &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; ✔️ &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; ❌ &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; ❌ &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; ❌ &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; ❌ &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; ✔️ &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+---
+# Unit testing
+
+- Test individual modules 
+  - Identify bugs early in the development process
+  - Promote modular and maintainable code
+
+.pull-left[
+![](slides_20250521_files/figure-html/unnamed-chunk-8-1.png)&lt;!-- --&gt;
+]
+
+.footnote[
+Figure source: .hyperlink-style[[FIMS selectivity Rcpp tests](https://github.com/NOAA-FIMS/FIMS/blob/main/tests/testthat/test-rcpp-selectivity.R)]
+]
+
+???
+- Testing frameworks and tools
+  - Use **GoogleTest** to test C++ code
+  - Use **testthat** to test R code
+- Roles and responsibilities
+  - Module developers write tests and execute them locally
+  - GitHub Actions (GHA) automatically runs all tests before each Pull Request (PR) as a safeguard 
+  
+---
+# Integration testing
+
+- Test how different modules interact with each other
+  - Ensure that different modules work together as intended
+  - Identify issues that may arise when different modules are combined
+
+![](slides_20250521_files/figure-html/unnamed-chunk-9-1.png)&lt;!-- --&gt;
+
+.footnote[
+Figure source: .hyperlink-style[[FIMS fleet Rcpp tests](https://github.com/NOAA-FIMS/FIMS/blob/main/tests/testthat/test-rcpp-fleet-interface.R)]
+]
+
+???
+- Testing frameworks and tools
+  - Use **GoogleTest** to test C++ code
+  - Use **testthat** to test R code
+- Roles and responsibilities
+  - Developers or testers write tests and execute them locally
+  - GHA automatically runs all tests before each PR as a safeguard 
+
+---
+# System testing
+
+- Evaluate the overall functionality of a complete FIMS model
+  - Check the entire functionality of the system
+  - Check if the product meets the technical and business requirements of clients
+
+&lt;table class="table table-striped table-hover" style="font-size: 12px; width: auto !important; margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Test Type &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Description &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Deterministic Test &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Fix parameters at "true" values from the operating model. &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Estimation Test 1 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Estimate using age composition input only. &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Estimation Test 2 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Estimate using length composition input only. &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Estimation Test 3 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Estimate using both age and length composition input. &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Estimation Test 4 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Estimate with NAs in the input data. &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+.footnote[
+Figure source: .hyperlink-style[[FIMS tests](https://github.com/NOAA-FIMS/FIMS/blob/main/tests/testthat/test-integration-caa-mle-wrappers.R)]
+]
+
+???
+- Testing frameworks and tools
+  - Use case studies to test FIMS in a separate repo
+- Roles and responsibilities
+  - Tester/users write tests and execute them locally
+  - GHA automatically runs all test cases 
+
+---
+# Performance testing
+.pull-left[
+- Ensure system perform properly under their expected workload
+  - Ensure the speed, load capability, and accuracy of the system
+  - Identify bottlenecks in the systems 
+]
+
+.pull-right[
+![](slides_20250521_files/figure-html/unnamed-chunk-11-1.png)&lt;!-- --&gt;
+]
+
+.footnote[
+Figure source: .hyperlink-style[[FIMS parallel tests](https://github.com/NOAA-FIMS/FIMS/blob/main/tests/testthat/test-parallel-caa-mle-wrappers.R)]
+]
+
+???
+- Testing frameworks and tools
+  - Use **testthat** to check if FIMS can be run in parallel
+  - Use case studies to test FIMS in a separate repo
+- Roles and responsibilities
+  - Tester/users write tests and execute them locally
+  - GHA automatically runs all test cases 
+  
+---
+# Usability testing
+
+- Done from an end user’s perspective to determine if the system is easily usable
+  - Evaluate the effectiveness of the user interface design 
+  - Identify user pain points
+  
+&lt;iframe src="https://noaa-fims.github.io/case-studies/content/NEFSC-yellowtail.html" width="100%" height="400px" data-external="1"&gt;&lt;/iframe&gt;
+
+???
+- Testing frameworks and tools
+  - Use case studies to test FIMS in a separate repo
+- Roles and responsibilities
+  - Tester/users write tests and execute them locally
+  - GHA automatically runs all test cases
+
+---
+# Compatibility testing
+
+- Check FIMS compatibility (running capability) on different operating systems
+  - Provide service across multiple operating systems
+  - Identifying bugs during the development process
+
+![](https://raw.githubusercontent.com/EgoistDeveloper/operating-system-logos/master/src/128x128/WIN.png)&lt;!-- --&gt;![](https://raw.githubusercontent.com/EgoistDeveloper/operating-system-logos/master/src/128x128/MAC.png)&lt;!-- --&gt;![](https://raw.githubusercontent.com/EgoistDeveloper/operating-system-logos/master/src/128x128/LIN.png)&lt;!-- --&gt;
+
+.footnote[
+Figure source: .hyperlink-style[[ngeenx/operating-system-logos](https://github.com/ngeenx/operating-system-logos)]
+]
+
+???
+- Testing frameworks and tools
+  - Run C++ and R tests on Windows, MacOS, and Ubuntu
+- Roles and responsibilities
+  - GHA automatically runs all tests
+
+---
+# Test design and evaluation
+
+- Use snapshot tests (also known as .hyperlink-style[[golden tests](https://ro-che.info/articles/2017-12-04-golden-tests)]) to capture FIMS output in human-readable files and track changes over time
+- Use test fixtures to supply input data and expected results to multiple tests, reducing redundancy and improving maintainability
+- Use built-in functions (e.g., expect_equal()) to compare computed values against known reference values (e.g., unit tests or deterministic integration tests)
+- Relax tolerance criteria for model estimates: ensure that no more than 5% of estimates deviate from expected values by more than 2 standard errors (e.g., estimation tests)
+
+---
+# Test coverage and reporting
+- Use Codecov to track and report code coverage
+- Rely on coverage metrics from the R side, as R code also triggers the underlying C++ code
+- Coverage has remained between 65% and 95% since 2022
+- Coverage changes are automatically reported in each pull request
+
+.pull-left[
+![](slides_20250521_files/figure-html/unnamed-chunk-14-1.png)&lt;!-- --&gt;
+]
+
+.pull-right[
+![](slides_20250521_files/figure-html/unnamed-chunk-15-1.png)&lt;!-- --&gt;
+]
+
+.footnote[
+Figure source: .hyperlink-style[[FIMS codecov](https://app.codecov.io/gh/NOAA-FIMS/FIMS?search=&amp;trend=all%20time)] |
+.hyperlink-style[[Pull request codecov](https://github.com/NOAA-FIMS/FIMS/pull/837)]
+]
+
+---
+# Automation testing
+- Use appropriate automation tools (e.g., GitHub Actions) to run tests for FIMS
+- C++ and R tests are automatically executed on every commit push.
+- Code coverage results are reported for every pull request
+
+![](slides_20250521_files/figure-html/unnamed-chunk-16-1.png)&lt;!-- --&gt;
+
+
+.footnote[
+Figure source: .hyperlink-style[[FIMS GitHub Actions](https://github.com/NOAA-FIMS/FIMS/actions/workflows/run-googletest.yml)]
+]
+
+---
+# Current challenges
+
+![](https://static7.depositphotos.com/1026550/780/i/600/depositphotos_7809833-stock-photo-challenges-ahead-road-sign.jpg)&lt;!-- --&gt;
+
+---
+# How to define tolerance criteria for statistical models?
+
+.pull-left[
+- 95% of the estimates within two standard error of the expected values
+- What is an acceptable range for model estimates under different modeling conditions?
+- If a single model run fails the tolerance check, should we explore alternative input data or flag it as an issue?
+- How can we manage tolerance testing across both maximum likelihood and Bayesian estimation frameworks within the same suite?
+]
+
+.pull-right[
+&lt;img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Standard_deviation_diagram.svg/330px-Standard_deviation_diagram.svg.png" width="80%" /&gt;
+]
+
+.footnote[
+Figure source: .hyperlink-style[[Wikipedia](https://en.wikipedia.org/wiki/Standard_error)]
+]
+
+---
+# How to better manage tests location and execution time?
+.pull-left[
+- Current R test suites can take up to 10 minutes to run
+- Which tests should run locally vs. remotely to balance speed and reliability?
+- Should we separate core vs. extended tests into different repositories?
+- Where and how should we define dynamic test input data that isn’t based on fixed values?
+]
+
+.pull-right[
+&lt;img src="https://nexwebsites.com/images/service/software-testing-services.svg" width="80%" /&gt;
+]
+
+???
+- Create a developer function to run only unit tests locally
+- How frequently should external tests be executed and maintained?
+---
+# Opportunities for improvement
+![](https://static7.depositphotos.com/1000376/768/i/600/depositphotos_7688025-stock-photo-opportunity-road-sign-on-background.jpg)&lt;!-- --&gt;
+
+---
+# Standardize test templates
+.pull-left[
+- Provide a reusable test template to help developers write consistent R tests
+- Use FIMS:::use_testthat_template() to generate a new test file
+- The template includes three types of tests: input/output checks, edge cases, and error handling
+- Currently implemented for R, a similar template for C++ is planned
+]
+
+.pull-right[
+![](slides_20250521_files/figure-html/unnamed-chunk-21-1.png)&lt;!-- --&gt;
+]
+
+.footnote[
+Figure source: .hyperlink-style[[FIMS testhat template](https://github.com/NOAA-FIMS/FIMS/blob/main/inst/templates/testthat_template.R)]
+]
+
+???
+- Input and output correctness: ensure that the function behaves as expected with correct inputs and returns the expected outputs
+- Edge-case handling: validate the function's performance with unusual scenarios
+- Built-in errors and warnings: confirm that appropriate error and warning messages are triggered under exceptional conditions
+
+
+---
+# Improve execution helpers
+
+- Create dedicated R functions to run specific types of tests (e.g., C++ tests, R unit tests, R integration tests)
+- Use one wrapper function check_fims() to streamline all test execution before pushing to the remote repo
+
+&lt;table class="table table-striped table-hover" style="font-size: 12px; width: auto !important; margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Function &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Description &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; setup_gtest() &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Sets up the environment and test files required for running C++ (GoogleTest) tests. &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; run_gtest() &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Executes the C++ tests using the previously configured test environment. &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; setup_and_run_gtest() &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Convenience wrapper to both set up and run C++ tests in a single call. &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; run_r_unit_tests() &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Runs all R unit tests using the testthat framework, typically for individual modules. &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; run_r_integration_tests() &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Runs R integration tests to validate interaction between multiple modules. &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; check_fims() &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Runs a full suite of all tests (C++ and R) before pushing code to the remote repository. &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+---
+# Establish a quarterly review process
+.pull-left[
+- Ensure testing efforts are aligned with project goals
+- Regularly review test coverage reports and identify gaps
+- Use code club meetings to refactor, reorganize, and expand test suit
+- Future improvement: use GitHub Actions to create an issue on a regular basis*&lt;sup&gt;1&lt;/sup&gt;*
+]
+
+.pull-right[
+- Quarterly review (04/01/2025*&lt;sup&gt;2&lt;/sup&gt;*)
+![](slides_20250521_files/figure-html/unnamed-chunk-23-1.png)&lt;!-- --&gt;
+]
+
+.footnote[
+[1] .hyperlink-style[[Scheduling issue creation](https://docs.github.com/en/actions/use-cases-and-examples/project-management/scheduling-issue-creation)]&lt;br&gt;
+[2] .hyperlink-style[[FIMS issue #761](https://github.com/NOAA-FIMS/FIMS/issues/761)]
+]
+
+---
+# Summary
+.pull-left[
+- Write tests that include normal use, edge cases, and expected error cases
+- Use code quality tools to verify coverage, formatting, and complexity
+- Do not write tests just to boost code coverage
+- Build a safety net and ensure good growth dynamics of a project
+- Developers and testers need to enjoy their testing achievements
+]
+
+.pull-right[
+![Growth dynamics between projects with good and bad tests](https://drek4537l1klr.cloudfront.net/khorikov/Figures/01fig02_alt.jpg)
+]
+
+.footnote[
+Figure source: .hyperlink-style[[(Khorikov, 2020)](https://livebook.manning.com/book/unit-testing/chapter-1/45)]
+]
+
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+  "ratio": "4:3",
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "countIncrementalSlides": false,
+  "slideNumberFormat": "Page %current%"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
