@@ -144,7 +144,7 @@ Figure source: .hyperlink-style[[Getting started with unit testing in R](https:/
 --
 - Current challenges
   - How to define tolerance criteria for statistical models?
-  - How to better manage tests location and execution time?
+  - How to better manage test location and execution time?
 - Opportunities for improvement
   - Standardize test templates
   - Improve execution helpers
@@ -165,7 +165,6 @@ knitr::include_graphics(file.path("static", "FIMS_hexlogo.png"))
 
 A flexible suite of software tools to support sustainable fishery management
 
-- A suite of software tools.
 - Fisheries stock assessment*<sup>1,2</sup>* at core. 
 - Connects to ecosystem, climate, and economic models/data.
 - Flexible for innovative future modeling work.
@@ -185,7 +184,7 @@ A flexible suite of software tools to support sustainable fishery management
 knitr::include_graphics(file.path("static", "fims_path_simple.png"))
 ```
 - FIMS modules are written in C++ and linked to R*<sup>1</sup>* using Rcpp*<sup>2</sup>*
-- Template Model Builder*<sup>3</sup>* (TMB) serves as the statistical inference engine for FIMS
+- Template Model Builder*<sup>3</sup>* serves as the engine for statistical inference of FIMS
 
 .footnote[
 
@@ -254,12 +253,12 @@ test_summary <- tibble::tibble(
     "Check FIMS compatibility across different operating systems"
   ),
   `GoogleTest (C++)` = c("✔️", "✔️", "❌", "❌", "❌", "✔️"),
-  `testthat (R)`     = c("✔️", "✔️", "❌", "✔️", "❌", "✔️"),
+  `testthat (R)`     = c("✔️", "✔️", "✔️", "✔️", "❌", "✔️"),
   `Case Studies`     = c("❌", "❌", "✔️", "✔️", "✔️", "❌"),
   `Developers`       = c("✔️", "✔️", "❌", "❌", "❌", "❌"),
   `Testers`          = c("❌", "✔️", "✔️", "✔️", "✔️", "❌"),
   `Users`            = c("❌", "❌", "✔️", "✔️", "✔️", "❌"),
-  `GHA`              = c("✔️", "✔️", "✔️", "✔️", "✔️", "✔️")
+  `GitHub Actions`   = c("✔️", "✔️", "✔️", "✔️", "✔️", "✔️")
 ) |>
   knitr::kable("html", escape = FALSE) |>
   kableExtra::add_header_above(c(
@@ -510,32 +509,11 @@ knitr::include_graphics("https://static7.depositphotos.com/1026550/780/i/600/dep
 ```
 
 ---
-# How to define tolerance criteria for statistical models?
-
-.pull-left[
-- 95% of the estimates within two standard error of the expected values
-- What is an acceptable range for model estimates under different modeling conditions?
-- If a single model run fails the tolerance check, should we explore alternative input data or flag it as an issue?
-- How can we manage tolerance testing across both maximum likelihood and Bayesian estimation frameworks within the same suite?
-]
-
-.pull-right[
-```{r, echo=FALSE, out.width="80%"}
-knitr::include_graphics("https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Standard_deviation_diagram.svg/330px-Standard_deviation_diagram.svg.png")
-```
-]
-
-.footnote[
-Figure source: .hyperlink-style[[Wikipedia](https://en.wikipedia.org/wiki/Standard_error)]
-]
-
----
-# How to better manage tests location and execution time?
+# How to better manage test location and execution time?
 .pull-left[
 - Current R test suites can take up to 10 minutes to run
 - Which tests should run locally vs. remotely to balance speed and reliability?
 - Should we separate core vs. extended tests into different repositories?
-- Where and how should we define dynamic test input data that isn’t based on fixed values?
 ]
 
 .pull-right[
@@ -544,13 +522,41 @@ knitr::include_graphics("https://nexwebsites.com/images/service/software-testing
 ```
 ]
 
+Mentimeter link: .hyperlink-style[[https://www.menti.com/al8ugsvp2kk3](https://www.menti.com/al8ugsvp2kk3)]
+
+
 ???
 - Create a developer function to run only unit tests locally
 - How frequently should external tests be executed and maintained?
+- Where and how should we define dynamic test input data that isn’t based on fixed values?
+
+---
+# How to define tolerance criteria for statistical models?
+
+.pull-left[
+- 95% of the estimates within two standard error of the expected values
+- What is an acceptable range for model estimates under different modeling conditions?
+- If a single model run fails the tolerance check, should we explore alternative input data or flag it as an issue?
+]
+
+.pull-right[
+```{r, echo=FALSE, out.width="80%"}
+knitr::include_graphics("https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Standard_deviation_diagram.svg/330px-Standard_deviation_diagram.svg.png")
+```
+]
+
+Mentimeter link: .hyperlink-style[[https://www.menti.com/al8ugsvp2kk3](https://www.menti.com/al8ugsvp2kk3)]
+
+.footnote[
+Figure source: .hyperlink-style[[Wikipedia](https://en.wikipedia.org/wiki/Standard_error)]
+]
+
+???
+- How can we manage tolerance testing across both maximum likelihood and Bayesian estimation frameworks within the same suite?
 ---
 # Opportunities for improvement
 ```{r, echo=FALSE, fig.height=1, fig.width=1}
-knitr::include_graphics("https://static7.depositphotos.com/1000376/768/i/600/depositphotos_7688025-stock-photo-opportunity-road-sign-on-background.jpg")
+knitr::include_url("https://static7.depositphotos.com/1000376/768/i/600/depositphotos_7688025-stock-photo-opportunity-road-sign-on-background.jpg")
 ```
 
 ---

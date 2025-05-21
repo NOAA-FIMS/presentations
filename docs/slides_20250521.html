@@ -96,7 +96,7 @@ Figure source: .hyperlink-style[[Getting started with unit testing in R](https:/
 --
 - Current challenges
   - How to define tolerance criteria for statistical models?
-  - How to better manage tests location and execution time?
+  - How to better manage test location and execution time?
 - Opportunities for improvement
   - Standardize test templates
   - Improve execution helpers
@@ -115,7 +115,6 @@ Figure source: .hyperlink-style[[Getting started with unit testing in R](https:/
 
 A flexible suite of software tools to support sustainable fishery management
 
-- A suite of software tools.
 - Fisheries stock assessment*&lt;sup&gt;1,2&lt;/sup&gt;* at core. 
 - Connects to ecosystem, climate, and economic models/data.
 - Flexible for innovative future modeling work.
@@ -133,7 +132,7 @@ A flexible suite of software tools to support sustainable fishery management
 # Introduction to FIMS
 &lt;img src="static/fims_path_simple.png" width="80%" /&gt;
 - FIMS modules are written in C++ and linked to R*&lt;sup&gt;1&lt;/sup&gt;* using Rcpp*&lt;sup&gt;2&lt;/sup&gt;*
-- Template Model Builder*&lt;sup&gt;3&lt;/sup&gt;* (TMB) serves as the statistical inference engine for FIMS
+- Template Model Builder*&lt;sup&gt;3&lt;/sup&gt;* serves as the engine for statistical inference of FIMS
 
 .footnote[
 
@@ -154,8 +153,8 @@ Figure source: .hyperlink-style[[GeeksforGeeks](https://www.geeksforgeeks.org/ty
 ---
 # Types of tests implemented
 
-<div class="DiagrammeR html-widget html-fill-item" id="htmlwidget-b976687919a0096e297c" style="width:100%;height:504px;"></div>
-<script type="application/json" data-for="htmlwidget-b976687919a0096e297c">{"x":{"diagram":"\n   graph TB\n   a[Types of FIMS Testing]-->A[Manual Testing]\n   a-->B[Automation Testing]\n   A-->C[Functional Testing]\n   A-->D[Non-Functional Testing]\n   C-->E[Unit Testing]\n   C-->F[Integration Testing]\n   C-->G[System Testing]\n   D-->H[Performance Testing]\n   D-->I[Usability Testing]\n   D-->J[Compatibility Testing]\n   style a fill:#C6E6F0\n   style A fill:#90DFE3\n   style B fill:#90DFE3\n   style C fill:#B1DC6B\n   style D fill:#B1DC6B\n   style E fill:#A8B8FF\n   style F fill:#A8B8FF\n   style G fill:#A8B8FF\n   style H fill:#A8B8FF\n   style I fill:#A8B8FF\n   style J fill:#A8B8FF\n"},"evals":[],"jsHooks":[]}</script>
+<div class="DiagrammeR html-widget html-fill-item" id="htmlwidget-a23e5f354c202d4d007f" style="width:100%;height:504px;"></div>
+<script type="application/json" data-for="htmlwidget-a23e5f354c202d4d007f">{"x":{"diagram":"\n   graph TB\n   a[Types of FIMS Testing]-->A[Manual Testing]\n   a-->B[Automation Testing]\n   A-->C[Functional Testing]\n   A-->D[Non-Functional Testing]\n   C-->E[Unit Testing]\n   C-->F[Integration Testing]\n   C-->G[System Testing]\n   D-->H[Performance Testing]\n   D-->I[Usability Testing]\n   D-->J[Compatibility Testing]\n   style a fill:#C6E6F0\n   style A fill:#90DFE3\n   style B fill:#90DFE3\n   style C fill:#B1DC6B\n   style D fill:#B1DC6B\n   style E fill:#A8B8FF\n   style F fill:#A8B8FF\n   style G fill:#A8B8FF\n   style H fill:#A8B8FF\n   style I fill:#A8B8FF\n   style J fill:#A8B8FF\n"},"evals":[],"jsHooks":[]}</script>
 
 ---
 # Types of tests implemented
@@ -175,7 +174,7 @@ Figure source: .hyperlink-style[[GeeksforGeeks](https://www.geeksforgeeks.org/ty
    &lt;th style="text-align:left;"&gt; Developers &lt;/th&gt;
    &lt;th style="text-align:left;"&gt; Testers &lt;/th&gt;
    &lt;th style="text-align:left;"&gt; Users &lt;/th&gt;
-   &lt;th style="text-align:left;"&gt; GHA &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; GitHub Actions &lt;/th&gt;
   &lt;/tr&gt;
  &lt;/thead&gt;
 &lt;tbody&gt;
@@ -205,7 +204,7 @@ Figure source: .hyperlink-style[[GeeksforGeeks](https://www.geeksforgeeks.org/ty
    &lt;td style="text-align:left;"&gt; System Testing &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; Evaluate the overall functionality of a complete FIMS model &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; ❌ &lt;/td&gt;
-   &lt;td style="text-align:left;"&gt; ❌ &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; ✔️ &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; ✔️ &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; ❌ &lt;/td&gt;
    &lt;td style="text-align:left;"&gt; ✔️ &lt;/td&gt;
@@ -447,42 +446,49 @@ Figure source: .hyperlink-style[[FIMS GitHub Actions](https://github.com/NOAA-FI
 ![](https://static7.depositphotos.com/1026550/780/i/600/depositphotos_7809833-stock-photo-challenges-ahead-road-sign.jpg)&lt;!-- --&gt;
 
 ---
-# How to define tolerance criteria for statistical models?
-
-.pull-left[
-- 95% of the estimates within two standard error of the expected values
-- What is an acceptable range for model estimates under different modeling conditions?
-- If a single model run fails the tolerance check, should we explore alternative input data or flag it as an issue?
-- How can we manage tolerance testing across both maximum likelihood and Bayesian estimation frameworks within the same suite?
-]
-
-.pull-right[
-&lt;img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Standard_deviation_diagram.svg/330px-Standard_deviation_diagram.svg.png" width="80%" /&gt;
-]
-
-.footnote[
-Figure source: .hyperlink-style[[Wikipedia](https://en.wikipedia.org/wiki/Standard_error)]
-]
-
----
-# How to better manage tests location and execution time?
+# How to better manage test location and execution time?
 .pull-left[
 - Current R test suites can take up to 10 minutes to run
 - Which tests should run locally vs. remotely to balance speed and reliability?
 - Should we separate core vs. extended tests into different repositories?
-- Where and how should we define dynamic test input data that isn’t based on fixed values?
 ]
 
 .pull-right[
 &lt;img src="https://nexwebsites.com/images/service/software-testing-services.svg" width="80%" /&gt;
 ]
 
+Mentimeter link: .hyperlink-style[[https://www.menti.com/al8ugsvp2kk3](https://www.menti.com/al8ugsvp2kk3)]
+
+
 ???
 - Create a developer function to run only unit tests locally
 - How frequently should external tests be executed and maintained?
+- Where and how should we define dynamic test input data that isn’t based on fixed values?
+
+---
+# How to define tolerance criteria for statistical models?
+
+.pull-left[
+- 95% of the estimates within two standard error of the expected values
+- What is an acceptable range for model estimates under different modeling conditions?
+- If a single model run fails the tolerance check, should we explore alternative input data or flag it as an issue?
+]
+
+.pull-right[
+&lt;img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Standard_deviation_diagram.svg/330px-Standard_deviation_diagram.svg.png" width="80%" /&gt;
+]
+
+Mentimeter link: .hyperlink-style[[https://www.menti.com/al8ugsvp2kk3](https://www.menti.com/al8ugsvp2kk3)]
+
+.footnote[
+Figure source: .hyperlink-style[[Wikipedia](https://en.wikipedia.org/wiki/Standard_error)]
+]
+
+???
+- How can we manage tolerance testing across both maximum likelihood and Bayesian estimation frameworks within the same suite?
 ---
 # Opportunities for improvement
-![](https://static7.depositphotos.com/1000376/768/i/600/depositphotos_7688025-stock-photo-opportunity-road-sign-on-background.jpg)&lt;!-- --&gt;
+&lt;iframe src="https://static7.depositphotos.com/1000376/768/i/600/depositphotos_7688025-stock-photo-opportunity-road-sign-on-background.jpg" width="100%" height="400px" data-external="1"&gt;&lt;/iframe&gt;
 
 ---
 # Standardize test templates
