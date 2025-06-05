@@ -1,0 +1,19 @@
+## FIMS path
+
+```{r}
+#| label: fims-path-simple
+#| echo: false
+#| warning: false
+#| fig-alt: Simplified FIMS path.
+knitr::include_graphics(file.path("fims_images", "fims_path_simple.png"))
+```
+- FIMS modules are written in C++ and linked to R*<sup>1</sup>* using Rcpp*<sup>2</sup>*
+- Template Model Builder*<sup>3</sup>* serves as the engine for statistical inference of FIMS
+
+*<sup>1</sup>*[R:](https://www.r-project.org/) A programming language and free software environment for statistical computing and graphics.<br>
+*<sup>2</sup>*[Rcpp:](https://cran.r-project.org/web/packages/Rcpp/index.html) An R package that provides R functions as well as C++ classes which offer a seamless<br> integration of R and C++.<br>
+*<sup>3</sup>*[Template Model Builder:](https://kaskr.github.io/adcomp/Introduction.html) An R package for fitting statistical latent variable models to data.<br>
+
+::: {.content-visible when-format="html" unless-format="revealjs"}
+This content will only appear in HTML report.
+:::
