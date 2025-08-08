@@ -30,7 +30,7 @@
 	// },
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	"forwardPorts": [4321],
+	// "forwardPorts": [],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	"postCreateCommand": "echo 'options(repos = c(CRAN = \"https://cloud.r-project.org\"))' | sudo sh -c 'cat - >>\"${R_HOME}/etc/Rprofile.site\"'",
