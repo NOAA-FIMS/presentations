@@ -1,0 +1,5 @@
+## NEFSC yellowtail flounder case study
+No more outdated screenshots. Embed live web pages with infinite scrolling slides!
+```{r, echo=FALSE}
+knitr::include_url("https://noaa-fims.github.io/case-studies/content/NEFSC-yellowtail.html")
+```

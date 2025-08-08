@@ -1,0 +1,36 @@
+::: {.columns}
+
+::: {.column width="30%"}
+
+**Fisheries Integrated Modeling System**
+```{r, echo=FALSE, out.width="80%"}
+#| label: fims-hexlog
+#| warning: false
+#| fig-alt: Hexagon-shaped logo representing FIMS
+knitr::include_graphics(file.path("docs", "static", "FIMS_hexlogo.png"))
+```
+
+:::
+
+::: {.column width="70%"}
+
+**What is FIMS?**
+
+A flexible suite of software tools to support sustainable fishery management
+
+- Fisheries stock assessment*<sup>1,2</sup>* at core. 
+- Connects to ecosystem, climate, and economic models/data.
+- Flexible for innovative future modeling work.
+- Collaborative community effort.
+- Addresses numerous priorities. 
+
+:::
+
+[FIMS landing page](https://noaa-fims.github.io/) | [FIMS GitHub repo](https://github.com/noaa-fims/fims/)
+
+- [1] [Fishery stock assessment:](https://www.fisheries.noaa.gov/insight/stock-assessment-model-descriptions) The scientific process of collecting, analyzing, and reporting on the condition of a fish stock and estimating its sustainable yield.
+- [2] [Stock assessment model:](https://www.fisheries.noaa.gov/insight/stock-assessment-model-descriptions) The mathematical and statistical techniques stock assessments use to analyze and understand the impact of fisheries and environmental factors on fish stocks.
+
+:::
+
+
