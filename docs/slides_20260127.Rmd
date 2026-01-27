@@ -1,0 +1,493 @@
+---
+title: "How FIMS plans to span the<br>range of data availabilities"
+subtitle: National Stock Assessment Workshop
+author: "Kelli Johnson, NOAA Fisheries OST<br>kelli.johnson@noaa.gov<br> <br>Co-Authors:<br>Andrea Havron, NOAA Fisheries OST<br>Megumi Oshima, NOAA Fisheries PIFSC<br>Ronald Klasky, T and T Consulting Services"
+date: 2026/01/27
+output:
+  xaringan::moon_reader:
+    css: ["xaringan-themer.css"]
+    lib_dir: libs
+    nature:
+      ratio: '4:3'
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      slideNumberFormat: "Page %current%"
+---
+
+layout: true
+  
+```{r xaringanthemer, include=FALSE, warning=FALSE}
+options(repos = c(CRAN = "https://cloud.r-project.org"))
+required_pkg <- c("xaringanthemer", "remotes", "webshot2", "xfun", "DiagrammeR", "FIMS")
+pkg_to_install <- required_pkg[!(required_pkg %in%
+                                   installed.packages()[, "Package"])]
+if (length(pkg_to_install)) install.packages(pkg_to_install)
+lapply(required_pkg, library, character.only = TRUE)
+
+remotes::install_github("nmfs-ost/nmfspalette")
+library(nmfspalette)
+
+style_xaringan(
+
+  base_font_size = "15px",
+  text_font_size = "1.5rem",
+
+  title_slide_background_color = unname(nmfs_cols("darkblue")),
+  title_slide_text_color = unname(nmfs_cols("white")),
+  title_slide_background_size = "cover",
+  title_slide_background_image = file.path("static", "slideswooshver.png"),
+
+  background_image = file.path("static", "slideswoosh.PNG"),
+  background_size = "cover",
+  background_color = unname(nmfs_cols("white")),
+
+  header_font_google = google_font("Arimo"),
+  header_color = unname(nmfs_cols("darkblue")),
+
+  text_color = unname(nmfs_cols("darkblue")),
+  # text_font_google = google_font("Carlito", "300", "300i"),
+  text_slide_number_color = unname(nmfs_cols("lightteal")),
+
+  code_font_google = google_font("Source Code Pro"),
+  code_highlight_color = unname(nmfs_cols("medteal")),
+
+  inverse_background_color = unname(nmfs_cols("processblue")),
+  inverse_text_color = unname(nmfs_cols("supltgray")),
+
+  footnote_font_size = "0.6em",
+  footnote_color = unname(nmfs_cols("darkblue")),
+  footnote_position_bottom = "10px",
+
+  link_color = unname(nmfs_cols("medteal")),
+
+
+  extra_css = list(
+    ".remark-slide-number" = list(
+      "font-size" = "0.4em",
+      "font-weight" = "bold",
+      "margin" = "0px 840px -2px 0px"),
+
+    ".title-slide h1, h2, h3" = list(
+      "text-align" = "right"), 
+    
+    ".hyperlink-style" = list(
+      "color" = "blue",
+      "text-decoration" = "underline"
+    )
+  )
+)
+```
+
+.footnote[U.S. Department of Commerce | National Oceanic and Atmospheric Administration | National Marine Fisheries Service]
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+```
+
+<!-- Start of slides -->
+
+---
+# Outline
+
+- Introduction to .hyperlink-style[[FIMS](https://noaa-fims.github.io/)]
+- The **S** in **S**ystem
+- Mechanics of specifying a model family
+- Future model families <!-- Timeline -->
+- Our assessment family
+
+---
+# Introduction to FIMS
+
+.left-column[
+<div style="text-align: center;">
+  <img src="static/FIMS_hexlogo.png" style="width: 100%; max-width: 300px;" />
+</div>
+
+<div style="font-size: 0.8em;">
+* .hyperlink-style[[NOAA-FIMS](https://noaa-fims.github.io/FIMS/)]<br>
+* .hyperlink-style[[FIMS code](https://github.com/noaa-fims/fims/)]<br>
+* .hyperlink-style[[FIMS docs](https://noaa-fims.github.io/FIMS/)]<br>
+* .hyperlink-style[[Repositories](https://github.com/orgs/NOAA-FIMS/repositories)]<br>
+]
+</div>
+
+.right-column[
+**What is the Fisheries Integrated Modeling System?**
+
+A flexible .hyperlink-style[[suite of software tools](https://github.com/orgs/NOAA-FIMS/repositories)] to support sustainable fishery management.
+
+* Addresses numerous priorities
+* Next-generation modeling platform
+  * Connects to ecosystem, climate, and economic models/data
+  * Transparent, timely, and efficient
+* Collaborative NOAA Fisheries product
+  * Representation from each regional Center
+  * Dedicated, continued support
+  * Guided by an International Council
+]
+
+---
+# The S in System
+
+FIMS is a **S**ystem not a single model
+
+<div style="display: flex;">
+  <div style="flex: 0 0 60%; padding-right: 2%;">
+    <!-- Left column content -->
+<li>connect the silos between</li>
+  <ul>
+  <li>🧭East/West/North/South🧭</li>
+  <li>data-limited and data-rich</li>
+  </ul>
+<li>System currently includes</li>
+  <ul>
+  <li>Catch-at-age model</li>
+  <li>Surplus production model (feature branch)</li>
+  </ul>
+  </div>
+  <div style="flex: 0 0 40%;">
+    <!-- Right column content -->
+<div style="text-align: center;">
+  <img src="https://live.staticflickr.com/3816/11090497816_4dcf638be1.jpg" style="width: 100%; max-width: 300px;" />
+</div>
+</div>
+
+---
+# 🏛️ NOAA-FIMS Architecture 🏛️
+
+* GitHub organization .hyperlink-style[https://github.com/NOAA-FIMS]
+* Single Discussion board
+  * .hyperlink-style[https://github.com/orgs/NOAA-FIMS/discussions]
+  * In place of Slack, Discord, or Google Group
+  * Please introduce yourself on .hyperlink-style[[Discussion #801](https://github.com/orgs/NOAA-FIMS/discussions/801)]
+* Multiple types of repositories, including R packages
+```{r noaa-fims-architecture, echo=FALSE, out.height="80%"}
+DiagrammeR::grViz("
+digraph flowchart {
+  node [shape = rectangle]
+  A [label = 'NOAA-FIMS']
+  B [label = 'FIMS', color='blue']
+  C [label = 'fishprior']
+  D [label = 'ecosystemom']
+  E [label = 'ecosystemdata']
+  A -> B
+  A -> C
+  A -> D
+  A -> E
+  D -> E
+}
+"
+)
+```
+
+
+---
+# 🏛️ FIMS Architecture 🏛️
+
+* Distributable R package that compiles during installation
+* FIMS modules are written in C++
+  * C++ is linked to R using Rcpp*<sup>1</sup>*
+  * Learn more in the .hyperlink-style[[training vignettes](https://noaa-fims.github.io/FIMS/articles/index.html)]
+* .hyperlink-style[[Template Model Builder](https://kaskr.github.io/adcomp/Introduction.html)]*<sup>2</sup>* currently serves as the engine for statistical inference
+<div style="text-align: center;">
+  <img src="static/fims_path_simple.png" style="width: 100%; max-width: 600px;" />
+</div>
+
+.footnote[
+[1] .hyperlink-style[[Rcpp:](https://cran.r-project.org/web/packages/Rcpp/index.html)] An R package that provides the seamless integration of R and C++.<br>
+[2] .hyperlink-style[[Template Model Builder:](https://kaskr.github.io/adcomp/Introduction.html)] An R package for fitting statistical latent variable models to data.
+]
+
+---
+# 🏛️ FIMS Architecture 🏛️
+
+* Distributable R package that compiles during installation
+* FIMS modules are written in `C++` in `inst/include`
+--
+
+* Rcpp code is in `inst/include/interface` and `src/FIMS.cpp`
+* R code is in `R`
+* Compiling of C++ is configured using `src/Makevars`
+```{r fims-architecture, echo=FALSE, out.height="80%", fig.align="center"}
+DiagrammeR::grViz("
+digraph fims_architecture {
+  a [label=<
+    <TABLE BORDER='0' CELLBORDER='0'>
+      <TR><TD ALIGN='CENTER'><B>inst/include</B></TD></TR>
+      <TR><TD ALIGN='LEFT'>common</TD></TR>
+      <TR><TD ALIGN='LEFT'>distributions</TD></TR>
+      <TR><TD ALIGN='LEFT'>interface</TD></TR>
+      <TR><TD ALIGN='LEFT'>models</TD></TR>
+      <TR><TD ALIGN='LEFT'>population_dynamics</TD></TR>
+      <TR><TD ALIGN='LEFT'>utilities</TD></TR>
+    </TABLE>
+  >, shape=box]
+  R [label=<
+    <TABLE BORDER='0' CELLBORDER='0'>
+      <TR><TD ALIGN='CENTER'><B>R</B></TD></TR>
+      <TR><TD ALIGN='LEFT'>create_default_configurations.R</TD></TR>
+      <TR><TD ALIGN='LEFT'>create_default_parameters.R</TD></TR>
+      <TR><TD ALIGN='LEFT'>fimsfit.R</TD></TR>
+      <TR><TD ALIGN='LEFT'>fimsframe.R</TD></TR>
+      <TR><TD ALIGN='LEFT'>FIMS-package.R</TD></TR>
+      <TR><TD ALIGN='LEFT'>initizalize_module.R</TD></TR>
+      <TR><TD ALIGN='LEFT'>*.R</TD></TR>
+    </TABLE>
+  >, shape = box]
+  src [label=<
+    <TABLE BORDER='0' CELLBORDER='0'>
+      <TR><TD ALIGN='CENTER'><B>src</B></TD></TR>
+      <TR><TD ALIGN='LEFT'>FIMS.cpp</TD></TR>
+      <TR><TD ALIGN='LEFT'>Makevars</TD></TR>
+    </TABLE>
+  >, shape=box]
+}
+")
+```
+
+---
+# 🏛️ C++ Architecture 🏛️
+
+`FIMS/inst/include`
+```{r include-architecture, echo=FALSE, out.width="100%"}
+DiagrammeR::grViz("
+digraph fims_architecture {
+  common [label=<
+    <TABLE BORDER='0' CELLBORDER='0'>
+      <TR><TD ALIGN='CENTER'><B>common</B></TD></TR>
+      <TR><TD ALIGN='LEFT'>data_object.hpp</TD></TR>
+      <TR><TD ALIGN='LEFT'>def.hpp</TD></TR>
+      <TR><TD ALIGN='LEFT'>fims_math.hpp</TD></TR>
+      <TR><TD ALIGN='LEFT'>fims_vector.hpp</TD></TR>
+      <TR><TD ALIGN='LEFT'>information.hpp</TD></TR>
+      <TR><TD ALIGN='LEFT'>model.hpp</TD></TR>
+      <TR><TD ALIGN='LEFT'>model_object.hpp</TD></TR>
+    </TABLE>
+  >, shape=box]
+  interface [label=<
+    <TABLE BORDER='0' CELLBORDER='0'>
+      <TR><TD ALIGN='CENTER'><B>interface</B></TD></TR>
+      <TR><TD ALIGN='LEFT'>rcpp_objects</TD></TR>
+      <TR><TD ALIGN='LEFT'>interface.hpp</TD></TR>
+    </TABLE>
+  >, shape=box]
+  models [label=<
+    <TABLE BORDER='0' CELLBORDER='0'>
+      <TR><TD ALIGN='CENTER'><B>models</B></TD></TR>
+      <TR><TD ALIGN='LEFT'>functors/catch-at-age.hpp</TD></TR>
+      <TR><TD ALIGN='LEFT'>functors/surplus-production.hpp</TD></TR>
+      <TR><TD ALIGN='LEFT'>functors/fishery_model_base.hpp</TD></TR>
+      <TR><TD ALIGN='LEFT'>fisheries_models.hpp</TD></TR>
+    </TABLE>
+  >, shape=box]
+  population [label=<
+    <TABLE BORDER='0' CELLBORDER='0'>
+      <TR><TD ALIGN='CENTER'><B>population_dynamics</B></TD></TR>
+      <TR><TD ALIGN='LEFT'>depletion</TD></TR>
+      <TR><TD ALIGN='LEFT'>fleet</TD></TR>
+      <TR><TD ALIGN='LEFT'>growth</TD></TR>
+      <TR><TD ALIGN='LEFT'>maturity</TD></TR>
+      <TR><TD ALIGN='LEFT'>population</TD></TR>
+      <TR><TD ALIGN='LEFT'>recruitment</TD></TR>
+      <TR><TD ALIGN='LEFT'>selectivity</TD></TR>
+    </TABLE>
+  >, shape=box]
+}
+")
+```
+
+---
+# 🏛️ Model Family Architecture 🏛️
+
+`FIMS/inst/include/models`
+<div style="margin-bottom:-28px;"></div>
+```{r models-architecture, echo=FALSE, out.width="100%"}
+DiagrammeR::grViz("
+digraph fims_architecture {
+  rankdir=LR;
+
+  // Model nodes
+  catch_at_age [label='functors/catch-at-age.hpp', shape=box, color='#00797F', penwidth = 2]
+  surplus_production [label='functors/surplus-production.hpp', shape=box, color='#DB6015', penwidth = 2]
+  fishery_model_base [label='functors/fishery_model_base.hpp', shape=box]
+  fisheries_models [label='fisheries_models.hpp', shape=box]
+
+  // Population nodes
+  depletion [label='depletion', shape=box]
+  fleet [label='fleet', shape=box]
+  growth [label='growth', shape=box]
+  maturity [label='maturity', shape=box]
+  population [label='population', shape=box]
+  recruitment [label='recruitment', shape=box]
+  selectivity [label='selectivity', shape=box]
+
+  // Grouping (optional, for visual grouping)
+  subgraph cluster_models {
+    label = 'models'
+    // style = 'dashed'
+    catch_at_age; surplus_production; fishery_model_base; fisheries_models;
+  }
+  subgraph cluster_population {
+    label = 'population_dynamics'
+    // style = 'dashed'
+    depletion; fleet; growth; maturity; population; recruitment; selectivity;
+  }
+
+  // Connections
+  // nmfspalette::nmfs_palette('regional_alt1')(6)
+  catch_at_age -> fleet [color='#00797F', penwidth = 2]
+  catch_at_age -> growth [color='#00797F', penwidth = 2]
+  catch_at_age -> maturity [color='#00797F', penwidth = 2]
+  catch_at_age -> population [color='#00797F', penwidth = 2]
+  catch_at_age -> recruitment [color='#00797F', penwidth = 2]
+  catch_at_age -> selectivity [color='#00797F', penwidth = 2]
+  surplus_production -> depletion [color='#DB6015', penwidth = 2]
+  surplus_production -> fleet [color='#DB6015', penwidth = 2]
+  surplus_production -> population [color='#DB6015', penwidth = 2]
+  fisheries_models -> catch_at_age
+  fisheries_models -> surplus_production
+  fishery_model_base -> population
+}
+")
+```
+
+---
+# Model Family R Code (main)
+
+```{r family-code-catch, eval=TRUE, include=TRUE}
+data(data1, package = "FIMS")
+configuration_catch <- FIMS::create_default_configurations(
+  data = FIMS::FIMSFrame(data1),
+  model_family = "catch_at_age"
+)
+tidyr::unnest(configuration_catch, cols = "data")
+```
+
+---
+# Model Family R Code (main)
+
+```{r family-code-catch-parameters, eval = TRUE, include = TRUE}
+data(data1, package = "FIMS")
+data_catch <- FIMS::FIMSFrame(data1)
+configuration_catch <- FIMS::create_default_configurations(
+  data = data_catch,
+  model_family = "catch_at_age"
+)
+parameters_catch <- FIMS::create_default_parameters(
+  configurations = configuration_catch,
+  data = data_catch
+)
+```
+
+---
+# Model Family R Code (main)
+
+```{r family-code-catch-show, eval = TRUE, include = TRUE}
+parameters_catch |> print(n = 6)
+tidyr::unnest(parameters_catch, cols = "data") |> print(n = 6)
+```
+
+---
+# Model Family R Code (dev-surplus-production)
+
+```{r family-code-surplus-production, eval=FALSE, include=TRUE}
+data(data2, package = "FIMS")
+data_surplus <- FIMS::FIMSFrame(data2)
+configuration_surplus <- FIMS::create_default_configurations(
+  data = data_surplus,
+  model_family = "surplus_production"
+)
+parameters_surplus <- FIMS::create_default_parameters(
+  configurations = configuration_surplus,
+  data = data_surplus
+)
+fit <- FIMS::initialize_fims(
+  parameters = parameters_surplus,
+  data = data_surplus
+) |>
+  fit_fims(optimize = TRUE)
+```
+
+---
+# 🏛️ C++ Architecture 🏛️
+
+`FIMS/inst/include`
+
+```{r ref.label='include-architecture', echo=FALSE, out.width="100%"}
+```
+
+---
+# 🏛️ Theoretical Family Architecture 🏛️
+
+```{r future-architecture, echo=FALSE, out.width="100%"}
+DiagrammeR::grViz("
+digraph fims_architecture {
+  rankdir=TB;
+
+  // Model nodes
+  fishery_model_base [label='functors/fishery_model_base.hpp', shape=box, color='#76BC21']
+  fisheries_models [label='fisheries_models.hpp', shape=box, color='#76BC21']
+  catch_at_age [label='functors/catch-at-age.hpp', shape=box, color='#76BC21', penwidth = 3]
+  surplus_production [label='functors/surplus-production.hpp', shape=box, color='#DB6015', penwidth = 3]
+  question [label='functors/?.hpp', shape=box, color='#B71300', penwidth = 3]
+  size [label='functors/size-structured.hpp', shape=box, color='#B71300', penwidth = 3]
+  length [label='functors/length-only.hpp', shape=box, color='#B71300', penwidth = 3]
+  spatial [label='functors/spatial.hpp', shape=box, color='#B71300', penwidth = 3]
+
+  // Grouping (optional, for visual grouping)
+  subgraph cluster_models {
+    label = 'models'
+    // style = 'dashed'
+    fisheries_models;
+    fishery_model_base;
+    catch_at_age;
+    surplus_production;
+
+    fisheries_models -> fishery_model_base [style=invis];
+    catch_at_age -> surplus_production [style=invis];
+
+  }
+
+  // Grouping (optional, for visual grouping)
+  subgraph new_models {
+    label = 'new'
+    // style = 'dashed'
+    size;
+    question;
+    length;
+    spatial;
+
+    question -> length -> spatial [style=invis];
+    question -> size [style=invis];
+  }
+}
+")
+```
+.footnote[
+[1] <span style="color: #76BC21;">Available in main.</span><br>
+[2] <span style="color: #DB6015;">Available in feature branch.</span><br>
+[2] <span style="color: #B71300;">Potential families.</span><br>
+]
+
+---
+# 🧑‍🤝‍🧑FIMS Family 🧑‍🤝‍🧑
+
+👉 You, yes **you** 👈, can get involved in the FIMS community!
+
+* Introduce yourself on our .hyperlink-style[[Discussion Board #801](https://github.com/orgs/NOAA-FIMS/discussions/801)]
+* Assign yourself to a .hyperlink-style[[low-hanging 🍎 Issue](https://github.com/NOAA-FIMS/FIMS/issues?q=is%3Aissue%20state%3Aopen%20label%3A%22attribute%3A%20low%20hanging%20%F0%9F%8D%8E%22)]
+* Join a .hyperlink-style[[FIMS Code Club](https://noaa-fims.github.io/about/calendar.html)] (monthly 3-hour coding/learning session)
+* Engage with individuals from multiple disciplines
+* Bring novel practices to all model types at once
+
+---
+# Thank you
+
+👋 Welcome to .hyperlink-style[[FIMS](https://noaa-fims.github.io/)]
+
+<div style="text-align: center;">
+  <img src="static/FIMS_hexlogo.png" style="width: 100%; max-width: 300px;" />
+</div>
+
+📩kelli.johnson@noaa.gov
