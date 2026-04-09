@@ -1,7 +1,7 @@
 ---
 title: "FIMS Case Studies"
-subtitle: Review of Fisheries Integrated Modeling System
-author: "Ian Taylor, NOAA Fisheries NWFSC<br>ian.taylor@noaa.gov<br>"
+subtitle: "Review of<br>Fisheries Integrated<br>Modeling System"
+author: "Ian Taylor<br>NOAA Fisheries<br>Northwest Fisheries Science Center<br>ian.taylor@noaa.gov<br>"
 date: 2026/04/22
 output:
   xaringan::moon_reader:
@@ -73,9 +73,13 @@ style_xaringan(
     ".title-slide h1, h2, h3" = list(
       "text-align" = "right"), 
     
-    ".hyperlink-style" = list(
+    ".remark-slide-content a, .remark-slide-content a:visited, .hyperlink-style a, .hyperlink-style a:visited" = list(
       "color" = "blue",
       "text-decoration" = "underline"
+    ),
+
+    ".remark-slide-content ul ul, .remark-slide-content ul ol, .remark-slide-content ol ul, .remark-slide-content ol ol" = list(
+      "font-size" = "0.85em"
     ),
 
     ".priority-grid" = list(
@@ -229,13 +233,13 @@ options(htmltools.dir.version = FALSE)
 
 - Background on case studies
 
-- Results of three case studies (viewed on the case studies website)
+- Results of three case studies (switch to the case studies [website](https://noaa-fims.github.io/case-studies))
 
-  - .hyperlink-style[[Southern New England-Mid Atlantic Yellowtail Flounder](https://noaa-fims.github.io/case-studies/content/NEFSC-yellowtail.html)]
+  - [Southern New England-Mid Atlantic Yellowtail Flounder](https://noaa-fims.github.io/case-studies/content/NEFSC-yellowtail.html)
 
-  - .hyperlink-style[[Gulf of Alaska Walleye Pollock](https://noaa-fims.github.io/case-studies/content/AFSC-GOA-pollock.html)]
+  - [Gulf of Alaska Walleye Pollock](https://noaa-fims.github.io/case-studies/content/AFSC-GOA-pollock.html)
   
-  - .hyperlink-style[[Pacific Hake](https://noaa-fims.github.io/case-studies/content/pacific-hake.html)]
+  - [Pacific Hake](https://noaa-fims.github.io/case-studies/content/pacific-hake.html)
  
 - Lessons learned (back to this presentation)
 
@@ -244,6 +248,22 @@ options(htmltools.dir.version = FALSE)
 ---
 
 # Background on case studies
+
+- Initial goal developed in 2022 was to have at least one case study for each NOAA Fisheries science center
+- Case studies repository created in December 2023, initially with Southern New England-Mid Atlantic Yellowtail Flounder thanks to Chris Legault
+- Eight case studies have been in development for stock assessments from different all U.S. regions have been developed based on models originally based on AMAK, ASAP, BAM, and SS3.
+- Rapid recent changes in FIMS have left some case studies out of date
+  - only three updated case studies are available on the website
+  - others will be updated in the near future
+
+
+---
+
+# A success story: finding bugs / undocumented features in FIMS
+The first case study (Yellowtail Flounder in ASAP -> FIMS) revealed several issues (all quickly resolved):
+- hard-wired sex ratio in SSB calculation
+- recruitment estimation in terminal year + 1
+- had to fill missing survey data because NA was not allowed
 
 ---
 
@@ -255,9 +275,25 @@ switch to case studies website: https://noaa-fims.github.io/case-studies/
 
 # Lessons learned
 
+- When comparing models with features not yet available in FIMS, it's helpful to revise the original model to be closer to the available options within FIMS 
+  - e.g. use logistic selectivity for Pacific Hake instead of more complex setup in production assessment
+  - isolates unknown differences in implementation from known differences in model structure
+  - helps identify which features are most important to add to FIMS in the future to bring the FIMS case study closer to the original model
+
+- Keeping the case studies up to date with the changes in FIMS is a challenge, but also valuable
+  - provides a reminder for developers of needed changes to the user interface
+  - provides example models for users to learn from and build upon
+  - helps identify and fix bugs in FIMS
+
 ---
 
 # Next steps
+
+- Update remaining case studies to be compatible with the latest version of FIMS
+- Generalize code used to convert data for case studies into conversion functions that can be used by others
+  - e.g. `ss3_data_to_fims()` converter now available in the {r4ss} package
+- Continue to use case studies as a testing ground for new features in FIMS, including growth estimation and time-varying selectivity
+- As FIMS feature set expands, eventually move away from needing to simplify the original models
 
 ---
 
