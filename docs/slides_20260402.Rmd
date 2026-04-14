@@ -8,7 +8,7 @@ output:
     css: ["xaringan-themer.css"]
     lib_dir: libs
     nature:
-      ratio: '4:3'
+      ratio: '7:5'
       highlightStyle: github
       highlightLines: true
       countIncrementalSlides: false
@@ -300,8 +300,8 @@ digraph flowchart {
   B [label = 'FIMS', color='blue']
   BB [label = 'FIMSRTMB']
   C [label = 'fishprior']
-  D [label = 'ecosystemom']
-  E [label = 'ecosystemdata']
+  D [label = 'ecosystemdata']
+  E [label = 'ecosystemom']
   A -> B
   A -> BB
   B -> BB
