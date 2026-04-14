@@ -15,7 +15,7 @@
  *    - xaringan wiki: https://github.com/yihui/xaringan/wiki
  *    - remarkjs wiki: https://github.com/gnab/remark/wiki
  *
- *  Version: 0.4.3
+ *  Version: 0.4.4
  *
  * ------------------------------------------------------- */
 @import url(https://fonts.googleapis.com/css?family=Noto+Sans:400,400i,700,700i&display=swap);
@@ -286,4 +286,120 @@ table.dataTable.hover tbody tr:hover, table.dataTable.display tbody tr:hover {
 }
 .hyperlink-style {
   color: blue;
+  text-decoration: underline;
+}
+.priority-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 8px;
+}
+.priority-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  background: rgba(243, 248, 252, 0.96);
+  border-left: 6px solid #0077b6;
+  border-radius: 10px;
+  box-shadow: 0 3px 8px rgba(0, 36, 64, 0.18);
+}
+.priority-card--wide {
+  grid-column: 1 / -1;
+  border-left: 6px solid #00a6a6;
+  background: rgba(230, 247, 247, 0.98);
+}
+.priority-card--accent {
+  border-left: 6px solid #005f8a;
+  background: rgba(232, 242, 250, 0.98);
+}
+.priority-card--you {
+  grid-column: 1 / -1;
+  border-left: 6px solid #00a6a6;
+  background: rgba(225, 245, 240, 0.98);
+}
+.priority-icon {
+  font-size: 1.35rem;
+  line-height: 1;
+  margin-top: 2px;
+}
+.priority-title {
+  font-weight: 700;
+  margin-bottom: 2px;
+  color: #003b5c;
+}
+.priority-detail {
+  font-size: 0.95rem;
+  line-height: 1.2;
+  color: #0b3a5b;
+}
+.join-wrap {
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 16px;
+  align-items: start;
+  margin-top: 10px;
+}
+.join-pitch {
+  background: rgba(232, 245, 252, 0.96);
+  border-left: 8px solid #0077b6;
+  border-radius: 12px;
+  padding: 14px 16px;
+  box-shadow: 0 4px 10px rgba(0, 36, 64, 0.16);
+}
+.join-headline {
+  font-size: 1.35rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-bottom: 8px;
+  color: #003b5c;
+}
+.join-sub {
+  font-size: 0.95rem;
+  line-height: 1.25;
+  color: #0b3a5b;
+  margin-bottom: 8px;
+}
+.join-proof {
+  font-size: 0.9rem;
+  line-height: 1.25;
+  color: #144c6e;
+  font-weight: 600;
+}
+.join-actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+.join-action {
+  background: rgba(255, 255, 255, 0.98);
+  border: 2px solid #8ecae6;
+  border-radius: 10px;
+  padding: 10px 12px;
+  box-shadow: 0 2px 8px rgba(0, 36, 64, 0.10);
+}
+.join-action-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #003b5c;
+  margin-bottom: 3px;
+}
+.join-action-detail {
+  font-size: 0.82rem;
+  line-height: 1.2;
+  color: #245576;
+}
+.join-footer {
+  margin-top: 8px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #0077b6;
+}
+.left-68 {
+  width: 68%;
+  float: left;
+}
+.right-32 {
+  width: 32%;
+  float: right;
 }
