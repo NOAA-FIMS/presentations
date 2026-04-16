@@ -1,0 +1,455 @@
+---
+title: "Bayesian estimation in the<br>Fisheries Integrated Modeling<br>System (FIMS)"
+subtitle: FIMS CIE Review
+author: "Kelli Johnson, NOAA Fisheries OST<br>kelli.johnson@noaa.gov<br>"
+date: 2026/04/21
+output:
+  xaringan::moon_reader:
+    css: ["xaringan-themer.css"]
+    lib_dir: libs
+    nature:
+      ratio: '7:5'
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      slideNumberFormat: "Page %current%"
+---
+
+layout: true
+  
+```{r xaringanthemer, include=FALSE, warning=FALSE, message=FALSE}
+options(repos = c(CRAN = "https://cloud.r-project.org"))
+required_pkg <- c("xaringanthemer", "remotes", "webshot2", "xfun", "DiagrammeR", "FIMS", "ggrepel")
+pkg_to_install <- required_pkg[!(required_pkg %in%
+                                   installed.packages()[, "Package"])]
+if (length(pkg_to_install)) install.packages(pkg_to_install)
+lapply(required_pkg, library, character.only = TRUE)
+
+if (!"nmfspalette" %in% installed.packages()[, "Package"]) {
+  remotes::install_github("nmfs-ost/nmfspalette")
+}
+library(nmfspalette)
+library(rvest)
+library(dplyr)
+library(FIMS)
+
+style_xaringan(
+
+  base_font_size = "15px",
+  text_font_size = "1.5rem",
+
+  title_slide_background_color = unname(nmfs_cols("darkblue")),
+  title_slide_text_color = unname(nmfs_cols("white")),
+  title_slide_background_size = "cover",
+  title_slide_background_image = file.path("static", "slideswooshver.png"),
+
+  background_image = file.path("static", "slideswoosh.PNG"),
+  background_size = "cover",
+  background_color = unname(nmfs_cols("white")),
+
+  header_font_google = google_font("Arimo"),
+  header_color = unname(nmfs_cols("darkblue")),
+
+  text_color = unname(nmfs_cols("darkblue")),
+  # text_font_google = google_font("Carlito", "300", "300i"),
+  text_slide_number_color = unname(nmfs_cols("lightteal")),
+
+  code_font_google = google_font("Source Code Pro"),
+  code_highlight_color = unname(nmfs_cols("medteal")),
+
+  inverse_background_color = unname(nmfs_cols("processblue")),
+  inverse_text_color = unname(nmfs_cols("supltgray")),
+
+  footnote_font_size = "0.6em",
+  footnote_color = unname(nmfs_cols("darkblue")),
+  footnote_position_bottom = "10px",
+
+  link_color = unname(nmfs_cols("medteal")),
+
+
+  extra_css = list(
+    ".remark-slide-number" = list(
+      "font-size" = "0.4em",
+      "font-weight" = "bold",
+      "margin" = "0px 840px -2px 0px"),
+
+    ".title-slide h1, h2, h3" = list(
+      "text-align" = "right"), 
+    
+    ".hyperlink-style" = list(
+      "color" = "blue",
+      "text-decoration" = "underline"
+    ),
+
+    ".priority-grid" = list(
+      "display" = "grid",
+      "grid-template-columns" = "repeat(2, minmax(0, 1fr))",
+      "gap" = "12px",
+      "margin-top" = "8px"
+    ),
+
+    ".priority-card" = list(
+      "display" = "flex",
+      "align-items" = "flex-start",
+      "gap" = "10px",
+      "padding" = "10px 12px",
+      "background" = "rgba(243, 248, 252, 0.96)",
+      "border-left" = "6px solid #0077b6",
+      "border-radius" = "10px",
+      "box-shadow" = "0 3px 8px rgba(0, 36, 64, 0.18)"
+    ),
+
+    ".priority-card--wide" = list(
+      "grid-column" = "1 / -1",
+      "border-left" = "6px solid #00a6a6",
+      "background" = "rgba(230, 247, 247, 0.98)"
+    ),
+
+    ".priority-card--accent" = list(
+      "border-left" = "6px solid #005f8a",
+      "background" = "rgba(232, 242, 250, 0.98)"
+    ),
+
+    ".priority-card--you" = list(
+      "grid-column" = "1 / -1",
+      "border-left" = "6px solid #00a6a6",
+      "background" = "rgba(225, 245, 240, 0.98)"
+    ),
+
+    ".priority-icon" = list(
+      "font-size" = "1.35rem",
+      "line-height" = "1",
+      "margin-top" = "2px"
+    ),
+
+    ".priority-title" = list(
+      "font-weight" = "700",
+      "margin-bottom" = "2px",
+      "color" = "#003b5c"
+    ),
+
+    ".priority-detail" = list(
+      "font-size" = "0.95rem",
+      "line-height" = "1.2",
+      "color" = "#0b3a5b"
+    ),
+
+    ".join-wrap" = list(
+      "display" = "grid",
+      "grid-template-columns" = "1.05fr 0.95fr",
+      "gap" = "16px",
+      "align-items" = "start",
+      "margin-top" = "10px"
+    ),
+
+    ".join-pitch" = list(
+      "background" = "rgba(232, 245, 252, 0.96)",
+      "border-left" = "8px solid #0077b6",
+      "border-radius" = "12px",
+      "padding" = "14px 16px",
+      "box-shadow" = "0 4px 10px rgba(0, 36, 64, 0.16)"
+    ),
+
+    ".join-headline" = list(
+      "font-size" = "1.35rem",
+      "font-weight" = "700",
+      "line-height" = "1.2",
+      "margin-bottom" = "8px",
+      "color" = "#003b5c"
+    ),
+
+    ".join-sub" = list(
+      "font-size" = "0.95rem",
+      "line-height" = "1.25",
+      "color" = "#0b3a5b",
+      "margin-bottom" = "8px"
+    ),
+
+    ".join-proof" = list(
+      "font-size" = "0.9rem",
+      "line-height" = "1.25",
+      "color" = "#144c6e",
+      "font-weight" = "600"
+    ),
+
+    ".join-actions" = list(
+      "display" = "grid",
+      "grid-template-columns" = "1fr",
+      "gap" = "10px"
+    ),
+
+    ".join-action" = list(
+      "background" = "rgba(255, 255, 255, 0.98)",
+      "border" = "2px solid #8ecae6",
+      "border-radius" = "10px",
+      "padding" = "10px 12px",
+      "box-shadow" = "0 2px 8px rgba(0, 36, 64, 0.10)"
+    ),
+
+    ".join-action-title" = list(
+      "font-size" = "0.95rem",
+      "font-weight" = "700",
+      "color" = "#003b5c",
+      "margin-bottom" = "3px"
+    ),
+
+    ".join-action-detail" = list(
+      "font-size" = "0.82rem",
+      "line-height" = "1.2",
+      "color" = "#245576"
+    ),
+
+    ".join-footer" = list(
+      "margin-top" = "8px",
+      "font-size" = "0.85rem",
+      "font-weight" = "700",
+      "color" = "#0077b6"
+    ),
+
+    ".left-68" = list(
+      "width" = "68%",
+      "float" = "left"
+    ),
+
+    ".right-32" = list(
+      "width" = "32%",
+      "float" = "right"
+    ),
+
+    ".list-small" = list(
+      "font-size" = "1.05rem",
+      "line-height" = "2.15"
+    ),
+
+    ".bayes-grid" = list(
+      "display" = "grid",
+      "grid-template-columns" = "repeat(2, minmax(0, 1fr))",
+      "gap" = "14px",
+      "margin-top" = "10px"
+    ),
+
+    ".bayes-card" = list(
+      "background" = "rgba(241, 248, 252, 0.96)",
+      "border-left" = "7px solid #0077b6",
+      "border-radius" = "10px",
+      "padding" = "11px 13px",
+      "box-shadow" = "0 3px 8px rgba(0, 36, 64, 0.14)"
+    ),
+
+    ".bayes-title" = list(
+      "font-size" = "1.02rem",
+      "font-weight" = "700",
+      "margin-bottom" = "4px",
+      "color" = "#003b5c"
+    ),
+
+    ".bayes-detail" = list(
+      "font-size" = "0.88rem",
+      "line-height" = "1.25",
+      "color" = "#0b3a5b"
+    ),
+
+    ".accent-box" = list(
+      "margin-top" = "10px",
+      "padding" = "12px 14px",
+      "border-radius" = "10px",
+      "background" = "rgba(226, 244, 251, 0.96)",
+      "border" = "2px solid #8ecae6",
+      "font-size" = "0.95rem",
+      "line-height" = "1.25",
+      "color" = "#003b5c"
+    ),
+
+    ".workflow-step" = list(
+      "padding" = "8px 10px",
+      "margin-bottom" = "8px",
+      "border-radius" = "8px",
+      "background" = "rgba(255, 255, 255, 0.95)",
+      "border-left" = "5px solid #0096c7"
+    ),
+
+    ".compare-wrap" = list(
+      "display" = "grid",
+      "grid-template-columns" = "repeat(2, minmax(0, 1fr))",
+      "gap" = "14px",
+      "margin-top" = "8px"
+    ),
+
+    ".compare-col" = list(
+      "padding" = "10px 12px",
+      "border-radius" = "10px",
+      "background" = "rgba(240, 247, 252, 0.95)",
+      "box-shadow" = "0 2px 8px rgba(0, 36, 64, 0.10)"
+    ),
+
+    ".compare-col h3" = list(
+      "margin-top" = "0px",
+      "margin-bottom" = "6px",
+      "font-size" = "1.0rem",
+      "color" = "#003b5c"
+    ),
+
+    ".compare-col ul" = list(
+      "margin" = "0px",
+      "padding-left" = "18px",
+      "font-size" = "0.88rem",
+      "line-height" = "1.25"
+    ),
+
+    ".small-code" = list(
+      "font-size" = "0.72rem"
+    )
+  )
+)
+```
+
+.footnote[U.S. Department of Commerce | National Oceanic and Atmospheric Administration | National Marine Fisheries Service]
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+```
+
+<!-- Start of slides -->
+
+---
+# Outline
+
+- Why Bayesian estimation for FIMS
+
+- FIMS as a standard TMB model
+
+- SparseNUTS workflow for posterior sampling
+
+- Why C++ classes make priors easy and extensible
+
+- Practical examples and take-home points
+
+---
+# Why Bayesian Estimation in FIMS?
+
+<div class="bayes-grid">
+  <div class="bayes-card">
+    <div class="bayes-title">Allows for probabilistic statements</div>
+    <div class="bayes-detail">E.g., the estimated probability that female spawning biomass at the start of 2024 is below the reference point of 40% of unfished biomass is 1.3%, and the probability that the relative fishing intensity exceeded 1 in 2023 is 0.4%. The joint probability of both these occurring is 0.2%.</div>
+  </div>
+  <div class="bayes-card">
+    <div class="bayes-title">Designed with MCMC in mind from the onset</div>
+    <div class="bayes-detail">MCMC sampling is a great diagnostic for models estimated using maximum likelihood and its capability has been included in FIMS since the beginning rather than starting the process after it is too late.</div>
+  </div>
+  <div class="bayes-card">
+    <div class="bayes-title">Bayesian sampling is now incredibly fast</div>
+    <div class="bayes-detail">{SparseNUTS} and other algorithms that can account for correlation and sparsity while sampling have made Bayesian estimation on non-linear models feasible on standard computers.</div>
+  </div>
+  <div class="bayes-card">
+    <div class="bayes-title">Same model, deeper inference</div>
+    <div class="bayes-detail">In FIMS, we do not rewrite the model; we sample the same TMB objective that powers frequentist estimation.</div>
+  </div>
+</div>
+
+---
+# FIMS can be a TMB Model
+
+<div class="accent-box">
+FIMS produces a TMB objective function under the hood. Once we have that objective, Bayesian sampling with {SparseNUTS} follows the same path used for any other TMB model.
+</div>
+
+<div class="bayes-grid">
+  <div class="bayes-card">
+    <div class="bayes-title">Model definition</div>
+    <div class="bayes-detail">FIMS C++ classes build likelihood components and priors into one joint negative log posterior.</div>
+  </div>
+  <div class="bayes-card">
+    <div class="bayes-title">TMB interface</div>
+    <div class="bayes-detail">The model is exposed as an objective with gradients from automatic differentiation.</div>
+  </div>
+  <div class="bayes-card">
+    <div class="bayes-title">Optimizer path</div>
+    <div class="bayes-detail">Use nlminb for MLE and Hessian-based summaries.</div>
+  </div>
+  <div class="bayes-card">
+    <div class="bayes-title">Sampler path</div>
+    <div class="bayes-detail">Use SparseNUTS::sample_snuts() on that same objective for posterior draws.</div>
+  </div>
+</div>
+
+---
+# One Objective, Two Estimation Modes
+
+```{r workflow-code, eval=FALSE}
+# Build objective from FIMS/TMB ingredients
+success <- FIMS::CreateTMBModel()
+parameters <- list(p = get_fixed(), re = get_random())
+obj <- TMB::MakeADFun(
+  data = list(),
+  parameters,
+  random = "re",
+  DLL = "FIMS",
+  silent = TRUE
+)
+
+# Frequentist path
+fit <- stats::nlminb(start = obj$par, objective = obj$fn, gradient = obj$gr)
+
+# Bayesian path (same objective)
+posterior <- SparseNUTS::sample_snuts(
+  obj = obj,
+  iter_warmup = 1000,
+  iter_sampling = 1000,
+  chains = 4
+)
+```
+
+<div class="accent-box">
+{SparseNUTS} samples the same AD-enabled target function. FIMS users get Bayesian inference without reimplementing the model in another framework.
+</div>
+
+---
+# SparseNUTS Workflow in Practice
+
+<div class="workflow-step"><b>Step 1:</b> Configure the model in FIMS and confirm optimization converges.</div>
+<div class="workflow-step"><b>Step 2:</b> Pass the TMB objective to SparseNUTS with an informed warmup and chain count.</div>
+<div class="workflow-step"><b>Step 3:</b> Check diagnostics: R-hat, effective sample size, divergences, and trace plots.</div>
+<div class="workflow-step"><b>Step 4:</b> Summarize posterior distributions for management quantities and derived measures.</div>
+
+<div class="accent-box">
+SparseNUTS is especially attractive for TMB models with sparse random-effects structure, where efficient gradient-based MCMC is critical.
+</div>
+
+---
+# Pacific hake case study
+
+```{r,eval=FALSE}
+SparseNUTS:::pairs.tmbfit(fit, pars = 1:6, order = "slow")
+```
+
+<img src="https://noaa-fims.github.io/case-studies/content/pacific-hake_files/figure-html/plot-diagnostic-slow-1.png" style="height: 70%; max-width: 600px;" />
+
+---
+# Priors Anywhere: Why FIMS C++ Design Helps
+
+<div class="bayes-grid">
+  <div class="bayes-card">
+    <div class="bayes-title">Class-based parameter objects</div>
+    <div class="bayes-detail">Parameters are represented as structured C++ objects with names, transforms, and links to model components.</div>
+  </div>
+  <div class="bayes-card">
+    <div class="bayes-title">Consistent objective assembly</div>
+    <div class="bayes-detail">Priors enter the same joint objective as likelihood terms, minimizing bookkeeping and duplication.</div>
+  </div>
+  <div class="bayes-card">
+    <div class="bayes-title">Extensibility</div>
+    <div class="bayes-detail">Adding a new parameter or model component naturally allows for allowing priors because all parameters use the same class.</div>
+  </div>
+  <div class="bayes-card">
+    <div class="bayes-title">If a distribution exists you can use it</div>
+    <div class="bayes-detail">Once a distribution is coded in FIMS it can be used to fit data or place a prior on a parameter. Other frameworks often restrict what types of priors are allowed on certain parameters. Multiple distributions can be used across time for a single parameter if desired and priors can be shared across parameters.</div>
+  </div>
+</div>
+
+---
+# Jacobian Transformation
+
+
+---
+# Future for Multivariate priors
+
