@@ -2,6 +2,9 @@
 A repository for National Stock Assessment Program presentations
 
 ## FIMS
+
+[Trusting the Numbers: An Overview of the Testing Framework for the Fisheries Integrated Modeling System (FIMS) (20260422)](https://noaa-fims.github.io/presentations/slides_20260422_BaiLi.html)
+
 [Software testing for FIMS: strategies, challenges, and opportunities (20250521)](https://noaa-fims.github.io/presentations/slides_20250521.html)
 
 [FIMS planning meeting (20210331)](https://noaa-fims.github.io/presentations/slides_20210331.html)

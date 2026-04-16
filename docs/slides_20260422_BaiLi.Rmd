@@ -1,0 +1,718 @@
+---
+title: "Trusting the Numbers: An <br> Overview of the Testing <br> Framework for the Fisheries <br> Integrated Modeling System <br> (FIMS)"
+author: "Bai Li <br><br> Contractor with ECS Federal LLC in support of <br> NOAA Fisheries Office of Science and Technology <br> Email: bai.li@noaa.gov"
+institute: FIMS CIE Review
+date: 2026/04/22
+output:
+  xaringan::moon_reader:
+    css: ["xaringan-themer.css"]
+    lib_dir: libs
+    nature:
+      ratio: '4:3'
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      slideNumberFormat: "Page %current%"
+---
+
+layout: true
+
+<style>
+.progress-bar {
+  position: fixed; left: 0; right: 0; bottom: 0;
+  height: 8px; background-color: #0085CA; z-index: 100;
+}
+
+.left-wide {
+  width: 65%;
+  float: left;
+}
+
+.right-narrow {
+  width: 30%;
+  float: right;
+}
+</style>
+  
+```{r xaringanthemer, include=FALSE, warning=FALSE}
+required_pkg <- c("xaringanthemer", "remotes", "webshot2", "xfun")
+pkg_to_install <- required_pkg[!(required_pkg %in%
+                                   installed.packages()[, "Package"])]
+if (length(pkg_to_install)) install.packages(pkg_to_install)
+lapply(required_pkg, library, character.only = TRUE)
+
+remotes::install_github("nmfs-ost/nmfspalette")
+library(nmfspalette)
+
+style_xaringan(
+
+  base_font_size = "15px",
+  text_font_size = "1.5rem",
+
+  title_slide_background_color = unname(nmfs_cols("darkblue")),
+  title_slide_text_color = unname(nmfs_cols("white")),
+  title_slide_background_size = "cover",
+  title_slide_background_image = file.path("static", "slideswooshver.png"),
+
+  background_image = file.path("static", "slideswoosh.PNG"),
+  background_size = "cover",
+  background_color = unname(nmfs_cols("white")),
+
+  header_font_google = google_font("Arimo"),
+  header_color = unname(nmfs_cols("darkblue")),
+
+  text_color = unname(nmfs_cols("darkblue")),
+  text_slide_number_color = unname(nmfs_cols("lightteal")),
+
+  code_font_google = google_font("Source Code Pro"),
+  code_highlight_color = unname(nmfs_cols("medteal")),
+
+  inverse_background_color = unname(nmfs_cols("processblue")),
+  inverse_text_color = unname(nmfs_cols("supltgray")),
+
+  footnote_font_size = "0.6em",
+  footnote_color = unname(nmfs_cols("darkblue")),
+  footnote_position_bottom = "10px",
+
+  link_color = unname(nmfs_cols("medteal")),
+
+
+  extra_css = list(
+    ".remark-slide-number" = list(
+      "font-size" = "0.4em",
+      "font-weight" = "bold",
+      "margin" = "0px 840px -2px 0px"),
+
+    ".title-slide h1, h2, h3" = list(
+      "text-align" = "right"), 
+    
+    ".hyperlink-style" = list(
+      "color" = "blue")
+  )
+)
+```
+
+.footnote[U.S. Department of Commerce | National Oceanic and Atmospheric Administration | National Marine Fisheries Service]
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+```
+
+---
+# Roadmap for Today
+
+.pull-left[
+- Why is rigorous testing vital for scientific software?
+- How we catch errors before they reach your desk?
+- How FIMS stacks up against the established models?
+- How can we improve the testing framework?
+]
+
+.pull-right[
+```{r, echo=FALSE}
+knitr::include_graphics("https://renewep.com/wp-content/uploads/2023/09/road-map-1030x722.jpg")
+
+```
+]
+
+---
+# What is FIMS? (Quick Refresher)
+
+```{r, echo=FALSE, out.width="70%", out.height="80%"}
+knitr::include_graphics(file.path("static", "fims_path_simple.png"))
+```
+
+- A flexible suite of software tools to support sustainable fishery management
+- FIMS modules are written in C++ and linked to R using Rcpp*<sup>1</sup>*
+- Template Model Builder*<sup>2</sup>* serves as the engine for statistical inference in FIMS
+
+.footnote[
+[1] .hyperlink-style[[Rcpp:](https://cran.r-project.org/web/packages/Rcpp/index.html)] An R package that provides R functions as well as C++ classes which offer a seamless<br> integration of R and C++.<br>
+[2] .hyperlink-style[[Template Model Builder:](https://kaskr.github.io/adcomp/Introduction.html)] An R package for fitting statistical latent variable models to data.
+]
+
+???
+This R/C++ design shapes how we organize and automate testing.
+
+---
+# Why Testing Matters
+
+.pull-left[
+```{r, echo=FALSE, out.width="80%", out.height="80%"}
+knitr::include_graphics(file.path("static", "Hook_and_Kelly_scientific_software_errors.png"))
+```
+
+(Hook and Kelly, 2009)
+]
+
+.pull-right[
+- Scientific software output can accumulate many sources of error
+- Testing ensures the code implementation matches the scientific theory
+- Reproducibility guarantees consistent results across systems
+- Comprehensive test suites allow for refactoring without unintentionally altering research outcomes
+- Well-tested code builds trust and strengthens peer review
+]
+
+.footnote[
+[1] .hyperlink-style[[Hook and Kelly, 2009:](https://se4science.org/workshops/secse09/Presentations/09_Hook.pdf)] Testing for (code) trustworthiness in scientific software.<br>
+]
+
+???
+In science, a small typo in code can lead to a big error in a quota recommendation. Testing is our 'Peer Review' for code—ensuring our implementation actually matches our equations.
+---
+# Overview of FIMS Testing
+
+- We adopt key best practices from software engineering
+
+```{r, echo=FALSE, out.width="75%"}
+knitr::include_graphics("https://media.geeksforgeeks.org/wp-content/uploads/20240730150406/Software-Testing-768-copy.webp")
+```
+
+.footnote[
+Figure source: .hyperlink-style[[GeeksforGeeks](https://www.geeksforgeeks.org/types-software-testing/)]
+]
+
+---
+# Testing Layers in FIMS
+
+```{r, echo=FALSE, out.width="100%"}
+# from top to bottom
+DiagrammeR::DiagrammeR("
+   graph TB
+   a[<b>Types of FIMS Testing</b>]-->A[<b>Manual Testing</b>]
+   a-->B[<b>Automation Testing</b>]
+   A-->C[<b>Functional Testing</b>]
+   A-->D[<b>Non-Functional Testing</b>]
+   C-->E[<b>Unit Testing</b>]
+   C-->F[<b>Integration Testing</b>]
+   C-->G[<b>System Testing</b>]
+   D-->H[<b>Performance Testing</b>]
+   D-->I[<b>Usability Testing</b>]
+   D-->J[<b>Compatibility Testing</b>]
+   style a fill:#FFFFFF, stroke:#003B5C
+   style A fill:#C6E6F0
+   style B fill:#C6E6F0
+   style C fill:#90DFE3
+   style D fill:#90DFE3
+   style E fill:#5BC0DE
+   style F fill:#5BC0DE
+   style G fill:#5BC0DE
+   style H fill:#5BC0DE
+   style I fill:#5BC0DE
+   style J fill:#5BC0DE
+")
+```
+
+---
+# Types of Tests Implemented
+```{r, echo=FALSE, out.width="100%"}
+# Base table data
+test_summary <- tibble::tibble(
+  `Test Type` = c(
+    "Unit Testing", "Integration Testing", "System Testing",
+    "Performance Testing", "Usability Testing", "Compatibility Testing"
+  ),
+  Description = c(
+    "Test individual components",
+    "Test components working together",
+    "Evaluate the overall functionality of a complete FIMS model",
+    "Ensure the system performs properly under its expected workload",
+    "Assess user interface effectiveness",
+    "Check FIMS compatibility across different operating systems"
+  ),
+  `GoogleTest (C++)`                  = c("✔️", "✔️", "❌", "❌", "❌", "✔️"),
+  `testthat (R)`                      = c("✔️", "✔️", "✔️", "✔️", "❌", "✔️"),
+  `Case Studies / Research Project`     = c("❌", "❌", "✔️", "✔️", "✔️", "❌"),
+  `Developers`                        = c("✔️", "✔️", "❌", "❌", "❌", "❌"),
+  `Testers`                           = c("❌", "✔️", "✔️", "✔️", "✔️", "❌"),
+  `Users`                             = c("❌", "❌", "✔️", "✔️", "✔️", "❌"),
+  `GitHub Actions`                    = c("✔️", "✔️", "✔️", "✔️", "✔️", "✔️")
+) |>
+  knitr::kable("html", escape = FALSE) |>
+  kableExtra::add_header_above(c(
+    "Tests" = 2,  # Test Type + Description
+    "Testing Frameworks and Tools" = 3,
+    "Roles and Responsibilities" = 4
+  )) |>
+  kableExtra::kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover"), font_size = 12)
+
+test_summary
+  
+```
+
+---
+
+# Unit Testing: Testing Individual Components
+
+- Test each scientific component **in isolation** before combining them 
+- Ensures each mathematical piece behaves exactly as expected
+- **Example:** If a logistic selectivity module has an inflection point of 10 and a slope of 0.2, verify that selectivity at age 10 equals 0.5 as expected from the logistic function
+
+```{r, echo=FALSE, fig.height=1, fig.width=1}
+knitr::include_url("https://noaa-fims.github.io/FIMS/testdown/test-rcpp-selectivity.html")
+```
+
+.footnote[
+Figure source: .hyperlink-style[[FIMS selectivity Rcpp tests](https://noaa-fims.github.io/FIMS/testdown/test-rcpp-selectivity.html)]
+]
+
+???
+- Testing frameworks and tools
+  - Use **GoogleTest** to test C++ code
+  - Use **testthat** to test R code
+- Roles and responsibilities
+  - Module developers write tests and execute them locally
+  - GitHub Actions (GHA) automatically runs all tests before each Pull Request (PR) as a safeguard 
+- Why this matters:
+  - Prevents small mathematical errors from propagating into full model results
+  
+---
+# Integration Testing: Testing Components Working Together
+
+- Verify that different model components **interact correctly**
+- Ensures information flows properly between components
+- **Example:** Create a selectivity module, assign it to a fleet module, and verify that the fleet correctly stores and uses the associated selectivity IDs without errors
+
+```{r, echo=FALSE, fig.height=1, fig.width=1}
+knitr::include_url("https://noaa-fims.github.io/FIMS/testdown/test-rcpp-fleet-interface.html")
+```
+
+.footnote[
+Figure source: .hyperlink-style[[FIMS selectivity Rcpp tests](https://noaa-fims.github.io/FIMS/testdown/test-rcpp-fleet-interface.html)]
+]
+
+???
+- Testing frameworks and tools
+  - Use **GoogleTest** to test C++ code
+  - Use **testthat** to test R code
+- Roles and responsibilities
+  - Developers or testers write tests and execute them locally
+  - GHA automatically runs all tests before each PR as a safeguard 
+- Why this matters:
+  - Even correct components can produce wrong results if they interact incorrectly
+---
+# System Testing: Testing the Full Model Behavior
+
+- Evaluate the **entire FIMS model** as a complete system
+- Run full model scenarios and compare results to known expectations
+- **Example:** Run a full FIMS model using simulated data and verify results match known "true" population trends
+
+```{r, echo=FALSE}
+
+# Create table data
+estimation_tests <- tibble::tibble(
+  `Test Type` = c(
+    "Deterministic Test",
+    "Estimation Test 1",
+    "Estimation Test 2",
+    "Estimation Test 3",
+    "Estimation Test 4"
+  ),
+  Description = c(
+    'Fix parameters at "true" values from the operating model.',
+    "Estimate using age composition input only.",
+    "Estimate using length composition input only.",
+    "Estimate using both age and length composition input.",
+    "Estimate with NAs in the input data."
+  )
+)|>
+  knitr::kable("html", escape = FALSE) |>
+  kableExtra::kable_styling(full_width = FALSE, bootstrap_options = c("striped", "hover"), font_size = 12)
+estimation_tests
+```
+
+.footnote[
+Figure source: .hyperlink-style[[FIMS tests](https://noaa-fims.github.io/FIMS/testdown/test-integration-caa-mle-wrappers.html)]
+]
+
+???
+- Testing frameworks and tools
+  - Use case studies to test FIMS in a separate repo
+- Roles and responsibilities
+  - Tester/users write tests and execute them locally
+  - GHA automatically runs all test cases 
+
+---
+# Performance Testing
+.pull-left[
+- Ensure the system performs properly under its expected workload
+- Evaluate speed, load capability, and consistency of results
+- **Example:** Run multiple FIMS models in parallel and confirm results match serial runs while maintaining fast execution 
+]
+
+.pull-right[
+```{r, echo=FALSE, message=FALSE}
+webshot2::webshot(
+  url = "https://github.com/NOAA-FIMS/FIMS/blob/main/tests/testthat/test-slow-parallel-caa-mle-wrappers.R",
+  cliprect = c(100, 3060, 550, 760),
+  file = file.path("static", "webshot.png")
+)
+```
+]
+
+.footnote[
+Figure source: .hyperlink-style[[FIMS parallel tests](https://github.com/NOAA-FIMS/FIMS/blob/main/tests/testthat/test-slow-parallel-caa-mle-wrappers.R)]
+]
+
+???
+- Testing frameworks and tools
+  - Use **testthat** to check if FIMS can be run in parallel
+  - Use case studies to test FIMS in a separate repo
+- Roles and responsibilities
+  - Tester/users write tests and execute them locally
+  - GHA automatically runs all test cases 
+  
+---
+# Usability Testing
+
+- Evaluate how easily end users can run and interpret FIMS models
+- Identify workflow challenges and user pain points
+- **Example:** A stock assessment scientist runs a case study and identifies bottlenecks or confusing steps
+  
+```{r, echo=FALSE, fig.height=1, fig.width=1}
+knitr::include_url("https://noaa-fims.github.io/case-studies/content/NEFSC-yellowtail.html")
+```
+
+???
+- Testing frameworks and tools
+  - Use case studies to test FIMS in a separate repo
+- Roles and responsibilities
+  - Tester/users write tests and execute them locally
+  - GHA automatically runs all test cases
+
+---
+# Compatibility Testing
+
+- Ensure FIMS runs on different operating systems
+- Verify results are reproducible on Windows, macOS, and Linux
+- **Example:** Run the same model across systems and confirm results are the same
+
+```{r, echo=FALSE, fig.height=1, fig.width=1}
+knitr::include_url("https://noaa-fisheries-integrated-toolbox.r-universe.dev/builds")
+```
+
+.footnote[
+Figure source: .hyperlink-style[[FIMS R Universe builds](https://noaa-fisheries-integrated-toolbox.r-universe.dev/builds)]
+]
+
+???
+- Testing frameworks and tools
+  - Run C++ and R tests on Windows, macOS, and Ubuntu
+- Roles and responsibilities
+  - GHA automatically runs all tests
+
+---
+# Automation Testing
+- Use appropriate automation tools (e.g., GitHub Actions) to run tests for FIMS
+- C++ and R tests are automatically executed on every commit
+- Code coverage results are reported for every pull request
+
+```{r, echo=FALSE, message=FALSE}
+webshot2::webshot(
+  url = "https://github.com/NOAA-FIMS/FIMS/actions/workflows/run-googletest.yml",
+  cliprect = c(10, 70, 1000, 470),
+  file = file.path("static", "webshot.png")
+) 
+```
+
+
+.footnote[
+Figure source: .hyperlink-style[[FIMS GitHub Actions](https://github.com/NOAA-FIMS/FIMS/actions/workflows/run-googletest.yml)]
+]
+
+---
+# Test Reporting
+- Use {testdown} to generate human readable test reports
+  - 132 tests with 542 checks 
+  - 470 passing checks, 72 skipped checks, and 2 warnings
+
+```{r, echo=FALSE, fig.height=1, fig.width=1}
+knitr::include_url("https://noaa-fims.github.io/FIMS/testdown/global-results-for-package-fims.html")
+```
+
+.footnote[
+Figure source: .hyperlink-style[[FIMS testing report](https://noaa-fims.github.io/FIMS/testdown/global-results-for-package-fims.html)]
+]
+
+---
+# Code Coverage
+- Use Codecov to track and report code coverage
+  - Current code coverage is 83%, meaning 83% of the codebase is exercised by tests
+  - Coverage changes are automatically reported on each pull request to ensure coverage does not decrease significantly
+
+
+```{r, echo=FALSE, fig.height=1, fig.width=1}
+knitr::include_graphics(file.path("static", "code_coverage_20260415.png"))
+```
+
+.footnote[
+Figure source: .hyperlink-style[[FIMS code coverage](https://app.codecov.io/gh/NOAA-FIMS/FIMS?search=&trend=all%20time)]
+]
+
+---
+# Statistical Validation
+- Statistical validation ensures the science is correct
+- We use an operating model with known truth and compare FIMS estimates to that truth
+
+<style>
+.metric-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 15px;
+}
+
+.metric-box {
+  padding: 15px;
+  border-radius: 10px;
+  color: #003B5C;
+  font-size: 0.9em;
+}
+
+.m1 { background-color: #E6F2FF; }
+.m2 { background-color: #E6FFF2; }
+.m3 { background-color: #FFF4E6; }
+.m4 { background-color: #F3E6FF; }
+</style>
+
+<div class="metric-grid">
+
+<div class="metric-box m1">
+<b>Metric 1: Magnitude Accuracy</b><br>
+$$
+\mathrm{median}\left(\left|\frac{\hat{y}-y}{y}\right|\right) \leq 0.2
+$$
+</div>
+
+<div class="metric-box m2">
+<b>Metric 2: Directional Bias</b><br>
+$$
+\left|\mathrm{mean}\left(\frac{\hat{y}-y}{y}\right)\right| \leq 0.1
+$$
+</div>
+
+<div class="metric-box m3">
+<b>Metric 3: Coefficient of Determination</b><br>
+$$
+\mathrm{cor}(\hat{y}, y)^2 \geq 0.9
+$$
+</div>
+
+<div class="metric-box m4">
+<b>Metric 4: Outlier Detection</b><br>
+$$
+\max\left(\left|\frac{\hat{y}-y}{\hat{\sigma}}\right|\right) \leq 4
+$$
+</div>
+
+</div>
+
+???
+- metric 1: Validates the overall scale and magnitude of the outputs
+- metric 2: Ensures the model does not systematically over- or under-estimate "true" values
+- metric 3: Verifies that estimated trends move in tandem with expected trends
+- metric 4: A deliberately lenient threshold to accommodate derived quantities across large matrices (n_years × n_ages)
+Together, these provide complementary views of model performance
+
+---
+# Benchmarking FIMS Against Established Assessment Tools
+<style>
+.flow-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-gap: 15px;
+  align-items: stretch;
+}
+
+.flow-box {
+  padding: 15px;
+  border-radius: 10px;
+  color: #003B5C;
+  font-size: 0.9em;
+}
+
+.om { background-color: #E6F2FF; grid-column: span 1;}
+.em { background-color: #FFF4E6; grid-column: span 2;}
+.analysis { background-color: #F3E6FF; grid-column: span 3; }
+.arrow {
+  text-align: center;
+  font-size: 1.5em;
+}
+</style>
+
+<div class="flow-grid">
+
+<div class="flow-box om">
+<b>Operating Model (OM)</b><br>
+- Age-structured (grouper-like)<br>
+- 30-year simulation<br>  
+- One fishing fleet<br>
+- One survey fleet<br>
+
+(Li et al., 2021)
+</div>
+
+<div class="flow-box em">
+<b>Estimation Models (EMs)</b><br>
+- Age Structured Assessment Program (ASAP)<br>
+- Beaufort Assessment Model (BAM)<br>
+- Stock Synthesis (SS3)<br>
+- Woods Hole Assessment Model (WHAM)<br>
+- FIMS <br><br>
+- WHAM and FIMS:<br>
+&nbsp;&nbsp;- Fixed-effect recruitment deviations<br>
+&nbsp;&nbsp;- Random-effect recruitment deviations 
+</div>
+
+<div class="flow-box analysis">
+<b>Analysis</b><br>
+- 500 simulations generated<br>
+- 100 converged runs retained<br>  
+- Performance measure metrics: bias, accuracy, convergence rate 
+</div>
+
+</div>
+
+.footnote[
+[1] .hyperlink-style[[Li et al., 2021:](https://doi.org/10.7755/FB.119.2-3.5)] A comparison of 4 primary age-structured stock assessment models used in the United States.<br>
+]
+---
+# Benchmarking FIMS Against Established Assessment Tools
+**Time series of recruitment estimates from each estimation model**
+
+```{r, echo=FALSE, out.width="80%", fig.align="center"}
+knitr::include_graphics("https://github.com/NOAA-FIMS/model-comparison-project/blob/main/C0/figure/recruit_all_em_vs_om.png?raw=true")
+```
+
+---
+# Benchmarking FIMS Against Established Assessment Tools
+**Relative error in fishing mortality over time from each estimation model**
+```{r, echo=FALSE, out.width="65%", fig.align="center"}
+knitr::include_graphics("https://github.com/NOAA-FIMS/model-comparison-project/blob/main/C0/figure/re_boxplot_f.png?raw=true")
+```
+
+---
+# Benchmarking FIMS Against Established Assessment Tools
+**Distribution of relative error in spawning biomass across all years and 100 simulation replicates for each estimation model**
+```{r, echo=FALSE, out.width="65%", fig.align="center"}
+knitr::include_graphics("https://github.com/NOAA-FIMS/model-comparison-project/blob/main/C0/figure/re_sb.png?raw=true")
+```
+
+---
+# Benchmarking FIMS Against Established Assessment Tools
+** Mean of median relative error (%)**
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+mre_data <- read.csv(
+  "https://raw.githubusercontent.com/NOAA-FIMS/model-comparison-project/refs/heads/main/C0/figure/median_relative_error_summary.csv"
+)
+
+knitr::kable(mre_data, "html") |>
+  kableExtra::kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed"),
+    full_width = FALSE,
+    font_size = 11
+  ) |>
+  kableExtra::column_spec(2, bold = TRUE, color = "black") |>
+  kableExtra::row_spec(0, bold = TRUE, extra_css = "padding: 1px;") |>
+  kableExtra::row_spec(1:nrow(mre_data), extra_css = "padding: 1px;")
+```
+
+---
+# Benchmarking FIMS Against Established Assessment Tools
+**Median absolute relative error (%)**
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+mare_data <- read.csv(
+  "https://raw.githubusercontent.com/NOAA-FIMS/model-comparison-project/refs/heads/main/C0/figure/median_absolute_relative_error_summary.csv"
+)
+
+knitr::kable(mare_data, "pipe") |>
+  kableExtra::kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed"), 
+    full_width = F,
+    font_size = 11
+  ) |>
+  kableExtra::column_spec(2, bold = T) |>
+  kableExtra::row_spec(0, bold = TRUE, extra_css = "padding: 1px;") |>
+  kableExtra::row_spec(1:nrow(mare_data), extra_css = "padding: 1px;")
+```
+
+---
+# Benchmarking FIMS Against Established Assessment Tools
+**Convergence success for 500 simulations across seven estimation models configurations**
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+convergence_rates <- read.csv("https://raw.githubusercontent.com/NOAA-FIMS/model-comparison-project/refs/heads/main/C0/figure/convergence_rates.csv")
+
+knitr::kable(convergence_rates, "pipe") |>
+  kableExtra::kable_styling(
+    bootstrap_options = c("striped", "hover", "condensed"), 
+    full_width = F,
+    font_size = 11
+  ) |>
+  kableExtra::column_spec(2, bold = T) |>
+  kableExtra::row_spec(0, bold = TRUE, extra_css = "padding: 4px;") |>
+  kableExtra::row_spec(1:nrow(convergence_rates), extra_css = "padding: 2px;")
+```
+
+---
+# Benchmarking FIMS Against Established Assessment Tools
+
+- FIMS estimates are consistent with established models
+- Software differences (ADMB vs TMB) have minimal impact on results when configured equivalently
+- Small differences arise from implementation details (e.g., recruitment constraints)
+- Random-effects models reduce bias compared to fixed-effects models
+
+**These findings support the use of FIMS as a reliable and flexible framework for next-generation fisheries stock assessments while maintaining consistency with existing modeling approaches**
+
+---
+# Challenges
+
+.pull-left[
+- Defining appropriate tolerance for statistical model outputs
+- Maintaining consistent reference outputs across FIMS releases
+- Benchmarking FIMS against other assessment models
+- Managing execution time without losing coverage
+- Is the **{testdown} report** useful and interpretable?
+]
+
+.pull-right[
+```{r, echo=FALSE, fig.height=1, fig.width=1}
+knitr::include_graphics("https://static7.depositphotos.com/1026550/780/i/600/depositphotos_7809833-stock-photo-challenges-ahead-road-sign.jpg")
+```
+]
+
+???
+- How can we manage tolerance testing across both maximum likelihood and Bayesian estimation frameworks within the same suite?
+
+---
+# Summary
+
+.left-wide[
+- We don’t just test code. We verify that our implementation stays true to the underlying biological and statistical theory.
+- Multiple automated "safety nets" catch errors at every stage, from individual formulas to full-scale model runs.
+- FIMS is benchmarked against established models to ensure consistent and reliable results.
+- Every update is automatically tested, documented, and openly available for peer review, building a "glass box" you can trust.
+]
+
+.right-narrow[
+```{r, echo=FALSE, out.width="100%"}
+knitr::include_graphics(file.path("static", "Hook_and_Kelly_scientific_software_errors.png"))
+```
+]
+
+.footnote[
+[1] .hyperlink-style[[Hook and Kelly, 2009:](https://se4science.org/workshops/secse09/Presentations/09_Hook.pdf)] Testing for (code) trustworthiness in scientific software.<br>
+]
+
+```{js, echo=FALSE}
+(function() {
+  var bar = document.createElement('div');
+  bar.className = 'progress-bar';
+  document.querySelector('.remark-slides-area').appendChild(bar);
+
+  slideshow.on('afterShowSlide', function(slide) {
+    var count = slideshow.getSlideCount();
+    var index = slide.getSlideIndex();
+    bar.style.width = (index / (count - 1) * 100) + '%';
+  });
+})();
