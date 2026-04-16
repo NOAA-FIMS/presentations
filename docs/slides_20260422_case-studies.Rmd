@@ -235,11 +235,11 @@ options(htmltools.dir.version = FALSE)
 
 - Results of three case studies (switch to the case studies [website](https://noaa-fims.github.io/case-studies))
 
-  - [Southern New England-Mid Atlantic Yellowtail Flounder](https://noaa-fims.github.io/case-studies/content/NEFSC-yellowtail.html)
+  - [Southern New England-Mid Atlantic Yellowtail Flounder](https://noaa-fims.github.io/case-studies/content/NEFSC-yellowtail.html) original model in ASAP, converted to FIMS by Chris Legault
 
-  - [Gulf of Alaska Walleye Pollock](https://noaa-fims.github.io/case-studies/content/AFSC-GOA-pollock.html)
+  - [Gulf of Alaska Walleye Pollock](https://noaa-fims.github.io/case-studies/content/AFSC-GOA-pollock.html) original model is a bespoke TMB model, converted to FIMS by Cole Monnahan
   
-  - [Pacific Hake](https://noaa-fims.github.io/case-studies/content/pacific-hake.html)
+  - [Pacific Hake](https://noaa-fims.github.io/case-studies/content/pacific-hake.html) original model in SS3, converted to FIMS by Kelli Johnson
  
 - Lessons learned (back to this presentation)
 
@@ -249,21 +249,35 @@ options(htmltools.dir.version = FALSE)
 
 # Background on case studies
 
-- Initial goal developed in 2022 was to have at least one case study for each NOAA Fisheries science center
+.left-68[
+- Initial goal developed in 2022 was to have at least one case study for each NOAA Fisheries Science Center
 - Case studies repository created in December 2023, initially with Southern New England-Mid Atlantic Yellowtail Flounder thanks to Chris Legault
-- Eight case studies have been in development for stock assessments from different all U.S. regions have been developed based on models originally based on AMAK, ASAP, BAM, and SS3.
-- Rapid recent changes in FIMS have left some case studies out of date
-  - only three updated case studies are available on the website
-  - others will be updated in the near future
+- Multiple goals for the case studies, including:
+  - testing FIMS features and identifying bugs
+  - providing example models for users to learn from and build upon
+  - comparing results between FIMS and existing models to build confidence in FIMS results
+  - prioritizing features to add to FIMS in the future based on differences between FIMS and existing models
+]
 
-
+.right-32[
+```{r, echo=FALSE}
+DiagrammeR::mermaid("
+graph TD
+  A[original<br>assessment] -- remove<br>features --> B[simplified<br>model]
+  B -- compare --> C[FIMS<br>model]
+")
+```
+]
 ---
 
 # A success story: finding bugs / undocumented features in FIMS
-The first case study (Yellowtail Flounder in ASAP -> FIMS) revealed several issues (all quickly resolved):
-- hard-wired sex ratio in SSB calculation
-- recruitment estimation in terminal year + 1
+The first case study (Yellowtail Flounder in ASAP &#x2192; FIMS) revealed several issues (all quickly resolved):
+- additional recruitment parameter was being estimated
 - had to fill missing survey data because NA was not allowed
+- sex ratio was not included in spawning biomass calculations
+  - fixed sex ratio = 0.5 now correctly applied, and flexibility to include sex structure is a priority for 2026 (see https://github.com/ioos/gsoc/issues/114)
+
+Real world applications are messier than simulated data in terms of data availability and complexity and thus provide a valuable testing ground for FIMS development and debugging.
 
 ---
 
@@ -275,8 +289,7 @@ switch to case studies website: https://noaa-fims.github.io/case-studies/
 
 # Lessons learned
 
-- When comparing models with features not yet available in FIMS, it's helpful to revise the original model to be closer to the available options within FIMS 
-  - e.g. use logistic selectivity for Pacific Hake instead of more complex setup in production assessment
+- When comparing models with features not yet available in FIMS, it can be helpful to revise the original model to be closer to the available options within FIMS 
   - isolates unknown differences in implementation from known differences in model structure
   - helps identify which features are most important to add to FIMS in the future to bring the FIMS case study closer to the original model
 
@@ -289,11 +302,55 @@ switch to case studies website: https://noaa-fims.github.io/case-studies/
 
 # Next steps
 
-- Update remaining case studies to be compatible with the latest version of FIMS
+- More case studies are currently in development:
+
+  - Pacific Sardine (SWFSC, SS3, Alex Jensen and Peter Kuriyama)
+
+  - Opakapaka (PIFSC, SS3, Meg Oshima)
+
+  - Petrale Sole (NWFSC, SS3, Ian Taylor)
+
+  - South Atlantic Scamp (SEFSC, BAM, formerly led by Kyle Shertzer)
+
+- Add additional case studies
+
+  - a WHAM model (thanks to Emily Liljestrand)
+
+  - an AMAK model (thanks to Jim Ianelli)
+
+---
+
+# Next steps (continued)
+
+.left-68[
+
 - Generalize code used to convert data for case studies into conversion functions that can be used by others
+
   - e.g. `ss3_data_to_fims()` converter now available in the {r4ss} package
+
+  - standardize language across models (e.g. more alignment between column names between FIMS and RCEATTLE to ease the conversion process)
+
 - Continue to use case studies as a testing ground for new features in FIMS, including growth estimation and time-varying selectivity
-- As FIMS feature set expands, eventually move away from needing to simplify the original models
+
+- As FIMS feature set expands, move away from simplifying the original models
+]
+.right-32[
+```{r, echo=FALSE}
+DiagrammeR::mermaid("
+graph TD
+  A[original<br>assessment] -- compare --> C[FIMS<br>model]
+")
+```
+]
+
+---
+
+# Next steps (continued)
+
+
+- Standardize plots of model output, diagnostics, and comparisons for the case studies by moving to the {[stockplotr](https://nmfs-ost.github.io/stockplotr/)} package
+
+- Refine the selection of case studies once FIMS starts being applied in production assessments (while also maintaining a list of those applications)
 
 ---
 
