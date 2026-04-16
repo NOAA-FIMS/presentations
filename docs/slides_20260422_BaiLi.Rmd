@@ -672,7 +672,7 @@ knitr::kable(convergence_rates, "pipe") |>
 - Maintaining consistent reference outputs across FIMS releases
 - Benchmarking FIMS against other assessment models
 - Managing execution time without losing coverage
-- Is the **{testdown} report** useful and interpretable?
+- Is the {testdown} report useful and interpretable?
 ]
 
 .pull-right[
