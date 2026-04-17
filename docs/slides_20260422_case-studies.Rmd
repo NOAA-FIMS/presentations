@@ -256,7 +256,7 @@ options(htmltools.dir.version = FALSE)
   - testing FIMS features and identifying bugs
   - providing example models for users to learn from and build upon
   - comparing results between FIMS and existing models to build confidence in FIMS results
-  - prioritizing features to add to FIMS in the future based on differences between FIMS and existing models
+  - prioritizing features to add to FIMS based on differences between FIMS and existing models
 ]
 
 .right-32[
@@ -293,7 +293,7 @@ switch to case studies website: https://noaa-fims.github.io/case-studies/
   - isolates unknown differences in implementation from known differences in model structure
   - helps identify which features are most important to add to FIMS in the future to bring the FIMS case study closer to the original model
 
-- Keeping the case studies up to date with the changes in FIMS is a challenge, but also valuable
+- Keeping the case studies up to date with the changes in FIMS is challenging but valuable
   - provides a reminder for developers of needed changes to the user interface
   - provides example models for users to learn from and build upon
   - helps identify and fix bugs in FIMS
@@ -326,9 +326,9 @@ switch to case studies website: https://noaa-fims.github.io/case-studies/
 
 - Generalize code used to convert data for case studies into conversion functions that can be used by others
 
-  - e.g. `ss3_data_to_fims()` converter now available in the {r4ss} package
+  - e.g., `ss3_data_to_fims()` converter now available in the {r4ss} package
 
-  - standardize language across models (e.g. more alignment between column names between FIMS and RCEATTLE to ease the conversion process)
+  - standardize language across models (e.g., more alignment between column names between FIMS and RCEATTLE to ease the conversion process)
 
 - Continue to use case studies as a testing ground for new features in FIMS, including growth estimation and time-varying selectivity
 
