@@ -1,0 +1,363 @@
+---
+title: "FIMS Case Studies"
+subtitle: "Review of<br>Fisheries Integrated<br>Modeling System"
+author: "Ian Taylor<br>NOAA Fisheries<br>Northwest Fisheries Science Center<br>ian.taylor@noaa.gov<br>"
+date: 2026/04/22
+output:
+  xaringan::moon_reader:
+    css: ["xaringan-themer.css"]
+    lib_dir: libs
+    nature:
+      ratio: '4:3'
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      slideNumberFormat: "Page %current%"
+---
+
+layout: true
+  
+```{r xaringanthemer, include=FALSE, warning=FALSE}
+options(repos = c(CRAN = "https://cloud.r-project.org"))
+required_pkg <- c("xaringanthemer", "remotes", "webshot2", "xfun", "DiagrammeR", "FIMS", "ggrepel")
+pkg_to_install <- required_pkg[!(required_pkg %in%
+                                   installed.packages()[, "Package"])]
+if (length(pkg_to_install)) install.packages(pkg_to_install)
+lapply(required_pkg, library, character.only = TRUE)
+
+if (!"nmfspalette" %in% installed.packages()[, "Package"]) {
+  remotes::install_github("nmfs-ost/nmfspalette")
+}
+library(nmfspalette)
+
+style_xaringan(
+
+  base_font_size = "15px",
+  text_font_size = "1.5rem",
+
+  title_slide_background_color = unname(nmfs_cols("darkblue")),
+  title_slide_text_color = unname(nmfs_cols("white")),
+  title_slide_background_size = "cover",
+  title_slide_background_image = file.path("static", "slideswooshver.png"),
+
+  background_image = file.path("static", "slideswoosh.PNG"),
+  background_size = "cover",
+  background_color = unname(nmfs_cols("white")),
+
+  header_font_google = google_font("Arimo"),
+  header_color = unname(nmfs_cols("darkblue")),
+
+  text_color = unname(nmfs_cols("darkblue")),
+  # text_font_google = google_font("Carlito", "300", "300i"),
+  text_slide_number_color = unname(nmfs_cols("lightteal")),
+
+  code_font_google = google_font("Source Code Pro"),
+  code_highlight_color = unname(nmfs_cols("medteal")),
+
+  inverse_background_color = unname(nmfs_cols("processblue")),
+  inverse_text_color = unname(nmfs_cols("supltgray")),
+
+  footnote_font_size = "0.6em",
+  footnote_color = unname(nmfs_cols("darkblue")),
+  footnote_position_bottom = "10px",
+
+  link_color = unname(nmfs_cols("medteal")),
+
+
+  extra_css = list(
+    ".remark-slide-number" = list(
+      "font-size" = "0.4em",
+      "font-weight" = "bold",
+      "margin" = "0px 840px -2px 0px"),
+
+    ".title-slide h1, h2, h3" = list(
+      "text-align" = "right"), 
+    
+    ".remark-slide-content a, .remark-slide-content a:visited, .hyperlink-style a, .hyperlink-style a:visited" = list(
+      "color" = "blue",
+      "text-decoration" = "underline"
+    ),
+
+    ".remark-slide-content ul ul, .remark-slide-content ul ol, .remark-slide-content ol ul, .remark-slide-content ol ol" = list(
+      "font-size" = "0.85em"
+    ),
+
+    ".priority-grid" = list(
+      "display" = "grid",
+      "grid-template-columns" = "repeat(2, minmax(0, 1fr))",
+      "gap" = "12px",
+      "margin-top" = "8px"
+    ),
+
+    ".priority-card" = list(
+      "display" = "flex",
+      "align-items" = "flex-start",
+      "gap" = "10px",
+      "padding" = "10px 12px",
+      "background" = "rgba(243, 248, 252, 0.96)",
+      "border-left" = "6px solid #0077b6",
+      "border-radius" = "10px",
+      "box-shadow" = "0 3px 8px rgba(0, 36, 64, 0.18)"
+    ),
+
+    ".priority-card--wide" = list(
+      "grid-column" = "1 / -1",
+      "border-left" = "6px solid #00a6a6",
+      "background" = "rgba(230, 247, 247, 0.98)"
+    ),
+
+    ".priority-card--accent" = list(
+      "border-left" = "6px solid #005f8a",
+      "background" = "rgba(232, 242, 250, 0.98)"
+    ),
+
+    ".priority-card--you" = list(
+      "grid-column" = "1 / -1",
+      "border-left" = "6px solid #00a6a6",
+      "background" = "rgba(225, 245, 240, 0.98)"
+    ),
+
+    ".priority-icon" = list(
+      "font-size" = "1.35rem",
+      "line-height" = "1",
+      "margin-top" = "2px"
+    ),
+
+    ".priority-title" = list(
+      "font-weight" = "700",
+      "margin-bottom" = "2px",
+      "color" = "#003b5c"
+    ),
+
+    ".priority-detail" = list(
+      "font-size" = "0.95rem",
+      "line-height" = "1.2",
+      "color" = "#0b3a5b"
+    ),
+
+    ".join-wrap" = list(
+      "display" = "grid",
+      "grid-template-columns" = "1.05fr 0.95fr",
+      "gap" = "16px",
+      "align-items" = "start",
+      "margin-top" = "10px"
+    ),
+
+    ".join-pitch" = list(
+      "background" = "rgba(232, 245, 252, 0.96)",
+      "border-left" = "8px solid #0077b6",
+      "border-radius" = "12px",
+      "padding" = "14px 16px",
+      "box-shadow" = "0 4px 10px rgba(0, 36, 64, 0.16)"
+    ),
+
+    ".join-headline" = list(
+      "font-size" = "1.35rem",
+      "font-weight" = "700",
+      "line-height" = "1.2",
+      "margin-bottom" = "8px",
+      "color" = "#003b5c"
+    ),
+
+    ".join-sub" = list(
+      "font-size" = "0.95rem",
+      "line-height" = "1.25",
+      "color" = "#0b3a5b",
+      "margin-bottom" = "8px"
+    ),
+
+    ".join-proof" = list(
+      "font-size" = "0.9rem",
+      "line-height" = "1.25",
+      "color" = "#144c6e",
+      "font-weight" = "600"
+    ),
+
+    ".join-actions" = list(
+      "display" = "grid",
+      "grid-template-columns" = "1fr",
+      "gap" = "10px"
+    ),
+
+    ".join-action" = list(
+      "background" = "rgba(255, 255, 255, 0.98)",
+      "border" = "2px solid #8ecae6",
+      "border-radius" = "10px",
+      "padding" = "10px 12px",
+      "box-shadow" = "0 2px 8px rgba(0, 36, 64, 0.10)"
+    ),
+
+    ".join-action-title" = list(
+      "font-size" = "0.95rem",
+      "font-weight" = "700",
+      "color" = "#003b5c",
+      "margin-bottom" = "3px"
+    ),
+
+    ".join-action-detail" = list(
+      "font-size" = "0.82rem",
+      "line-height" = "1.2",
+      "color" = "#245576"
+    ),
+
+    ".join-footer" = list(
+      "margin-top" = "8px",
+      "font-size" = "0.85rem",
+      "font-weight" = "700",
+      "color" = "#0077b6"
+    ),
+
+    ".left-68" = list(
+      "width" = "68%",
+      "float" = "left"
+    ),
+
+    ".right-32" = list(
+      "width" = "32%",
+      "float" = "right"
+    )
+  )
+)
+```
+
+.footnote[U.S. Department of Commerce | National Oceanic and Atmospheric Administration | National Marine Fisheries Service]
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+```
+
+<!-- Start of slides -->
+
+---
+# Outline
+
+- Background on case studies
+
+- Results of three case studies (switch to the case studies [website](https://noaa-fims.github.io/case-studies))
+
+  - [Southern New England-Mid Atlantic Yellowtail Flounder](https://noaa-fims.github.io/case-studies/content/NEFSC-yellowtail.html) original model in ASAP, converted to FIMS by Chris Legault
+
+  - [Gulf of Alaska Walleye Pollock](https://noaa-fims.github.io/case-studies/content/AFSC-GOA-pollock.html) original model is a bespoke TMB model, converted to FIMS by Cole Monnahan
+  
+  - [Pacific Hake](https://noaa-fims.github.io/case-studies/content/pacific-hake.html) original model in SS3, converted to FIMS by Kelli Johnson
+ 
+- Lessons learned (back to this presentation)
+
+- Next steps
+
+---
+
+# Background on case studies
+
+.left-68[
+- Initial goal developed in 2022 was to have at least one case study for each NOAA Fisheries Science Center
+- Case studies repository created in December 2023, initially with Southern New England-Mid Atlantic Yellowtail Flounder thanks to Chris Legault
+- Multiple goals for the case studies, including:
+  - testing FIMS features and identifying bugs
+  - providing example models for users to learn from and build upon
+  - comparing results between FIMS and existing models to build confidence in FIMS results
+  - prioritizing features to add to FIMS based on differences between FIMS and existing models
+]
+
+.right-32[
+```{r, echo=FALSE}
+DiagrammeR::mermaid("
+graph TD
+  A[original<br>assessment] -- remove<br>features --> B[simplified<br>model]
+  B -- compare --> C[FIMS<br>model]
+")
+```
+]
+---
+
+# A success story: finding bugs / undocumented features in FIMS
+The first case study (Yellowtail Flounder in ASAP &#x2192; FIMS) revealed several issues (all quickly resolved):
+- additional recruitment parameter was being estimated
+- had to fill missing survey data because NA was not allowed
+- sex ratio was not included in spawning biomass calculations
+  - fixed sex ratio = 0.5 now correctly applied, and flexibility to include sex structure is a priority for 2026 (see https://github.com/ioos/gsoc/issues/114)
+
+Real world applications are messier than simulated data in terms of data availability and complexity and thus provide a valuable testing ground for FIMS development and debugging.
+
+---
+
+# Results of three case studies
+
+switch to case studies website: https://noaa-fims.github.io/case-studies/
+
+---
+
+# Lessons learned
+
+- When comparing models with features not yet available in FIMS, it can be helpful to revise the original model to be closer to the available options within FIMS 
+  - isolates unknown differences in implementation from known differences in model structure
+  - helps identify which features are most important to add to FIMS in the future to bring the FIMS case study closer to the original model
+
+- Keeping the case studies up to date with the changes in FIMS is challenging but valuable
+  - provides a reminder for developers of needed changes to the user interface
+  - provides example models for users to learn from and build upon
+  - helps identify and fix bugs in FIMS
+
+---
+
+# Next steps
+
+- More case studies are currently in development:
+
+  - Pacific Sardine (SWFSC, SS3, Alex Jensen and Peter Kuriyama)
+
+  - Opakapaka (PIFSC, SS3, Meg Oshima)
+
+  - Petrale Sole (NWFSC, SS3, Ian Taylor)
+
+  - South Atlantic Scamp (SEFSC, BAM, formerly led by Kyle Shertzer)
+
+- Add additional case studies
+
+  - a WHAM model (thanks to Emily Liljestrand)
+
+  - an AMAK model (thanks to Jim Ianelli)
+
+---
+
+# Next steps (continued)
+
+.left-68[
+
+- Generalize code used to convert data for case studies into conversion functions that can be used by others
+
+  - e.g., `ss3_data_to_fims()` converter now available in the {r4ss} package
+
+  - standardize language across models (e.g., more alignment between column names between FIMS and RCEATTLE to ease the conversion process)
+
+- Continue to use case studies as a testing ground for new features in FIMS, including growth estimation and time-varying selectivity
+
+- As FIMS feature set expands, move away from simplifying the original models
+]
+.right-32[
+```{r, echo=FALSE}
+DiagrammeR::mermaid("
+graph TD
+  A[original<br>assessment] -- compare --> C[FIMS<br>model]
+")
+```
+]
+
+---
+
+# Next steps (continued)
+
+
+- Standardize plots of model output, diagnostics, and comparisons for the case studies by moving to the {[stockplotr](https://nmfs-ost.github.io/stockplotr/)} package
+
+- Refine the selection of case studies once FIMS starts being applied in production assessments (while also maintaining a list of those applications)
+
+---
+
+<div style="text-align: center;">
+  <img src="static/FIMS_hexlogo.png" style="width: 100%; max-width: 300px;" />
+</div>
+
+&#x1F310; https://noaa-fims.github.io/case-studies/
+
+&#x1F4E9; ian.taylor@noaa.gov
