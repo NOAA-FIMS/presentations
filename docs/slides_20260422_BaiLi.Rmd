@@ -116,7 +116,7 @@ knitr::include_graphics("https://renewep.com/wp-content/uploads/2023/09/road-map
 ]
 
 ---
-# What is FIMS? (Quick Refresher)
+# FIMS Design
 
 ```{r, echo=FALSE, out.width="70%", out.height="80%"}
 knitr::include_graphics(file.path("static", "fims_path_simple.png"))
@@ -173,36 +173,41 @@ Figure source: .hyperlink-style[[GeeksforGeeks](https://www.geeksforgeeks.org/ty
 ]
 
 ---
-# Testing Layers in FIMS
+# Overview of FIMS Testing
 
-```{r, echo=FALSE, out.width="100%"}
-# from top to bottom
-DiagrammeR::DiagrammeR("
-   graph TB
-   a[<b>Types of FIMS Testing</b>]-->A[<b>Manual Testing</b>]
-   a-->B[<b>Automation Testing</b>]
-   A-->C[<b>Functional Testing</b>]
-   A-->D[<b>Non-Functional Testing</b>]
-   C-->E[<b>Unit Testing</b>]
-   C-->F[<b>Integration Testing</b>]
-   C-->G[<b>System Testing</b>]
-   D-->H[<b>Performance Testing</b>]
-   D-->I[<b>Usability Testing</b>]
-   D-->J[<b>Compatibility Testing</b>]
-   style a fill:#FFFFFF, stroke:#003B5C
-   style A fill:#C6E6F0
-   style B fill:#C6E6F0
-   style C fill:#90DFE3
-   style D fill:#90DFE3
-   style E fill:#5BC0DE
-   style F fill:#5BC0DE
-   style G fill:#5BC0DE
-   style H fill:#5BC0DE
-   style I fill:#5BC0DE
-   style J fill:#5BC0DE
-")
-```
+- We adopt key best practices from software engineering
 
+<div style="position: relative; display: inline-block; width: 75%;">
+  <img src="https://media.geeksforgeeks.org/wp-content/uploads/20240730150406/Software-Testing-768-copy.webp"
+       style="width: 100%; display: block;">
+  
+  <!-- Box 1 -->
+  <div style="
+    position: absolute;
+    top: 12%;
+    left: 1%;
+    width: 100%;
+    height: 18%;
+    border: 4px solid red;
+    background-color: rgba(255,0,0,0.12);
+    box-sizing: border-box;
+  "></div>
+  
+  <!-- Box 2 -->
+  <div style="
+    position: absolute;
+    top: 40%;
+    left: 1%;
+    width: 100%;
+    height: 25%;
+    border: 4px solid red;
+    background-color: rgba(255,0,0,0.12);
+  "></div>
+</div>
+
+.footnote[
+Figure source: .hyperlink-style[[GeeksforGeeks](https://www.geeksforgeeks.org/types-software-testing/)]
+]
 ---
 # Types of Tests Implemented
 ```{r, echo=FALSE, out.width="100%"}
@@ -441,7 +446,7 @@ Figure source: .hyperlink-style[[FIMS testing report](https://noaa-fims.github.i
   - Coverage changes are automatically reported on each pull request to ensure coverage does not decrease significantly
 
 
-```{r, echo=FALSE, fig.height=1, fig.width=1}
+```{r, echo=FALSE, out.width="80%"}
 knitr::include_graphics(file.path("static", "code_coverage_20260415.png"))
 ```
 
@@ -600,6 +605,7 @@ knitr::include_graphics("https://github.com/NOAA-FIMS/model-comparison-project/b
 ---
 # Benchmarking FIMS Against Established Assessment Tools
 ** Mean of median relative error (%)**
+<div style="position: relative; display: inline-block; width: 75%;">
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 mre_data <- read.csv(
   "https://raw.githubusercontent.com/NOAA-FIMS/model-comparison-project/refs/heads/main/C0/figure/median_relative_error_summary.csv"
@@ -614,12 +620,44 @@ knitr::kable(mre_data, "html") |>
   kableExtra::column_spec(2, bold = TRUE, color = "black") |>
   kableExtra::row_spec(0, bold = TRUE, extra_css = "padding: 1px;") |>
   kableExtra::row_spec(1:nrow(mre_data), extra_css = "padding: 1px;")
+
 ```
+
+  <div style="
+    position: absolute;
+    top: 27%;
+    left: 1%;
+    width: 57%;
+    height: 8%;
+    border: 4px solid red;
+    background-color: rgba(255,0,0,0.12);
+  "></div>
+  
+  <div style="
+    position: absolute;
+    top: 58%;
+    left: 1%;
+    width: 57%;
+    height: 8%;
+    border: 4px solid red;
+    background-color: rgba(255,0,0,0.12);
+  "></div>
+  
+  <div style="
+    position: absolute;
+    top: 90%;
+    left: 1%;
+    width: 57%;
+    height: 8%;
+    border: 4px solid red;
+    background-color: rgba(255,0,0,0.12);
+  "></div>
+</div>
 
 ---
 # Benchmarking FIMS Against Established Assessment Tools
 **Median absolute relative error (%)**
-
+<div style="position: relative; display: inline-block; width: 75%;">
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 mare_data <- read.csv(
   "https://raw.githubusercontent.com/NOAA-FIMS/model-comparison-project/refs/heads/main/C0/figure/median_absolute_relative_error_summary.csv"
@@ -636,10 +674,40 @@ knitr::kable(mare_data, "pipe") |>
   kableExtra::row_spec(1:nrow(mare_data), extra_css = "padding: 1px;")
 ```
 
+<div style="
+    position: absolute;
+    top: 27%;
+    left: 1%;
+    width: 57%;
+    height: 8%;
+    border: 4px solid red;
+    background-color: rgba(255,0,0,0.12);
+  "></div>
+  
+  <div style="
+    position: absolute;
+    top: 58%;
+    left: 1%;
+    width: 57%;
+    height: 8%;
+    border: 4px solid red;
+    background-color: rgba(255,0,0,0.12);
+  "></div>
+  
+  <div style="
+    position: absolute;
+    top: 90%;
+    left: 1%;
+    width: 57%;
+    height: 8%;
+    border: 4px solid red;
+    background-color: rgba(255,0,0,0.12);
+  "></div>
+</div>
 ---
 # Benchmarking FIMS Against Established Assessment Tools
 **Convergence success for 500 simulations across seven estimation models configurations**
-
+<div style="position: relative; display: inline-block; width: 75%;">
 ```{r, echo=FALSE, message=FALSE, warning=FALSE}
 convergence_rates <- read.csv("https://raw.githubusercontent.com/NOAA-FIMS/model-comparison-project/refs/heads/main/C0/figure/convergence_rates.csv")
 
@@ -653,7 +721,16 @@ knitr::kable(convergence_rates, "pipe") |>
   kableExtra::row_spec(0, bold = TRUE, extra_css = "padding: 4px;") |>
   kableExtra::row_spec(1:nrow(convergence_rates), extra_css = "padding: 2px;")
 ```
-
+  <div style="
+    position: absolute;
+    top: 75%;
+    left: 80%;
+    width: 20%;
+    height: 20%;
+    border: 4px solid red;
+    background-color: rgba(255,0,0,0.12);
+  "></div>
+</div>
 ---
 # Benchmarking FIMS Against Established Assessment Tools
 

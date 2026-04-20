@@ -5,15 +5,6 @@
     <meta charset="utf-8" />
     <meta name="author" content="Bai Li    Contractor with ECS Federal LLC in support of   NOAA Fisheries Office of Science and Technology   Email: bai.li@noaa.gov" />
     <script src="libs/header-attrs/header-attrs.js"></script>
-    <link href="libs/htmltools-fill/fill.css" rel="stylesheet" />
-    <script src="libs/htmlwidgets/htmlwidgets.js"></script>
-    <script src="libs/d3/d3.min.js"></script>
-    <script src="libs/dagre/dagre-d3.min.js"></script>
-    <link href="libs/mermaid/dist/mermaid.css" rel="stylesheet" />
-    <script src="libs/mermaid/dist/mermaid.slim.min.js"></script>
-    <link href="libs/DiagrammeR-styles/styles.css" rel="stylesheet" />
-    <script src="libs/chromatography/chromatography.js"></script>
-    <script src="libs/DiagrammeR-binding/DiagrammeR.js"></script>
     <script src="libs/kePrint/kePrint.js"></script>
     <link href="libs/lightable/lightable.css" rel="stylesheet" />
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
@@ -78,7 +69,7 @@ layout: true
 ]
 
 ---
-# What is FIMS? (Quick Refresher)
+# FIMS Design
 
 &lt;img src="static/fims_path_simple.png" width="70%" height="80%" /&gt;
 
@@ -129,11 +120,41 @@ Figure source: .hyperlink-style[[GeeksforGeeks](https://www.geeksforgeeks.org/ty
 ]
 
 ---
-# Testing Layers in FIMS
+# Overview of FIMS Testing
 
-<div class="DiagrammeR html-widget html-fill-item" id="htmlwidget-b04d44c9937fbc556863" style="width:100%;height:504px;"></div>
-<script type="application/json" data-for="htmlwidget-b04d44c9937fbc556863">{"x":{"diagram":"\n   graph TB\n   a[<b>Types of FIMS Testing<\/b>]-->A[<b>Manual Testing<\/b>]\n   a-->B[<b>Automation Testing<\/b>]\n   A-->C[<b>Functional Testing<\/b>]\n   A-->D[<b>Non-Functional Testing<\/b>]\n   C-->E[<b>Unit Testing<\/b>]\n   C-->F[<b>Integration Testing<\/b>]\n   C-->G[<b>System Testing<\/b>]\n   D-->H[<b>Performance Testing<\/b>]\n   D-->I[<b>Usability Testing<\/b>]\n   D-->J[<b>Compatibility Testing<\/b>]\n   style a fill:#FFFFFF, stroke:#003B5C\n   style A fill:#C6E6F0\n   style B fill:#C6E6F0\n   style C fill:#90DFE3\n   style D fill:#90DFE3\n   style E fill:#5BC0DE\n   style F fill:#5BC0DE\n   style G fill:#5BC0DE\n   style H fill:#5BC0DE\n   style I fill:#5BC0DE\n   style J fill:#5BC0DE\n"},"evals":[],"jsHooks":[]}</script>
+- We adopt key best practices from software engineering
 
+&lt;div style="position: relative; display: inline-block; width: 75%;"&gt;
+  &lt;img src="https://media.geeksforgeeks.org/wp-content/uploads/20240730150406/Software-Testing-768-copy.webp"
+       style="width: 100%; display: block;"&gt;
+  
+  &lt;!-- Box 1 --&gt;
+  &lt;div style="
+    position: absolute;
+    top: 12%;
+    left: 1%;
+    width: 100%;
+    height: 18%;
+    border: 4px solid red;
+    background-color: rgba(255,0,0,0.12);
+    box-sizing: border-box;
+  "&gt;&lt;/div&gt;
+  
+  &lt;!-- Box 2 --&gt;
+  &lt;div style="
+    position: absolute;
+    top: 40%;
+    left: 1%;
+    width: 100%;
+    height: 25%;
+    border: 4px solid red;
+    background-color: rgba(255,0,0,0.12);
+  "&gt;&lt;/div&gt;
+&lt;/div&gt;
+
+.footnote[
+Figure source: .hyperlink-style[[GeeksforGeeks](https://www.geeksforgeeks.org/types-software-testing/)]
+]
 ---
 # Types of Tests Implemented
 &lt;table class="table table-striped table-hover" style="font-size: 12px; width: auto !important; margin-left: auto; margin-right: auto;"&gt;
@@ -329,7 +350,7 @@ Figure source: .hyperlink-style[[FIMS tests](https://noaa-fims.github.io/FIMS/te
 ]
 
 .pull-right[
-![](slides_20260422_BaiLi_files/figure-html/unnamed-chunk-10-1.png)&lt;!-- --&gt;
+![](slides_20260422_BaiLi_files/figure-html/unnamed-chunk-9-1.png)&lt;!-- --&gt;
 ]
 
 .footnote[
@@ -385,7 +406,7 @@ Figure source: .hyperlink-style[[FIMS R Universe builds](https://noaa-fisheries-
 - C++ and R tests are automatically executed on every commit
 - Code coverage results are reported for every pull request
 
-![](slides_20260422_BaiLi_files/figure-html/unnamed-chunk-13-1.png)&lt;!-- --&gt;
+![](slides_20260422_BaiLi_files/figure-html/unnamed-chunk-12-1.png)&lt;!-- --&gt;
 
 
 .footnote[
@@ -411,7 +432,7 @@ Figure source: .hyperlink-style[[FIMS testing report](https://noaa-fims.github.i
   - Coverage changes are automatically reported on each pull request to ensure coverage does not decrease significantly
 
 
-![](static/code_coverage_20260415.png)&lt;!-- --&gt;
+&lt;img src="static/code_coverage_20260415.png" width="80%" /&gt;
 
 .footnote[
 Figure source: .hyperlink-style[[FIMS code coverage](https://app.codecov.io/gh/NOAA-FIMS/FIMS?search=&amp;trend=all%20time)]
@@ -562,6 +583,7 @@ Together, these provide complementary views of model performance
 ---
 # Benchmarking FIMS Against Established Assessment Tools
 ** Mean of median relative error (%)**
+&lt;div style="position: relative; display: inline-block; width: 75%;"&gt;
 &lt;table class="table table-striped table-hover table-condensed" style="font-size: 11px; width: auto !important; margin-left: auto; margin-right: auto;"&gt;
  &lt;thead&gt;
   &lt;tr&gt;
@@ -789,10 +811,41 @@ Together, these provide complementary views of model performance
 &lt;/tbody&gt;
 &lt;/table&gt;
 
+  &lt;div style="
+    position: absolute;
+    top: 27%;
+    left: 1%;
+    width: 57%;
+    height: 8%;
+    border: 4px solid red;
+    background-color: rgba(255,0,0,0.12);
+  "&gt;&lt;/div&gt;
+  
+  &lt;div style="
+    position: absolute;
+    top: 58%;
+    left: 1%;
+    width: 57%;
+    height: 8%;
+    border: 4px solid red;
+    background-color: rgba(255,0,0,0.12);
+  "&gt;&lt;/div&gt;
+  
+  &lt;div style="
+    position: absolute;
+    top: 90%;
+    left: 1%;
+    width: 57%;
+    height: 8%;
+    border: 4px solid red;
+    background-color: rgba(255,0,0,0.12);
+  "&gt;&lt;/div&gt;
+&lt;/div&gt;
+
 ---
 # Benchmarking FIMS Against Established Assessment Tools
 **Median absolute relative error (%)**
-
+&lt;div style="position: relative; display: inline-block; width: 75%;"&gt;
 &lt;table class="table table-striped table-hover table-condensed" style="font-size: 11px; width: auto !important; margin-left: auto; margin-right: auto;"&gt;
  &lt;thead&gt;
   &lt;tr&gt;
@@ -1042,10 +1095,40 @@ Together, these provide complementary views of model performance
 &lt;/tbody&gt;
 &lt;/table&gt;
 
+&lt;div style="
+    position: absolute;
+    top: 27%;
+    left: 1%;
+    width: 57%;
+    height: 8%;
+    border: 4px solid red;
+    background-color: rgba(255,0,0,0.12);
+  "&gt;&lt;/div&gt;
+  
+  &lt;div style="
+    position: absolute;
+    top: 58%;
+    left: 1%;
+    width: 57%;
+    height: 8%;
+    border: 4px solid red;
+    background-color: rgba(255,0,0,0.12);
+  "&gt;&lt;/div&gt;
+  
+  &lt;div style="
+    position: absolute;
+    top: 90%;
+    left: 1%;
+    width: 57%;
+    height: 8%;
+    border: 4px solid red;
+    background-color: rgba(255,0,0,0.12);
+  "&gt;&lt;/div&gt;
+&lt;/div&gt;
 ---
 # Benchmarking FIMS Against Established Assessment Tools
 **Convergence success for 500 simulations across seven estimation models configurations**
-
+&lt;div style="position: relative; display: inline-block; width: 75%;"&gt;
 &lt;table class="table table-striped table-hover table-condensed" style="font-size: 11px; width: auto !important; margin-left: auto; margin-right: auto;"&gt;
  &lt;thead&gt;
   &lt;tr&gt;
@@ -1108,7 +1191,16 @@ Together, these provide complementary views of model performance
   &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
-
+  &lt;div style="
+    position: absolute;
+    top: 75%;
+    left: 80%;
+    width: 20%;
+    height: 20%;
+    border: 4px solid red;
+    background-color: rgba(255,0,0,0.12);
+  "&gt;&lt;/div&gt;
+&lt;/div&gt;
 ---
 # Benchmarking FIMS Against Established Assessment Tools
 
