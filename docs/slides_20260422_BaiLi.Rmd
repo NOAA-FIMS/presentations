@@ -116,6 +116,31 @@ knitr::include_graphics("https://renewep.com/wp-content/uploads/2023/09/road-map
 ]
 
 ---
+# Why Testing Matters
+
+.pull-left[
+```{r, echo=FALSE, out.width="80%", out.height="80%"}
+knitr::include_graphics(file.path("static", "Hook_and_Kelly_scientific_software_errors.png"))
+```
+
+(Hook and Kelly, 2009)
+]
+
+.pull-right[
+- Scientific software output can accumulate many sources of error
+- Testing ensures the code implementation matches the scientific theory
+- Comprehensive test suites allow for refactoring without unintentionally altering research outcomes
+- Reproducibility guarantees consistent results across systems
+- Well-tested code builds trust and strengthens peer review
+]
+
+.footnote[
+[1] .hyperlink-style[[Hook and Kelly, 2009:](https://se4science.org/workshops/secse09/Presentations/09_Hook.pdf)] Testing for (code) trustworthiness in scientific software.<br>
+]
+
+???
+In science, a small typo in code can lead to a big error in a quota recommendation. Testing is our 'Peer Review' for code—ensuring our implementation actually matches our equations.
+---
 # FIMS Design
 
 ```{r, echo=FALSE, out.width="70%", out.height="80%"}
@@ -134,31 +159,6 @@ knitr::include_graphics(file.path("static", "fims_path_simple.png"))
 ???
 This R/C++ design shapes how we organize and automate testing.
 
----
-# Why Testing Matters
-
-.pull-left[
-```{r, echo=FALSE, out.width="80%", out.height="80%"}
-knitr::include_graphics(file.path("static", "Hook_and_Kelly_scientific_software_errors.png"))
-```
-
-(Hook and Kelly, 2009)
-]
-
-.pull-right[
-- Scientific software output can accumulate many sources of error
-- Testing ensures the code implementation matches the scientific theory
-- Reproducibility guarantees consistent results across systems
-- Comprehensive test suites allow for refactoring without unintentionally altering research outcomes
-- Well-tested code builds trust and strengthens peer review
-]
-
-.footnote[
-[1] .hyperlink-style[[Hook and Kelly, 2009:](https://se4science.org/workshops/secse09/Presentations/09_Hook.pdf)] Testing for (code) trustworthiness in scientific software.<br>
-]
-
-???
-In science, a small typo in code can lead to a big error in a quota recommendation. Testing is our 'Peer Review' for code—ensuring our implementation actually matches our equations.
 ---
 # Overview of FIMS Testing
 
@@ -283,7 +283,7 @@ knitr::include_url("https://noaa-fims.github.io/FIMS/testdown/test-rcpp-fleet-in
 ```
 
 .footnote[
-Figure source: .hyperlink-style[[FIMS selectivity Rcpp tests](https://noaa-fims.github.io/FIMS/testdown/test-rcpp-fleet-interface.html)]
+Figure source: .hyperlink-style[[FIMS fleet Rcpp tests](https://noaa-fims.github.io/FIMS/testdown/test-rcpp-fleet-interface.html)]
 ]
 
 ???
@@ -414,7 +414,7 @@ Figure source: .hyperlink-style[[FIMS R Universe builds](https://noaa-fisheries-
 
 ```{r, echo=FALSE, message=FALSE}
 webshot2::webshot(
-  url = "https://github.com/NOAA-FIMS/FIMS/actions/workflows/run-googletest.yml",
+  url = "https://github.com/NOAA-FIMS/FIMS/actions/workflows/run-googletest.yml?query=branch%3Amain",
   cliprect = c(10, 70, 1000, 470),
   file = file.path("static", "webshot.png")
 ) 

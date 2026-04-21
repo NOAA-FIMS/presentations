@@ -69,6 +69,29 @@ layout: true
 ]
 
 ---
+# Why Testing Matters
+
+.pull-left[
+&lt;img src="static/Hook_and_Kelly_scientific_software_errors.png" width="80%" height="80%" /&gt;
+
+(Hook and Kelly, 2009)
+]
+
+.pull-right[
+- Scientific software output can accumulate many sources of error
+- Testing ensures the code implementation matches the scientific theory
+- Comprehensive test suites allow for refactoring without unintentionally altering research outcomes
+- Reproducibility guarantees consistent results across systems
+- Well-tested code builds trust and strengthens peer review
+]
+
+.footnote[
+[1] .hyperlink-style[[Hook and Kelly, 2009:](https://se4science.org/workshops/secse09/Presentations/09_Hook.pdf)] Testing for (code) trustworthiness in scientific software.&lt;br&gt;
+]
+
+???
+In science, a small typo in code can lead to a big error in a quota recommendation. Testing is our 'Peer Review' for code—ensuring our implementation actually matches our equations.
+---
 # FIMS Design
 
 &lt;img src="static/fims_path_simple.png" width="70%" height="80%" /&gt;
@@ -85,29 +108,6 @@ layout: true
 ???
 This R/C++ design shapes how we organize and automate testing.
 
----
-# Why Testing Matters
-
-.pull-left[
-&lt;img src="static/Hook_and_Kelly_scientific_software_errors.png" width="80%" height="80%" /&gt;
-
-(Hook and Kelly, 2009)
-]
-
-.pull-right[
-- Scientific software output can accumulate many sources of error
-- Testing ensures the code implementation matches the scientific theory
-- Reproducibility guarantees consistent results across systems
-- Comprehensive test suites allow for refactoring without unintentionally altering research outcomes
-- Well-tested code builds trust and strengthens peer review
-]
-
-.footnote[
-[1] .hyperlink-style[[Hook and Kelly, 2009:](https://se4science.org/workshops/secse09/Presentations/09_Hook.pdf)] Testing for (code) trustworthiness in scientific software.&lt;br&gt;
-]
-
-???
-In science, a small typo in code can lead to a big error in a quota recommendation. Testing is our 'Peer Review' for code—ensuring our implementation actually matches our equations.
 ---
 # Overview of FIMS Testing
 
@@ -280,7 +280,7 @@ Figure source: .hyperlink-style[[FIMS selectivity Rcpp tests](https://noaa-fims.
 &lt;iframe src="https://noaa-fims.github.io/FIMS/testdown/test-rcpp-fleet-interface.html" width="100%" height="400px" data-external="1"&gt;&lt;/iframe&gt;
 
 .footnote[
-Figure source: .hyperlink-style[[FIMS selectivity Rcpp tests](https://noaa-fims.github.io/FIMS/testdown/test-rcpp-fleet-interface.html)]
+Figure source: .hyperlink-style[[FIMS fleet Rcpp tests](https://noaa-fims.github.io/FIMS/testdown/test-rcpp-fleet-interface.html)]
 ]
 
 ???
