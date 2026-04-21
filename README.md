@@ -3,6 +3,12 @@ A repository for National Stock Assessment Program presentations
 
 ## FIMS
 
+[Background and rationale of FIMS (20260421)](https://noaa-fims.github.io/presentations/slides_20260421_background.html)
+
+[Bayesian estimation in FIMS (20260421)](https://noaa-fims.github.io/presentations/slides_20260421_bayesian.html)
+
+[Case studies (20260422)](https://noaa-fims.github.io/presentations/slides_20260422_case-studies.html)
+
 [Trusting the Numbers: An Overview of the Testing Framework for the Fisheries Integrated Modeling System (FIMS) (20260422)](https://noaa-fims.github.io/presentations/slides_20260422_BaiLi.html)
 
 [Software testing for FIMS: strategies, challenges, and opportunities (20250521)](https://noaa-fims.github.io/presentations/slides_20250521.html)

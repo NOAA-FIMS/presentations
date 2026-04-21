@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Background and rationale for the Fisheries Integrated Modeling System (FIMS)</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Kelli Johnson, NOAA Fisheries OST kelli.johnson@noaa.gov " />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/htmltools-fill/fill.css" rel="stylesheet" />
+    <script src="libs/htmlwidgets/htmlwidgets.js"></script>
+    <script src="libs/viz/viz.js"></script>
+    <link href="libs/DiagrammeR-styles/styles.css" rel="stylesheet" />
+    <script src="libs/grViz-binding/grViz.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Background and rationale for the<br>Fisheries Integrated Modeling<br>System (FIMS)
+]
+.subtitle[
+## FIMS CIE Review
+]
+.author[
+### Kelli Johnson, NOAA Fisheries OST<br><a href="mailto:kelli.johnson@noaa.gov" class="email">kelli.johnson@noaa.gov</a><br>
+]
+.date[
+### 2026/04/21
+]
+
+---
+
+
+layout: true
+  
+
+
+.footnote[U.S. Department of Commerce | National Oceanic and Atmospheric Administration | National Marine Fisheries Service]
+
+
+
+&lt;!-- Start of slides --&gt;
+
+---
+# Outline
+
+- Why was FIMS created
+
+- FIMS mission statement
+
+- Why build FIMS now
+
+- Software in fisheries
+
+- Who will build the software
+
+---
+
+
+# .hyperlink-style[[Why was FIMS Created](https://noaa-fims.github.io/about/faq.html#why-is-fims-being-created)]
+&lt;ul&gt; &lt;li&gt;New good practices in assessment methods, such as random effects, one-step ahead residuals, and new statistical distributions, can be difficult to add in a performant way to older software systems.&lt;/li&gt;&lt;br&gt;&lt;li&gt;FIMS will be written in a way that these new best practices are included at the onset rather than as an afterthought.&lt;/li&gt;&lt;br&gt; &lt;/ul&gt;
+
+---
+# .hyperlink-style[[Why was FIMS Created](https://noaa-fims.github.io/about/faq.html#why-is-fims-being-created)]
+
+&lt;ul&gt; &lt;li&gt;FIMS was created, according to its Terms of Reference, to increase the pool of developers, designers, and testers that contribute to a commonly-used stock assessment modeling system that can be used across regions.&lt;/li&gt;&lt;br&gt;&lt;li&gt;The commitment to build FIMS was made by the National Marine Fisheries Service (NMFS) Science Board in 2020 partly in response to the Center for the Advancement of Population Assessment Methodology (CAPAM) workshop on Next Generation Models and the recommendations in Implementing a Next Generation Stock Assessment Enterprise, a NOAA Fisheries strategic document that calls for the development of general modeling platforms that facilitate ease of use, robust testing, modular applications, and best practices and to improve the professionalism of model development.&lt;/li&gt;&lt;br&gt; &lt;/ul&gt;
+
+---
+# .hyperlink-style[[Why was FIMS Created](https://noaa-fims.github.io/about/faq.html#why-is-fims-being-created)]
+
+Implementing a Next Generation Stock Assessment Enterprise .hyperlink-style[[Lynch et al., 2018](https://spo.nmfs.noaa.gov/sites/default/files/TMSPO183.pdf)]
+
+&lt;ul&gt;
+&lt;li&gt;In 2001 NOAA Fisheries conducted 50 assessments&lt;/li&gt;
+&lt;li&gt;In 2015 NOAA Fisheries conducted 190 assessments&lt;/li&gt;
+&lt;li&gt;Next Generation Stock Assessments (NGSA) require three themes&lt;/li&gt;
+  &lt;ul&gt;
+  &lt;li&gt;holistic and ecosystem linked&lt;/li&gt;
+  &lt;li&gt;use of innovative science for data collection and analysis&lt;/li&gt;
+  &lt;li&gt;timely, efficient, and effective&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;li&gt;Recommendations to improve NOAA Fisheries' ability to meet its mandates included the creation of general modeling platforms that facilitate&lt;/li&gt;
+  &lt;ul&gt;
+  &lt;li&gt;ease of use,&lt;/li&gt;
+  &lt;li&gt;robust testing,&lt;/li&gt;
+  &lt;li&gt;modular applications, and&lt;/li&gt;
+  &lt;li&gt;best practices to improve the professionalism of model development&lt;/li&gt;
+&lt;/ul&gt;
+
+---
+# .hyperlink-style[[Mission Statement](https://noaa-fims.github.io/about/#mission)]
+
+&lt;iframe src="https://noaa-fims.github.io/about/" width="100%" height="400px" data-external="1"&gt;&lt;/iframe&gt;
+
+---
+# .hyperlink-style[[Why Build FIMS Now](https://noaa-fims.github.io/about/faq.html#why-build-fims-now)]
+
+&lt;ul&gt; &lt;li&gt;AD Model Builder (ADMB) is no longer being supported so the ability to compile existing models that use ADMB, e.g., Age Structured Assessment Program (ASAP), Assessment Model for Alaska (AMAK), Beaufort Assessment Model (BAM), and Stock Synthesis 3 (SS3), will be compromised with future operating system upgrades.&lt;/li&gt;&lt;br&gt;&lt;li&gt;Furthermore, development of these models that rely on ADMB to include best practices, such as random effects, is not feasible.&lt;/li&gt;&lt;br&gt; &lt;/ul&gt;
+
+---
+# Software in Fisheries
+&lt;div&gt;
+&lt;img src = "https://onlinelibrary.wiley.com/pb-assets/journal-banners/14672979-1501384690583.jpg"&gt;
+&lt;/div&gt;
+
+Dowling et al. (2026; .hyperlink-style[[10.1111/faf.70076](https://doi.org/10.1111/faf.70076)]) surveyed developers of 33 fishery stock assessment tools and found:
+
+- &amp;#x2705; **91%** reported using formal version control.
+- &amp;#x274c; **54%** did not actively promote their tools.
+- &amp;#x274c; **36%** had a succession plan despite **61%** reporting training activity.
+- &amp;#x1F627; **30%** felt their tool was trending towards being obsolete.
+- &amp;#x1F627; **91%** of tools were generated a specific use case rather than from a general need.
+
+These patterns support investing in shared infrastructure, explicit maintenance planning, and broader contributor participation.
+
+---
+# Who is Involved in FIMS
+
+- .hyperlink-style[[FIMS Implementation Team](https://noaa-fims.github.io/contact/contributors.html#core-developers)]
+  - Dedicated Project Lead (currently Kelli Johnson)
+  - 2 Scientists from each of the 6 Science Centers
+  - Members of the Office of Science and Technology's National Stock Assessment Program
+  - Rotation is encouraged to spread knowledge
+
+- .hyperlink-style[[FIMS Council](https://noaa-fims.github.io/contact/contributors.html#fims-council)]
+  - Members from the academic community and global partners
+  - One-year terms if desired
+
+- Support from the National Marine Fisheries Service Science Board, the senior leadership team
+
+---
+# FIMS Design
+
+&lt;center&gt;
+&lt;img src="static/FIMS_hexlogo.png" style="width: 100%; max-width: 300px;" /&gt;
+&lt;/center&gt;
+
+---
+# Outline
+
+- &amp;#x1F3DB;&amp;#xFE0F; .hyperlink-style[[FIMS organization](https://noaa-fims.github.io/)] &amp;#x1F3DB;&amp;#xFE0F;
+
+- Version history of &lt;img src="static/FIMS_hexlogo.png" style="width: 100%; max-width: 30px;" /&gt; package
+
+- The **S** in **S**ystem
+
+- Architecture
+
+---
+# &amp;#x1F3DB;&amp;#xFE0F; FIMS Organization &amp;#x1F3DB;&amp;#xFE0F;
+
+### One &amp;#x1F3E0; for code, conversation, and collaboration
+
+Everything for FIMS lives in one shared place, making it easy to find the code, follow discussions, and jump in.
+
+**Explore the GitHub organization**
+   1. .hyperlink-style[https://github.com/NOAA-FIMS] stores many repositories
+   2. &amp;#x1F50D; Find code, issues, and discussions in one search
+   3. Trace decisions from .hyperlink-style[[Discussions](https://github.com/orgs/NOAA-FIMS/discussions)] &amp;#x2192; Issues &amp;#x2192; Pull Requests
+   4. &amp;#x1F680; Reuse solutions across teams and repositories
+   5. &amp;#x1F91D; Onboard contributors faster with shared context
+   6. .hyperlink-style[https://noaa-fims.github.io]
+
+---
+# &amp;#x1F3DB;&amp;#xFE0F; FIMS Organization &amp;#x1F3DB;&amp;#xFE0F;
+
+### How packages in the organization connect
+
+<div class="grViz html-widget html-fill-item" id="htmlwidget-f0461ddbb15248a3814d" style="width:40%;height:504px;"></div>
+<script type="application/json" data-for="htmlwidget-f0461ddbb15248a3814d">{"x":{"diagram":"\ndigraph flowchart {\n  node [shape = rectangle]\n  A [label = \"NOAA-FIMS\"]\n  B [label = \"FIMS\", color=\"blue\"]\n  BB [label = \"FIMSRTMB\"]\n  C [label = \"fishprior\"]\n  D [label = \"ecosystemdata\"]\n  E [label = \"ecosystemom\"]\n  F [label = \"FIMSdiags\"]\n  A -> B\n  A -> BB\n  B -> BB\n  A -> C\n  A -> D\n  A -> E\n  D -> E\n  E -> B\n  A -> F\n  B -> F\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+
+---
+# Tracing milestones in the FIMS package
+
+&lt;img src="slides_20260421_background_files/figure-html/snake-time-line-1.svg" alt="" width="100%" style="display: block; margin: auto;" /&gt;
+
+---
+# The S in System
+
+### FIMS connects the assessment ecosystem
+
+.left-68[
+
+- East/West/North/South &amp;#x2192; shared framework
+- data-limited/data-rich &amp;#x2192; common workflow
+- model inputs/model outputs &amp;#x2192; end-to-end consistency
+
+**Why this matters**
+
+One system means faster collaboration, clearer handoffs, and more consistent assessments.
+]
+
+.right-32[
+&lt;img src="https://live.staticflickr.com/3816/11090497816_4dcf638be1.jpg" style="width: 100%; border-radius: 10px;" /&gt;
+]
+
+
+---
+# 🏛️ FIMS Architecture 🏛️
+
+* Distributable R package that compiles during installation
+* FIMS modules are written in C++
+  * C++ is linked to R using Rcpp*&lt;sup&gt;1&lt;/sup&gt;*
+  * Learn more in the .hyperlink-style[[training vignettes](https://noaa-fims.github.io/FIMS/articles/index.html)]
+* .hyperlink-style[[Template Model Builder](https://kaskr.github.io/adcomp/Introduction.html)]*&lt;sup&gt;2&lt;/sup&gt;* currently serves as the engine for statistical inference
+&lt;div style="text-align: center;"&gt;
+  &lt;img src="static/fims_path_simple.png" style="width: 100%; max-width: 600px;" /&gt;
+&lt;/div&gt;
+
+.footnote[
+[1] .hyperlink-style[[Rcpp:](https://cran.r-project.org/web/packages/Rcpp/index.html)] An R package that provides the seamless integration of R and C++.&lt;br&gt;
+[2] .hyperlink-style[[Template Model Builder:](https://kaskr.github.io/adcomp/Introduction.html)] An R package for fitting statistical latent variable models to data.
+]
+
+---
+# 🏛️ FIMS Architecture 🏛️
+
+* Distributable R package that compiles during installation
+* FIMS modules are written in `C++` in `inst/include`
+--
+
+* Rcpp code is in `inst/include/interface` and `src/FIMS.cpp`
+* R code is in `R`
+* Compiling of C++ is configured using `src/Makevars`
+<div class="grViz html-widget html-fill-item" id="htmlwidget-099421f6193fb9fd8d2c" style="width:504px;height:80%;"></div>
+<script type="application/json" data-for="htmlwidget-099421f6193fb9fd8d2c">{"x":{"diagram":"\ndigraph fims_architecture {\n  a [label=<\n    <TABLE BORDER=\"0\" CELLBORDER=\"0\">\n      <TR><TD ALIGN=\"CENTER\"><B>inst/include<\/B><\/TD><\/TR>\n      <TR><TD ALIGN=\"LEFT\">common<\/TD><\/TR>\n      <TR><TD ALIGN=\"LEFT\">distributions<\/TD><\/TR>\n      <TR><TD ALIGN=\"LEFT\">interface<\/TD><\/TR>\n      <TR><TD ALIGN=\"LEFT\">models<\/TD><\/TR>\n      <TR><TD ALIGN=\"LEFT\">population_dynamics<\/TD><\/TR>\n      <TR><TD ALIGN=\"LEFT\">utilities<\/TD><\/TR>\n    <\/TABLE>\n  >, shape=box]\n  R [label=<\n    <TABLE BORDER=\"0\" CELLBORDER=\"0\">\n      <TR><TD ALIGN=\"CENTER\"><B>R<\/B><\/TD><\/TR>\n      <TR><TD ALIGN=\"LEFT\">create_default_configurations.R<\/TD><\/TR>\n      <TR><TD ALIGN=\"LEFT\">create_default_parameters.R<\/TD><\/TR>\n      <TR><TD ALIGN=\"LEFT\">fimsfit.R<\/TD><\/TR>\n      <TR><TD ALIGN=\"LEFT\">fimsframe.R<\/TD><\/TR>\n      <TR><TD ALIGN=\"LEFT\">FIMS-package.R<\/TD><\/TR>\n      <TR><TD ALIGN=\"LEFT\">initizalize_module.R<\/TD><\/TR>\n      <TR><TD ALIGN=\"LEFT\">*.R<\/TD><\/TR>\n    <\/TABLE>\n  >, shape = box]\n  src [label=<\n    <TABLE BORDER=\"0\" CELLBORDER=\"0\">\n      <TR><TD ALIGN=\"CENTER\"><B>src<\/B><\/TD><\/TR>\n      <TR><TD ALIGN=\"LEFT\">FIMS.cpp<\/TD><\/TR>\n      <TR><TD ALIGN=\"LEFT\">Makevars<\/TD><\/TR>\n    <\/TABLE>\n  >, shape=box]\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+
+---
+# 🏛️ C++ Architecture 🏛️
+
+`FIMS/inst/include`
+<div class="grViz html-widget html-fill-item" id="htmlwidget-30bd75a7d5df4e5b5e82" style="width:100%;height:504px;"></div>
+<script type="application/json" data-for="htmlwidget-30bd75a7d5df4e5b5e82">{"x":{"diagram":"\ndigraph fims_architecture {\n  common [label=<\n    <TABLE BORDER=\"0\" CELLBORDER=\"0\">\n      <TR><TD ALIGN=\"CENTER\"><B>common<\/B><\/TD><\/TR>\n      <TR><TD ALIGN=\"LEFT\">data_object.hpp<\/TD><\/TR>\n      <TR><TD ALIGN=\"LEFT\">def.hpp<\/TD><\/TR>\n      <TR><TD ALIGN=\"LEFT\">fims_math.hpp<\/TD><\/TR>\n      <TR><TD ALIGN=\"LEFT\">fims_vector.hpp<\/TD><\/TR>\n      <TR><TD ALIGN=\"LEFT\">information.hpp<\/TD><\/TR>\n      <TR><TD ALIGN=\"LEFT\">model.hpp<\/TD><\/TR>\n      <TR><TD ALIGN=\"LEFT\">model_object.hpp<\/TD><\/TR>\n    <\/TABLE>\n  >, shape=box]\n  interface [label=<\n    <TABLE BORDER=\"0\" CELLBORDER=\"0\">\n      <TR><TD ALIGN=\"CENTER\"><B>interface<\/B><\/TD><\/TR>\n      <TR><TD ALIGN=\"LEFT\">rcpp_objects<\/TD><\/TR>\n      <TR><TD ALIGN=\"LEFT\">interface.hpp<\/TD><\/TR>\n    <\/TABLE>\n  >, shape=box]\n  models [label=<\n    <TABLE BORDER=\"0\" CELLBORDER=\"0\">\n      <TR><TD ALIGN=\"CENTER\"><B>models<\/B><\/TD><\/TR>\n      <TR><TD ALIGN=\"LEFT\">functors/catch-at-age.hpp<\/TD><\/TR>\n      <TR><TD ALIGN=\"LEFT\">functors/surplus-production.hpp<\/TD><\/TR>\n      <TR><TD ALIGN=\"LEFT\">functors/fishery_model_base.hpp<\/TD><\/TR>\n      <TR><TD ALIGN=\"LEFT\">fisheries_models.hpp<\/TD><\/TR>\n    <\/TABLE>\n  >, shape=box]\n  population [label=<\n    <TABLE BORDER=\"0\" CELLBORDER=\"0\">\n      <TR><TD ALIGN=\"CENTER\"><B>population_dynamics<\/B><\/TD><\/TR>\n      <TR><TD ALIGN=\"LEFT\">depletion<\/TD><\/TR>\n      <TR><TD ALIGN=\"LEFT\">fleet<\/TD><\/TR>\n      <TR><TD ALIGN=\"LEFT\">growth<\/TD><\/TR>\n      <TR><TD ALIGN=\"LEFT\">maturity<\/TD><\/TR>\n      <TR><TD ALIGN=\"LEFT\">population<\/TD><\/TR>\n      <TR><TD ALIGN=\"LEFT\">recruitment<\/TD><\/TR>\n      <TR><TD ALIGN=\"LEFT\">selectivity<\/TD><\/TR>\n    <\/TABLE>\n  >, shape=box]\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+
+---
+# 🏛️ Model Family Architecture 🏛️
+
+`FIMS/inst/include/models`
+&lt;div style="margin-bottom:-28px;"&gt;&lt;/div&gt;
+<div class="grViz html-widget html-fill-item" id="htmlwidget-75cd7168eea44c015bed" style="width:100%;height:504px;"></div>
+<script type="application/json" data-for="htmlwidget-75cd7168eea44c015bed">{"x":{"diagram":"\ndigraph fims_architecture {\n  rankdir=LR;\n\n  // Model nodes\n  catch_at_age [label=\"functors/catch-at-age.hpp\", shape=box, color=\"#00797F\", penwidth = 2]\n  surplus_production [label=\"functors/surplus-production.hpp\", shape=box, color=\"#DB6015\", penwidth = 2]\n  fishery_model_base [label=\"functors/fishery_model_base.hpp\", shape=box]\n  fisheries_models [label=\"fisheries_models.hpp\", shape=box]\n\n  // Population nodes\n  depletion [label=\"depletion\", shape=box]\n  fleet [label=\"fleet\", shape=box]\n  growth [label=\"growth\", shape=box]\n  maturity [label=\"maturity\", shape=box]\n  population [label=\"population\", shape=box]\n  recruitment [label=\"recruitment\", shape=box]\n  selectivity [label=\"selectivity\", shape=box]\n\n  // Grouping (optional, for visual grouping)\n  subgraph cluster_models {\n    label = \"models\"\n    // style = \"dashed\"\n    catch_at_age; surplus_production; fishery_model_base; fisheries_models;\n  }\n  subgraph cluster_population {\n    label = \"population_dynamics\"\n    // style = \"dashed\"\n    depletion; fleet; growth; maturity; population; recruitment; selectivity;\n  }\n\n  // Connections\n  // nmfspalette::nmfs_palette(\"regional_alt1\")(6)\n  catch_at_age -> fleet [color=\"#00797F\", penwidth = 2]\n  catch_at_age -> growth [color=\"#00797F\", penwidth = 2]\n  catch_at_age -> maturity [color=\"#00797F\", penwidth = 2]\n  catch_at_age -> population [color=\"#00797F\", penwidth = 2]\n  catch_at_age -> recruitment [color=\"#00797F\", penwidth = 2]\n  catch_at_age -> selectivity [color=\"#00797F\", penwidth = 2]\n  surplus_production -> depletion [color=\"#DB6015\", penwidth = 2]\n  surplus_production -> fleet [color=\"#DB6015\", penwidth = 2]\n  surplus_production -> population [color=\"#DB6015\", penwidth = 2]\n  fisheries_models -> catch_at_age\n  fisheries_models -> surplus_production\n  fishery_model_base -> population\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+
+---
+# 🏛️ Theoretical Family Architecture 🏛️
+
+<div class="grViz html-widget html-fill-item" id="htmlwidget-0d790b08dafd8e518e64" style="width:100%;height:504px;"></div>
+<script type="application/json" data-for="htmlwidget-0d790b08dafd8e518e64">{"x":{"diagram":"\ndigraph fims_architecture {\n  rankdir=TB;\n\n  // Model nodes\n  fishery_model_base [label=\"functors/fishery_model_base.hpp\", shape=box, color=\"#76BC21\"]\n  fisheries_models [label=\"fisheries_models.hpp\", shape=box, color=\"#76BC21\"]\n  catch_at_age [label=\"functors/catch-at-age.hpp\", shape=box, color=\"#76BC21\", penwidth = 3]\n  surplus_production [label=\"functors/surplus-production.hpp\", shape=box, color=\"#DB6015\", penwidth = 3]\n  question [label=\"functors/?.hpp\", shape=box, color=\"#B71300\", penwidth = 3]\n  size [label=\"functors/size-structured.hpp\", shape=box, color=\"#B71300\", penwidth = 3]\n  length [label=\"functors/length-only.hpp\", shape=box, color=\"#B71300\", penwidth = 3]\n  spatial [label=\"functors/spatial.hpp\", shape=box, color=\"#B71300\", penwidth = 3]\n\n  // Grouping (optional, for visual grouping)\n  subgraph cluster_models {\n    label = \"models\"\n    // style = \"dashed\"\n    fisheries_models;\n    fishery_model_base;\n    catch_at_age;\n    surplus_production;\n\n    fisheries_models -> fishery_model_base [style=invis];\n    catch_at_age -> surplus_production [style=invis];\n\n  }\n\n  // Grouping (optional, for visual grouping)\n  subgraph new_models {\n    label = \"new\"\n    // style = \"dashed\"\n    size;\n    question;\n    length;\n    spatial;\n\n    question -> length -> spatial [style=invis];\n    question -> size [style=invis];\n  }\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+.footnote[
+[1] &lt;span style="color: #76BC21;"&gt;Available in main.&lt;/span&gt;&lt;br&gt;
+[2] &lt;span style="color: #DB6015;"&gt;Available in feature branch.&lt;/span&gt;&lt;br&gt;
+[2] &lt;span style="color: #B71300;"&gt;Potential families.&lt;/span&gt;&lt;br&gt;
+]
+
+---
+# Running FIMS
+
+.hyperlink-style[[Intro to FIMS vignette](https://noaa-fims.github.io/FIMS/articles/fims-demo.html)]
+
+---
+# .hyperlink-style[[Features](https://noaa-fims.github.io/about/#comparison-to-other-frameworks)]
+
+&lt;iframe src="https://noaa-fims.github.io/about/#comparison-to-other-frameworks" width="100%" height="400px" data-external="1"&gt;&lt;/iframe&gt;
+
+---
+# Thank you
+
+&lt;center&gt;
+&lt;img src="static/FIMS_hexlogo.png" style="width: 100%; max-width: 300px;" /&gt;
+&lt;/center&gt;
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+  "ratio": "7:5",
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "countIncrementalSlides": false,
+  "slideNumberFormat": "Page %current%"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

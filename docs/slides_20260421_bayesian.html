@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Bayesian estimation in the Fisheries Integrated Modeling System (FIMS)</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Andrea Havron, NOAA Fisheries OST andrea.havron@noaa.gov " />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Bayesian estimation in the<br>Fisheries Integrated Modeling<br>System (FIMS)
+]
+.subtitle[
+## FIMS CIE Review
+]
+.author[
+### Andrea Havron, NOAA Fisheries OST<br><a href="mailto:andrea.havron@noaa.gov" class="email">andrea.havron@noaa.gov</a><br>
+]
+.date[
+### 2026/04/21
+]
+
+---
+
+
+layout: true
+  
+
+
+.footnote[U.S. Department of Commerce | National Oceanic and Atmospheric Administration | National Marine Fisheries Service]
+
+
+
+&lt;!-- Start of slides --&gt;
+
+---
+# Outline
+
+- Why Bayesian estimation for FIMS
+
+- FIMS as a standard TMB model
+
+- SparseNUTS workflow for posterior sampling
+
+- Why C++ classes make priors easy and extensible
+
+- Practical examples and take-home points
+
+---
+# Why Bayesian Estimation in FIMS?
+
+&lt;div class="bayes-grid"&gt;
+  &lt;div class="bayes-card"&gt;
+    &lt;div class="bayes-title"&gt;Allows for probabilistic statements&lt;/div&gt;
+    &lt;div class="bayes-detail"&gt;E.g., the estimated probability that female spawning biomass at the start of 2024 is below the reference point of 40% of unfished biomass is 1.3%, and the probability that the relative fishing intensity exceeded 1 in 2023 is 0.4%. The joint probability of both these occurring is 0.2%.&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="bayes-card"&gt;
+    &lt;div class="bayes-title"&gt;Designed with MCMC in mind from the onset&lt;/div&gt;
+    &lt;div class="bayes-detail"&gt;MCMC sampling is a great diagnostic for models estimated using maximum likelihood and its capability has been included in FIMS since the beginning rather than starting the process after it is too late.&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="bayes-card"&gt;
+    &lt;div class="bayes-title"&gt;Bayesian sampling is now incredibly fast&lt;/div&gt;
+    &lt;div class="bayes-detail"&gt;{SparseNUTS} and other algorithms that can account for correlation and sparsity while sampling have made Bayesian estimation on non-linear models feasible on standard computers.&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="bayes-card"&gt;
+    &lt;div class="bayes-title"&gt;Same model, deeper inference&lt;/div&gt;
+    &lt;div class="bayes-detail"&gt;In FIMS, we do not rewrite the model; we sample the same TMB objective that powers frequentist estimation.&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+---
+# FIMS can be a TMB Model
+
+&lt;div class="accent-box"&gt;
+FIMS produces a TMB objective function under the hood. Once we have that objective, Bayesian sampling with {SparseNUTS} follows the same path used for any other TMB model.
+&lt;/div&gt;
+
+&lt;div class="bayes-grid"&gt;
+  &lt;div class="bayes-card"&gt;
+    &lt;div class="bayes-title"&gt;Model definition&lt;/div&gt;
+    &lt;div class="bayes-detail"&gt;FIMS C++ classes build likelihood components and priors into one joint negative log posterior.&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="bayes-card"&gt;
+    &lt;div class="bayes-title"&gt;TMB interface&lt;/div&gt;
+    &lt;div class="bayes-detail"&gt;The model is exposed as an objective with gradients from automatic differentiation.&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="bayes-card"&gt;
+    &lt;div class="bayes-title"&gt;Optimizer path&lt;/div&gt;
+    &lt;div class="bayes-detail"&gt;Use nlminb for MLE and Hessian-based summaries.&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="bayes-card"&gt;
+    &lt;div class="bayes-title"&gt;Sampler path&lt;/div&gt;
+    &lt;div class="bayes-detail"&gt;Use SparseNUTS::sample_snuts() on that same objective for posterior draws.&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+---
+# One Objective, Two Estimation Modes
+
+
+``` r
+# Build objective from FIMS/TMB ingredients
+success &lt;- FIMS::CreateTMBModel()
+parameters &lt;- list(p = get_fixed(), re = get_random())
+obj &lt;- TMB::MakeADFun(
+  data = list(),
+  parameters,
+  random = "re",
+  DLL = "FIMS",
+  silent = TRUE
+)
+
+# Frequentist path
+fit &lt;- stats::nlminb(start = obj$par, objective = obj$fn, gradient = obj$gr)
+
+# Bayesian path (same objective)
+posterior &lt;- SparseNUTS::sample_snuts(
+  obj = obj,
+  iter_warmup = 1000,
+  iter_sampling = 1000,
+  chains = 4
+)
+```
+
+&lt;div class="accent-box"&gt;
+{SparseNUTS} samples the same AD-enabled target function. FIMS users get Bayesian inference without reimplementing the model in another framework.
+&lt;/div&gt;
+
+---
+# SparseNUTS Workflow in Practice
+
+&lt;div class="workflow-step"&gt;&lt;b&gt;Step 1:&lt;/b&gt; Configure the model in FIMS and confirm optimization converges.&lt;/div&gt;
+&lt;div class="workflow-step"&gt;&lt;b&gt;Step 2:&lt;/b&gt; Pass the TMB objective to SparseNUTS with an informed warmup and chain count.&lt;/div&gt;
+&lt;div class="workflow-step"&gt;&lt;b&gt;Step 3:&lt;/b&gt; Check diagnostics: R-hat, effective sample size, divergences, and trace plots.&lt;/div&gt;
+&lt;div class="workflow-step"&gt;&lt;b&gt;Step 4:&lt;/b&gt; Summarize posterior distributions for management quantities and derived measures.&lt;/div&gt;
+
+&lt;div class="accent-box"&gt;
+SparseNUTS is especially attractive for TMB models with sparse random-effects structure, where efficient gradient-based MCMC is critical.
+&lt;/div&gt;
+
+---
+# Pacific hake case study
+
+
+``` r
+SparseNUTS:::pairs.tmbfit(fit, pars = 1:6, order = "slow")
+```
+
+&lt;img src="https://noaa-fims.github.io/case-studies/content/pacific-hake_files/figure-html/plot-diagnostic-slow-1.png" style="height: 70%; max-width: 600px;" /&gt;
+
+---
+# Priors Anywhere: Why FIMS C++ Design Helps
+
+&lt;div class="bayes-grid"&gt;
+  &lt;div class="bayes-card"&gt;
+    &lt;div class="bayes-title"&gt;Class-based parameter objects&lt;/div&gt;
+    &lt;div class="bayes-detail"&gt;Parameters are represented as structured C++ objects with names, transforms, and links to model components.&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="bayes-card"&gt;
+    &lt;div class="bayes-title"&gt;Consistent objective assembly&lt;/div&gt;
+    &lt;div class="bayes-detail"&gt;Priors enter the same joint objective as likelihood terms, minimizing bookkeeping and duplication.&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="bayes-card"&gt;
+    &lt;div class="bayes-title"&gt;Extensibility&lt;/div&gt;
+    &lt;div class="bayes-detail"&gt;Adding a new parameter or model component naturally allows for allowing priors because all parameters use the same class.&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="bayes-card"&gt;
+    &lt;div class="bayes-title"&gt;If a distribution exists you can use it&lt;/div&gt;
+    &lt;div class="bayes-detail"&gt;Once a distribution is coded in FIMS it can be used to fit data or place a prior on a parameter. Other frameworks often restrict what types of priors are allowed on certain parameters. Multiple distributions can be used across time for a single parameter if desired and priors can be shared across parameters.&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+---
+# 🚧 Transformations: Flexibility vs. Safety
+
+Decision Points:
+
+&lt;div class ="bayes-column"&gt;
+  &lt;div class="bayes-card"&gt;
+    &lt;div class="bayes-title"&gt;Safety First: Constrained Priors&lt;/div&gt;
+    &lt;div class="bayes-detail"&gt;Users can only define Normal priors for parameters in log-space. This does not require a Jacobian. Models can easily transition from MLE output to MCMC input. This puts a hard limit on prior flexibility. &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="bayes-card"&gt;
+    &lt;div class="bayes-title"&gt;Middle Ground: Natural Parameter Priors&lt;/div&gt;
+    &lt;div class="bayes-detail"&gt;Allow users to put priors on natural parameters and pass min/max parameter constraints into {StanNUTS}, this will trigger Stan's automatic Jacobian detection. MLE models optimize better when parameters are in log-space, so moving between the two would be more challenging.&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="bayes-card"&gt;
+    &lt;div class="bayes-title"&gt;Maximum Flexibility: Automatic Jacobian Adjustments&lt;/div&gt;
+    &lt;div class="bayes-detail"&gt;This would keep input parameters in log or logit-space but users could place priors on any transformation. An automatic Jacobian transformation would determine any adjustment needed given the input and prior transformations. Models could swicth between MLE and MCMC, although there would be a flag needed to determine whether or not the Jacobian adjustment was turned on.&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+
+---
+# Flexible Parameter Priors
+&lt;br&gt;
+&lt;div class="bayes-grid"&gt;
+  &lt;div class="bayes-card"&gt;
+    &lt;div class="bayes-title"&gt;Parameter class field&lt;/div&gt;
+    &lt;div class="bayes-detail"&gt;The transformation field takes the the name of the transformation applied to the parameter.&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="bayes-card"&gt;
+    &lt;div class="bayes-title"&gt;Internal ApplyBackTransformation function&lt;/div&gt;
+    &lt;div class="bayes-detail"&gt;Applies the appropriate back transformation given the transformation field.&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="bayes-card"&gt;
+    &lt;div class="bayes-title"&gt;Flexible prior specification&lt;/div&gt;
+    &lt;div class="bayes-detail"&gt;Priors can be placed on the natural parameter or any transformation of it, such as the log or logit.&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="bayes-card"&gt;
+    &lt;div class="bayes-title"&gt;Challenges&lt;/div&gt;
+    &lt;div class="bayes-detail"&gt;Given this flexibility, how do we make sure uses do not use the wrong transformation for MLE models.&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;br&gt;&lt;br&gt;
+🚧 Currently implemented in the surplus production development branch
+
+
+
+---
+# Automatic Jacobian Transformation
+&lt;br&gt;
+&lt;div class="bayes-column"&gt;
+  &lt;div class="bayes-card"&gt;
+    &lt;div class="bayes-title"&gt;Tracking input parameter and prior transformations&lt;/div&gt;
+    &lt;div class="bayes-detail"&gt;A systems needs to be developed to distinguish between the input parameter's tranformation (what the MCMC sampler sees) and the transformation of the prior.&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="bayes-card"&gt;
+    &lt;div class="bayes-title"&gt;Internal AddLogJacobian function&lt;/div&gt;
+    &lt;div class="bayes-detail"&gt;Given the transformations of the input and the prior from the transformation field, this internal function determines the log Jacobian adjustment using TMB's Jacobian() and log_determinant() functions.&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="bayes-card"&gt;
+    &lt;div class="bayes-title"&gt;Challenge&lt;/div&gt;
+    &lt;div class="bayes-detail"&gt;How to differentiate between MCMC and MLE estimation runs?&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;br&gt;
+🚧 Currently being developed in the surplus production development branch
+
+
+---
+# Future for Multivariate priors
+&lt;br&gt;
+**Existing Infrastructure**
+&lt;div class="bayes-column"&gt;
+  &lt;div class="bayes-card"&gt;
+    &lt;div class="bayes-title"&gt;Shared Parameter Architecture&lt;/div&gt;
+    &lt;div class="bayes-detail"&gt;Our C++ class structure allows us to easily extend simple distributions into complex, multivariate ones.&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="bayes-card"&gt;
+    &lt;div class="bayes-title"&gt;Cross-Module Linking&lt;/div&gt;
+    &lt;div class="bayes-detail"&gt;Using a global pointer system, we can "bridge" parameters from different parts of the model to create a single, multivariate prior.&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="bayes-card"&gt;
+    &lt;div class="bayes-title"&gt;Location Independence&lt;/div&gt;
+    &lt;div class="bayes-detail"&gt;Parameters can be linked and estimated together regardless of which module they originally belong to.&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+---
+# Future for Multivariate priors
+&lt;br&gt;
+**Next Steps for Development**
+&lt;div class="bayes-column"&gt;
+  &lt;div class="bayes-card"&gt;
+    &lt;div class="bayes-title"&gt;Advanced Distributions&lt;/div&gt;
+    &lt;div class="bayes-detail"&gt;Implement multivariate distributions like GMRF (Gaussian Markov Random Fields) and 2D-AR1 models.&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="bayes-card"&gt;
+    &lt;div class="bayes-title"&gt;Covariance Automation&lt;/div&gt;
+    &lt;div class="bayes-detail"&gt;Develop functions to automatically assemble the covariance matrices required for these distributions.&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="bayes-card"&gt;
+    &lt;div class="bayes-title"&gt;Component Building&lt;/div&gt;
+    &lt;div class="bayes-detail"&gt;Enhance the pointer system to allow users to build multivariate priors piece-by-piece from individual model components.&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+---
+# Summary 
+
+- One TMB object for both MLE optimization and Bayesian MCMC 
+
+- {SparseNUTS} package for fast, gradient-based MCMC in high-dimensional models
+
+- Modular and flexible prior specification across all parameters
+
+- Plan for flexible priors via automatic Jacobian transformations
+
+- Future development on multivariate priors
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+  "ratio": "7:5",
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "countIncrementalSlides": false,
+  "slideNumberFormat": "Page %current%"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

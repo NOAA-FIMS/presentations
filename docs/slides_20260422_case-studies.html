@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>FIMS Case Studies</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Ian Taylor NOAA Fisheries Northwest Fisheries Science Center ian.taylor@noaa.gov " />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/htmltools-fill/fill.css" rel="stylesheet" />
+    <script src="libs/htmlwidgets/htmlwidgets.js"></script>
+    <script src="libs/d3/d3.min.js"></script>
+    <script src="libs/dagre/dagre-d3.min.js"></script>
+    <link href="libs/mermaid/dist/mermaid.css" rel="stylesheet" />
+    <script src="libs/mermaid/dist/mermaid.slim.min.js"></script>
+    <link href="libs/DiagrammeR-styles/styles.css" rel="stylesheet" />
+    <script src="libs/chromatography/chromatography.js"></script>
+    <script src="libs/DiagrammeR-binding/DiagrammeR.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# FIMS Case Studies
+]
+.subtitle[
+## Review of<br>Fisheries Integrated<br>Modeling System
+]
+.author[
+### Ian Taylor<br>NOAA Fisheries<br>Northwest Fisheries Science Center<br><a href="mailto:ian.taylor@noaa.gov" class="email">ian.taylor@noaa.gov</a><br>
+]
+.date[
+### 2026/04/22
+]
+
+---
+
+
+layout: true
+  
+
+
+.footnote[U.S. Department of Commerce | National Oceanic and Atmospheric Administration | National Marine Fisheries Service]
+
+
+
+&lt;!-- Start of slides --&gt;
+
+---
+# Outline
+
+- Background on case studies
+
+- Results of three case studies (switch to the case studies [website](https://noaa-fims.github.io/case-studies))
+
+  - [Southern New England-Mid Atlantic Yellowtail Flounder](https://noaa-fims.github.io/case-studies/content/NEFSC-yellowtail.html) original model in ASAP, converted to FIMS by Chris Legault
+
+  - [Gulf of Alaska Walleye Pollock](https://noaa-fims.github.io/case-studies/content/AFSC-GOA-pollock.html) original model is a bespoke TMB model, converted to FIMS by Cole Monnahan
+  
+  - [Pacific Hake](https://noaa-fims.github.io/case-studies/content/pacific-hake.html) original model in SS3, converted to FIMS by Kelli Johnson
+ 
+- Lessons learned (back to this presentation)
+
+- Next steps
+
+---
+
+# Background on case studies
+
+.left-68[
+- Initial goal developed in 2022 was to have at least one case study for each NOAA Fisheries Science Center
+- Case studies repository created in December 2023, initially with Southern New England-Mid Atlantic Yellowtail Flounder thanks to Chris Legault
+- Multiple goals for the case studies, including:
+  - testing FIMS features and identifying bugs
+  - providing example models for users to learn from and build upon
+  - comparing results between FIMS and existing models to build confidence in FIMS results
+  - prioritizing features to add to FIMS based on differences between FIMS and existing models
+]
+
+.right-32[
+<div class="DiagrammeR html-widget html-fill-item" id="htmlwidget-aeb24b841299a8c9e602" style="width:504px;height:504px;"></div>
+<script type="application/json" data-for="htmlwidget-aeb24b841299a8c9e602">{"x":{"diagram":"\ngraph TD\n  A[original<br>assessment] -- remove<br>features --> B[simplified<br>model]\n  B -- compare --> C[FIMS<br>model]\n"},"evals":[],"jsHooks":[]}</script>
+]
+---
+
+# A success story: finding bugs / undocumented features in FIMS
+The first case study (Yellowtail Flounder in ASAP &amp;#x2192; FIMS) revealed several issues (all quickly resolved):
+- additional recruitment parameter was being estimated
+- had to fill missing survey data because NA was not allowed
+- sex ratio was not included in spawning biomass calculations
+  - fixed sex ratio = 0.5 now correctly applied, and flexibility to include sex structure is a priority for 2026 (see https://github.com/ioos/gsoc/issues/114)
+
+Real world applications are messier than simulated data in terms of data availability and complexity and thus provide a valuable testing ground for FIMS development and debugging.
+
+---
+
+# Results of three case studies
+
+switch to case studies website: https://noaa-fims.github.io/case-studies/
+
+---
+
+# Lessons learned
+
+- When comparing models with features not yet available in FIMS, it can be helpful to revise the original model to be closer to the available options within FIMS 
+  - isolates unknown differences in implementation from known differences in model structure
+  - helps identify which features are most important to add to FIMS in the future to bring the FIMS case study closer to the original model
+
+- Keeping the case studies up to date with the changes in FIMS is challenging but valuable
+  - provides a reminder for developers of needed changes to the user interface
+  - provides example models for users to learn from and build upon
+  - helps identify and fix bugs in FIMS
+
+---
+
+# Next steps
+
+- More case studies are currently in development:
+
+  - Pacific Sardine (SWFSC, SS3, Alex Jensen and Peter Kuriyama)
+
+  - Opakapaka (PIFSC, SS3, Meg Oshima)
+
+  - Petrale Sole (NWFSC, SS3, Ian Taylor)
+
+  - South Atlantic Scamp (SEFSC, BAM, formerly led by Kyle Shertzer)
+
+- Add additional case studies
+
+  - a WHAM model (thanks to Emily Liljestrand)
+
+  - an AMAK model (thanks to Jim Ianelli)
+
+---
+
+# Next steps (continued)
+
+.left-68[
+
+- Generalize code used to convert data for case studies into conversion functions that can be used by others
+
+  - e.g., `ss3_data_to_fims()` converter now available in the {r4ss} package
+
+  - standardize language across models (e.g., more alignment between column names between FIMS and RCEATTLE to ease the conversion process)
+
+- Continue to use case studies as a testing ground for new features in FIMS, including growth estimation and time-varying selectivity
+
+- As FIMS feature set expands, move away from simplifying the original models
+]
+.right-32[
+<div class="DiagrammeR html-widget html-fill-item" id="htmlwidget-58ba67489eddcc08c37f" style="width:504px;height:504px;"></div>
+<script type="application/json" data-for="htmlwidget-58ba67489eddcc08c37f">{"x":{"diagram":"\ngraph TD\n  A[original<br>assessment] -- compare --> C[FIMS<br>model]\n"},"evals":[],"jsHooks":[]}</script>
+]
+
+---
+
+# Next steps (continued)
+
+
+- Standardize plots of model output, diagnostics, and comparisons for the case studies by moving to the {[stockplotr](https://nmfs-ost.github.io/stockplotr/)} package
+
+- Refine the selection of case studies once FIMS starts being applied in production assessments (while also maintaining a list of those applications)
+
+---
+
+&lt;div style="text-align: center;"&gt;
+  &lt;img src="static/FIMS_hexlogo.png" style="width: 100%; max-width: 300px;" /&gt;
+&lt;/div&gt;
+
+&amp;#x1F310; https://noaa-fims.github.io/case-studies/
+
+&amp;#x1F4E9; ian.taylor@noaa.gov
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+  "ratio": "4:3",
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "countIncrementalSlides": false,
+  "slideNumberFormat": "Page %current%"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

@@ -1,7 +1,7 @@
 ---
 title: "Bayesian estimation in the<br>Fisheries Integrated Modeling<br>System (FIMS)"
 subtitle: FIMS CIE Review
-author: "Kelli Johnson, NOAA Fisheries OST<br>kelli.johnson@noaa.gov<br>"
+author: "Andrea Havron, NOAA Fisheries OST<br>andrea.havron@noaa.gov<br>"
 date: 2026/04/21
 output:
   xaringan::moon_reader:
@@ -72,6 +72,7 @@ style_xaringan(
       "font-size" = "0.4em",
       "font-weight" = "bold",
       "margin" = "0px 840px -2px 0px"),
+
 
     ".title-slide h1, h2, h3" = list(
       "text-align" = "right"), 
@@ -244,7 +245,7 @@ style_xaringan(
     ),
 
     ".bayes-detail" = list(
-      "font-size" = "0.88rem",
+      "font-size" = "1.1rem",
       "line-height" = "1.25",
       "color" = "#0b3a5b"
     ),
@@ -447,9 +448,122 @@ SparseNUTS:::pairs.tmbfit(fit, pars = 1:6, order = "slow")
 </div>
 
 ---
-# Jacobian Transformation
+# 🚧 Transformations: Flexibility vs. Safety
+
+Decision Points:
+
+<div class ="bayes-column">
+  <div class="bayes-card">
+    <div class="bayes-title">Safety First: Constrained Priors</div>
+    <div class="bayes-detail">Users can only define Normal priors for parameters in log-space. This does not require a Jacobian. Models can easily transition from MLE output to MCMC input. This puts a hard limit on prior flexibility. </div>
+  </div>
+  <div class="bayes-card">
+    <div class="bayes-title">Middle Ground: Natural Parameter Priors</div>
+    <div class="bayes-detail">Allow users to put priors on natural parameters and pass min/max parameter constraints into {StanNUTS}, this will trigger Stan's automatic Jacobian detection. MLE models optimize better when parameters are in log-space, so moving between the two would be more challenging.</div>
+  </div>
+  <div class="bayes-card">
+    <div class="bayes-title">Maximum Flexibility: Automatic Jacobian Adjustments</div>
+    <div class="bayes-detail">This would keep input parameters in log or logit-space but users could place priors on any transformation. An automatic Jacobian transformation would determine any adjustment needed given the input and prior transformations. Models could swicth between MLE and MCMC, although there would be a flag needed to determine whether or not the Jacobian adjustment was turned on.</div>
+  </div>
+</div>
+
+
+---
+# Flexible Parameter Priors
+<br>
+<div class="bayes-grid">
+  <div class="bayes-card">
+    <div class="bayes-title">Parameter class field</div>
+    <div class="bayes-detail">The transformation field takes the the name of the transformation applied to the parameter.</div>
+  </div>
+  <div class="bayes-card">
+    <div class="bayes-title">Internal ApplyBackTransformation function</div>
+    <div class="bayes-detail">Applies the appropriate back transformation given the transformation field.</div>
+  </div>
+  <div class="bayes-card">
+    <div class="bayes-title">Flexible prior specification</div>
+    <div class="bayes-detail">Priors can be placed on the natural parameter or any transformation of it, such as the log or logit.</div>
+  </div>
+  <div class="bayes-card">
+    <div class="bayes-title">Challenges</div>
+    <div class="bayes-detail">Given this flexibility, how do we make sure uses do not use the wrong transformation for MLE models.</div>
+  </div>
+</div>
+
+<br><br>
+🚧 Currently implemented in the surplus production development branch
+
+
+
+---
+# Automatic Jacobian Transformation
+<br>
+<div class="bayes-column">
+  <div class="bayes-card">
+    <div class="bayes-title">Tracking input parameter and prior transformations</div>
+    <div class="bayes-detail">A systems needs to be developed to distinguish between the input parameter's tranformation (what the MCMC sampler sees) and the transformation of the prior.</div>
+  </div>
+  <div class="bayes-card">
+    <div class="bayes-title">Internal AddLogJacobian function</div>
+    <div class="bayes-detail">Given the transformations of the input and the prior from the transformation field, this internal function determines the log Jacobian adjustment using TMB's Jacobian() and log_determinant() functions.</div>
+  </div>
+  <div class="bayes-card">
+    <div class="bayes-title">Challenge</div>
+    <div class="bayes-detail">How to differentiate between MCMC and MLE estimation runs?</div>
+  </div>
+</div>
+
+<br>
+🚧 Currently being developed in the surplus production development branch
 
 
 ---
 # Future for Multivariate priors
+<br>
+**Existing Infrastructure**
+<div class="bayes-column">
+  <div class="bayes-card">
+    <div class="bayes-title">Shared Parameter Architecture</div>
+    <div class="bayes-detail">Our C++ class structure allows us to easily extend simple distributions into complex, multivariate ones.</div>
+  </div>
+  <div class="bayes-card">
+    <div class="bayes-title">Cross-Module Linking</div>
+    <div class="bayes-detail">Using a global pointer system, we can "bridge" parameters from different parts of the model to create a single, multivariate prior.</div>
+  </div>
+  <div class="bayes-card">
+    <div class="bayes-title">Location Independence</div>
+    <div class="bayes-detail">Parameters can be linked and estimated together regardless of which module they originally belong to.</div>
+  </div>
+</div>
 
+---
+# Future for Multivariate priors
+<br>
+**Next Steps for Development**
+<div class="bayes-column">
+  <div class="bayes-card">
+    <div class="bayes-title">Advanced Distributions</div>
+    <div class="bayes-detail">Implement multivariate distributions like GMRF (Gaussian Markov Random Fields) and 2D-AR1 models.</div>
+  </div>
+  <div class="bayes-card">
+    <div class="bayes-title">Covariance Automation</div>
+    <div class="bayes-detail">Develop functions to automatically assemble the covariance matrices required for these distributions.</div>
+  </div>
+  <div class="bayes-card">
+    <div class="bayes-title">Component Building</div>
+    <div class="bayes-detail">Enhance the pointer system to allow users to build multivariate priors piece-by-piece from individual model components.</div>
+  </div>
+</div>
+
+---
+# Summary 
+
+- One TMB object for both MLE optimization and Bayesian MCMC 
+
+- {SparseNUTS} package for fast, gradient-based MCMC in high-dimensional models
+
+- Modular and flexible prior specification across all parameters
+
+- Plan for flexible priors via automatic Jacobian transformations
+
+- Future development on multivariate priors
