@@ -73,11 +73,11 @@ style_xaringan(
     ".title-slide h1, h2, h3" = list(
       "text-align" = "right"), 
     
-    ".remark-slide-content a, .remark-slide-content a:visited, .hyperlink-style a, .hyperlink-style a:visited" = list(
+    ".hyperlink-style" = list(
       "color" = "blue",
       "text-decoration" = "underline"
     ),
-
+    
     ".remark-slide-content ul ul, .remark-slide-content ul ol, .remark-slide-content ol ul, .remark-slide-content ol ol" = list(
       "font-size" = "0.85em"
     ),
@@ -233,13 +233,13 @@ options(htmltools.dir.version = FALSE)
 
 - Background on case studies
 
-- Results of three case studies (switch to the case studies [website](https://noaa-fims.github.io/case-studies))
+- Results of three case studies (switch to the case studies .hyperlink-style[[website](https://noaa-fims.github.io/case-studies)])
 
-  - [Southern New England-Mid Atlantic Yellowtail Flounder](https://noaa-fims.github.io/case-studies/content/NEFSC-yellowtail.html) original model in ASAP, converted to FIMS by Chris Legault
+  - .hyperlink-style[[Southern New England-Mid Atlantic Yellowtail Flounder](https://noaa-fims.github.io/case-studies/content/NEFSC-yellowtail.html)] original model in ASAP, converted to FIMS by Chris Legault
 
-  - [Gulf of Alaska Walleye Pollock](https://noaa-fims.github.io/case-studies/content/AFSC-GOA-pollock.html) original model is a bespoke TMB model, converted to FIMS by Cole Monnahan
+  - .hyperlink-style[[Gulf of Alaska Walleye Pollock](https://noaa-fims.github.io/case-studies/content/AFSC-GOA-pollock.html)] original model is a bespoke TMB model, converted to FIMS by Cole Monnahan
   
-  - [Pacific Hake](https://noaa-fims.github.io/case-studies/content/pacific-hake.html) original model in SS3, converted to FIMS by Kelli Johnson
+  - .hyperlink-style[[Pacific Hake](https://noaa-fims.github.io/case-studies/content/pacific-hake.html)] original model in SS3, converted to FIMS by Kelli Johnson
  
 - Lessons learned (back to this presentation)
 
@@ -275,7 +275,7 @@ The first case study (Yellowtail Flounder in ASAP &#x2192; FIMS) revealed severa
 - additional recruitment parameter was being estimated
 - had to fill missing survey data because NA was not allowed
 - sex ratio was not included in spawning biomass calculations
-  - fixed sex ratio = 0.5 now correctly applied, and flexibility to include sex structure is a priority for 2026 (see https://github.com/ioos/gsoc/issues/114)
+  - fixed sex ratio = 0.5 now correctly applied, and flexibility to include sex structure is a priority for 2026 (see .hyperlink-style[[https://github.com/ioos/gsoc/issues/114](https://github.com/ioos/gsoc/issues/114)])
 
 Real world applications are messier than simulated data in terms of data availability and complexity and thus provide a valuable testing ground for FIMS development and debugging.
 
@@ -283,7 +283,7 @@ Real world applications are messier than simulated data in terms of data availab
 
 # Results of three case studies
 
-switch to case studies website: https://noaa-fims.github.io/case-studies/
+switch to case studies website: .hyperlink-style[[https://noaa-fims.github.io/case-studies/](https://noaa-fims.github.io/case-studies/)]
 
 ---
 
@@ -348,9 +348,15 @@ graph TD
 # Next steps (continued)
 
 
-- Standardize plots of model output, diagnostics, and comparisons for the case studies by moving to the {[stockplotr](https://nmfs-ost.github.io/stockplotr/)} package
+- Standardize plots of model output, diagnostics, and comparisons for the case studies by moving to the {.hyperlink-style[[stockplotr](https://nmfs-ost.github.io/stockplotr/)]} package
 
 - Refine the selection of case studies once FIMS starts being applied in production assessments (while also maintaining a list of those applications)
+
+- Point for discussion: what would be the best collection(s) of case studies to maintain for the long term? 
+  - curated examples spanning range of features and complexity? 
+  - comprehensive U.S. repository of production stock assessments (easier)?
+  - global repository (how to get folks to contribute)?
+  - models used in research projects?
 
 ---
 
@@ -358,6 +364,6 @@ graph TD
   <img src="static/FIMS_hexlogo.png" style="width: 100%; max-width: 300px;" />
 </div>
 
-&#x1F310; https://noaa-fims.github.io/case-studies/
+&#x1F310; .hyperlink-style[[https://noaa-fims.github.io/case-studies/](https://noaa-fims.github.io/case-studies/)]
 
-&#x1F4E9; ian.taylor@noaa.gov
+&#x1F4E9; .hyperlink-style[[ian.taylor@noaa.gov](mailto:ian.taylor@noaa.gov)]
