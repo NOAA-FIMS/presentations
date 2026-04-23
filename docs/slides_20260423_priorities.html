@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Priorities of the Fisheries Integrated Modeling System</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Kelli Johnson, NOAA Fisheries OST kelli.johnson@noaa.gov " />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Priorities of the Fisheries<br>Integrated Modeling System
+]
+.subtitle[
+## NOAA Library<br>Stock Assessment Seminar Series
+]
+.author[
+### Kelli Johnson, NOAA Fisheries OST<br><a href="mailto:kelli.johnson@noaa.gov" class="email">kelli.johnson@noaa.gov</a><br>
+]
+.date[
+### 2026/04/23
+]
+
+---
+
+
+layout: true
+  
+
+
+.footnote[U.S. Department of Commerce | National Oceanic and Atmospheric Administration | National Marine Fisheries Service]
+
+
+
+&lt;!-- Start of slides --&gt;
+
+---
+# Priorities
+
+## How do we decide priorities?
+
+## What are our priorities?
+
+## How will we meet our priorities?
+
+---
+# How do we decide priorities
+
+&lt;div class="priority-grid"&gt;
+  &lt;div class="priority-card"&gt;
+    &lt;div class="priority-icon"&gt;&amp;#x1F4CB;&lt;/div&gt;
+    &lt;div&gt;
+      &lt;div class="priority-title"&gt;Requirements&lt;/div&gt;
+      &lt;div class="priority-detail"&gt;Maintain alignment with core project requirements.&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div class="priority-card priority-card"&gt;
+    &lt;div class="priority-icon"&gt;&amp;#x1F3A3;&lt;/div&gt;
+    &lt;div&gt;
+      &lt;div class="priority-title"&gt;Management Needs&lt;/div&gt;
+      &lt;div class="priority-detail"&gt;FIMS is meant to produce results for managers.&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div class="priority-card"&gt;
+    &lt;div class="priority-icon"&gt;&amp;#x1F9EA;&lt;/div&gt;
+    &lt;div&gt;
+      &lt;div class="priority-title"&gt;New Statistical Methods&lt;/div&gt;
+      &lt;div class="priority-detail"&gt;Support adoption of new modeling and statistical approaches.&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div class="priority-card"&gt;
+    &lt;div class="priority-icon"&gt;&amp;#x1F3AF;&lt;/div&gt;
+    &lt;div&gt;
+      &lt;div class="priority-title"&gt;Case-Study Compatibility&lt;/div&gt;
+      &lt;div class="priority-detail"&gt;Match features needed for ASAP, BAM, SS3, and WHAM case studies.&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div class="priority-card"&gt;
+    &lt;div class="priority-icon"&gt;&amp;#x1F44D;&lt;/div&gt;
+    &lt;div&gt;
+      &lt;div class="priority-title"&gt;Ease of Use&lt;/div&gt;
+      &lt;div class="priority-detail"&gt;Improve user experience for model developers and analysts.&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div class="priority-card priority-card"&gt;
+    &lt;div class="priority-icon"&gt;&amp;#x1F451;&lt;/div&gt;
+    &lt;div&gt;
+      &lt;div class="priority-title"&gt;Benevolent Dictator&lt;/div&gt;
+      &lt;div class="priority-detail"&gt;Final prioritization is guided by project leadership.&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+---
+# Requirements
+
+* 287 defined requirements tracked in a Google Sheet
+* Each requirement is scored for three metrics
+  * Impact: The importance of this requirement to accuracy, desired features, or documented best practice in an ideal world. High impact/importance gets a value of 1.
+  * Effort: The difficulty in implementing this requirement in any phase of the process, from initial software implementation, to data collection, to testing of this requirement, to interpretation of results. High effort gets a value of 2.
+  * Compatibility: The importance of this requirement to backwards compatibility and comparability to existing tactical stock assessment management approaches. This should be measured as how necessary this feature is to accurately compare to a previous model. Importance for compatibility gets a value of 1.
+* Requirements with smallest scores are worked on first
+* Grouped into six topics
+
+---
+# Requirements
+
+&lt;table class="table table-condensed"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Topic &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; Complete &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; In Progress &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; Planning Stage &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; Distant Future &lt;/th&gt;
+   &lt;th style="text-align:center;"&gt; Not Planned &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Fitting, estimation, simulation &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 12 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 3 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 14 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Forecasting &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 3 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 24 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Model structure &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 3 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 3 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 5 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 13 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Outputs &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 5 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 6 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 21 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Parameterization &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 16 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 5 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 15 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 100 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 1 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; User/dev experience &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 6 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 6 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 7 &lt;/td&gt;
+   &lt;td style="text-align:center;"&gt; 0 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+---
+# Management Needs
+
+* &amp;#x2705; Forecasts
+* &amp;#x2705; SPR Reference Points
+
+
+* Additional Reference Points
+* Longer-term forecasting
+* Simulation capabilities for Management Strategy Evaluation
+
+---
+# New Statistical Methods
+
+* Random effects for recruitment deviations
+  * Results from the model-comparison project
+  * Default behavior is now random recruitment deviations
+* Dynamic Structural Equation Modeling (DSEM)
+* Empirical Dynamic Modeling (e.g., brown shrimp, sardine)
+* Multivariate priors
+
+---
+# Case-Study Compatibility
+## Age Structured Assessment Program
+
+.left-68[
+  &lt;img src="https://noaa-fims.github.io/case-studies/content/NEFSC-yellowtail_files/figure-html/comparison-plots-6.png" style="width: 100%; border-radius: 10px;" /&gt;
+]
+.right-32[
+* Time-varying weight-at-age data (Implemented in FIMS)
+* Annual timing of calculations
+* Sex-at-age ratio other than 0.5
+* Other selectivity forms
+* One-step-ahead residuals
+]
+
+---
+# Case-Study Compatibility
+## Stock Synthesis 3
+
+.left-68[
+  &lt;img src="https://noaa-fims.github.io/case-studies/content/pacific-hake_files/figure-html/plot-compare-spawning-biomass-1.png" style="width: 100%; border-radius: 10px;" /&gt;
+]
+.right-32[
+* Other selectivity forms
+* Number of age groups?
+* Ageing error?
+* Plotting capabilities for MCMC
+]
+
+---
+# Benevolent Dictator
+## .hyperlink-style[[Listen to us does NOT mean do what we say](https://dev.to/jon_at_backboardio/stop-building-what-your-customers-ask-for-3d16?context=digest)] by Jonathan Murray
+
+* Stakeholders see their slice. Not the whole system. Their fix is local.
+* They imagine solutions inside the workflow they already have. Which is often the exact workflow you're trying to change.
+* The thing that would actually solve the problem doesn't exist in their vocabulary yet. That's kind of your job.
+
+&lt;div style="text-align: center;"&gt;
+  &lt;img src="https://media2.dev.to/dynamic/image/width=1000,height=420,fit=cover,gravity=auto,format=auto/https%3A%2F%2Fdev-to-uploads.s3.amazonaws.com%2Fuploads%2Farticles%2F2fytab0wih4bn8ib230a.png" style="width: 60%;" /&gt;
+&lt;/div&gt;
+
+---
+# Ease of Use
+
+&lt;div class="ease-hero"&gt;
+  &lt;div class="ease-chip"&gt;Don't build in a vacuum&lt;/div&gt;
+  &lt;div class="ease-overlay"&gt;
+    &lt;div class="ease-kicker"&gt;Exposure&lt;/div&gt;
+    &lt;div class="ease-headline"&gt;Ease of use only improves when new users are exposed to the software.&lt;/div&gt;
+    &lt;div class="ease-detail"&gt;Fresh eyes reveal rough edges, confusing defaults, and hidden assumptions that experienced developers stop noticing. Feedback from first-time users is how we make FIMS easier to learn, easier to trust, and easier to adopt.&lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+---
+# What are our priorities
+
+&lt;div class="priority-grid"&gt;
+
+  &lt;div class="priority-card priority-card--accent"&gt;
+    &lt;div class="priority-icon"&gt;&amp;#x1F4C8;&lt;/div&gt;
+    &lt;div&gt;
+      &lt;div class="priority-title"&gt;Growth Estimation&lt;/div&gt;
+      &lt;div class="priority-detail"&gt;Support estimation of growth dynamics within the model framework by November 2026.&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div class="priority-card priority-card--accent"&gt;
+    &lt;div class="priority-icon"&gt;&amp;#x1F300;&lt;/div&gt;
+    &lt;div&gt;
+      &lt;div class="priority-title"&gt;Additional Model Families&lt;/div&gt;
+      &lt;div class="priority-detail"&gt;Add families such as surplus production (June 2026) and empirical dynamic models.&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div class="priority-card priority-card--accent"&gt;
+    &lt;div class="priority-icon"&gt;&amp;#x1F4AB;&lt;/div&gt;
+    &lt;div&gt;
+      &lt;div class="priority-title"&gt;Random effects&lt;/div&gt;
+      &lt;div class="priority-detail"&gt;Add auto-regressive structure and friendly user interface by August 2026.&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div class="priority-card priority-card--accent"&gt;
+    &lt;div class="priority-icon"&gt;&amp;#x1FA93;&lt;/div&gt;
+    &lt;div&gt;
+      &lt;div class="priority-title"&gt;Selectivity&lt;/div&gt;
+      &lt;div class="priority-detail"&gt;Random walk at age and length-based selectivity.&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div class="priority-card priority-card--accent"&gt;
+    &lt;div class="priority-icon"&gt;&amp;#x1F328;&amp;#xFE0F;&lt;/div&gt;
+    &lt;div&gt;
+      &lt;div class="priority-title"&gt;Cloud ready&lt;/div&gt;
+      &lt;div class="priority-detail"&gt;Cloud environments with FIMS installed.&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div class="priority-card priority-card--accent"&gt;
+    &lt;div class="priority-icon"&gt;&amp;#x2640;&amp;#xFE0F;&amp;#x2642;&amp;#xFE0F;&lt;/div&gt;
+    &lt;div&gt;
+      &lt;div class="priority-title"&gt;Sex&lt;/div&gt;
+      &lt;div class="priority-detail"&gt;Modeling support for sex-specific processes and data inputs (October 2026).&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div class="priority-card priority-card--accent"&gt;
+    &lt;div class="priority-icon"&gt;&amp;#x27BF;&lt;/div&gt;
+    &lt;div&gt;
+      &lt;div class="priority-title"&gt;Dynamic Structural Equation Modeling&lt;/div&gt;
+      &lt;div class="priority-detail"&gt;Dynamic Structural Equation Modeling capabilities (December 2026).&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div class="priority-card priority-card--accent"&gt;
+    &lt;div class="priority-icon"&gt;&amp;#x23F1;&amp;#xFE0F;&lt;/div&gt;
+    &lt;div&gt;
+      &lt;div class="priority-title"&gt;Timing&lt;/div&gt;
+      &lt;div class="priority-detail"&gt;Provide more granularity than beginning of the year.&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div class="priority-card priority-card--accent"&gt;
+    &lt;div class="priority-icon"&gt;&amp;#x0031;&amp;#xFE0F;&amp;#x20E3;&lt;/div&gt;
+    &lt;div&gt;
+      &lt;div class="priority-title"&gt;Distributions&lt;/div&gt;
+      &lt;div class="priority-detail"&gt;Linear version of the Dirichlet-multinomial (May 2026) and other distributions.&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div class="priority-card priority-card--accent"&gt;
+    &lt;div class="priority-icon"&gt;&amp;#x1F480;&lt;/div&gt;
+    &lt;div&gt;
+      &lt;div class="priority-title"&gt;Discards&lt;/div&gt;
+      &lt;div class="priority-detail"&gt;Allow for discard fisheries.&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+---
+# FIMS Milestones
+
+.pull-left[
+  `is:issue state:open`&lt;br&gt;
+  `milestone:"Version 1.0"`
+]
+.pull-right[
+  .hyperlink-style[[`milestones?sort=due_date&amp;`&lt;br&gt;`direction=asc`](https://github.com/NOAA-FIMS/FIMS/milestones?sort=due_date&amp;direction=asc)]
+]
+&lt;div style="text-align: center;"&gt;
+  &lt;img src="static/github_issue_milestone.png" style="width: 110%;" /&gt;
+&lt;/div&gt;
+
+---
+# How will we meet our priorities
+
+&lt;div class="priority-grid"&gt;
+  &lt;div class="priority-card"&gt;
+    &lt;div class="priority-icon"&gt;&amp;#x1F4BB;&lt;/div&gt;
+    &lt;div&gt;
+      &lt;div class="priority-title"&gt;Code Club&lt;/div&gt;
+      &lt;div class="priority-detail"&gt;Monthly sessions to build, test, and learn together.&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div class="priority-card"&gt;
+    &lt;div class="priority-icon"&gt;&amp;#x1F91D;&lt;/div&gt;
+    &lt;div&gt;
+      &lt;div class="priority-title"&gt;Contractors&lt;/div&gt;
+      &lt;div class="priority-detail"&gt;Bring focused expertise to accelerate key tasks.&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div class="priority-card"&gt;
+    &lt;div class="priority-icon"&gt;&amp;#x1F6E0;&amp;#xFE0F;&lt;/div&gt;
+    &lt;div&gt;
+      &lt;div class="priority-title"&gt;FIMS Implementation Team&lt;/div&gt;
+      &lt;div class="priority-detail"&gt;Coordinate integration, testing, and delivery.&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div class="priority-card"&gt;
+    &lt;div class="priority-icon"&gt;&amp;#x1F393;&lt;/div&gt;
+    &lt;div&gt;
+      &lt;div class="priority-title"&gt;Interns&lt;/div&gt;
+      &lt;div class="priority-detail"&gt;Google Summer of Code and other pathways for interns.&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div class="priority-card"&gt;
+    &lt;div class="priority-icon"&gt;&amp;#x1F3EB;&lt;/div&gt;
+    &lt;div&gt;
+      &lt;div class="priority-title"&gt;University Students&lt;/div&gt;
+      &lt;div class="priority-detail"&gt;Contribute research ideas and hands-on model development.&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div class="priority-card priority-card--you"&gt;
+    &lt;div class="priority-icon"&gt;&amp;#x1F465;&lt;/div&gt;
+    &lt;div&gt;
+      &lt;div class="priority-title"&gt;YOU, yes you!&lt;/div&gt;
+      &lt;div class="priority-detail"&gt;Your participation directly shapes priorities and outcomes.&lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+---
+# &amp;#x1F451; How the Benevolent Dictator Thinks
+
+&lt;div class="dictator-wrap"&gt;
+  &lt;div class="dictator-panel"&gt;
+    &lt;div class="dictator-kicker"&gt;Decision filter&lt;/div&gt;
+    &lt;ul&gt;
+      &lt;li&gt;What was the customer trying to do when they felt the pain?&lt;/li&gt;
+      &lt;li&gt;What's the actual friction, stripped of their proposed fix?&lt;/li&gt;
+      &lt;li&gt;What would "solved" feel like, regardless of how it gets built?&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/div&gt;
+
+  &lt;div class="dictator-quote"&gt;
+    &lt;div class="dictator-quote-main"&gt;"Heard" is not the same as "obeyed."&lt;/div&gt;
+  &lt;/div&gt;
+  &lt;div class="dictator-quote"&gt;
+    &lt;div class="dictator-quote-main"&gt;Founders who treat customer feedback as a spec instead of a bug report end up building slightly nicer versions of the thing that already isn't working.&lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div class="dictator-mantra"&gt;Listen obsessively!&lt;br&gt;
+Obey selectively!&lt;br&gt;
+And be willing to tell the room that the button they're asking for isn't the thing they actually need!&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class="dictator-note"&gt;Many thanks to .hyperlink-style[[Jonathan Murray](https://dev.to/jon_at_backboardio/stop-building-what-your-customers-ask-for-3d16?context=digest)]&lt;/div&gt;
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+  "ratio": "7:5",
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "countIncrementalSlides": false,
+  "slideNumberFormat": "Page %current%"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
