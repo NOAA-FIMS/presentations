@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Random Effects in  Fisheries Integrated Modeling System (FIMS):  Architecture, implementation, and     future development</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Andrea Havron, NOAA Fisheries OST andrea.havron@noaa.gov " />
+    <script src="slides_20260423_Random_Effects_files/header-attrs/header-attrs.js"></script>
+    <script src="slides_20260423_Random_Effects_files/htmlwidgets/htmlwidgets.js"></script>
+    <script src="slides_20260423_Random_Effects_files/viz/viz.js"></script>
+    <link href="slides_20260423_Random_Effects_files/DiagrammeR-styles/styles.css" rel="stylesheet" />
+    <script src="slides_20260423_Random_Effects_files/grViz-binding/grViz.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# Random Effects in <br>Fisheries Integrated Modeling System (FIMS): <br>Architecture, implementation, and <br>   future development
+]
+.subtitle[
+## FIMS CIE Review
+]
+.author[
+### Andrea Havron, NOAA Fisheries OST<br><a href="mailto:andrea.havron@noaa.gov" class="email">andrea.havron@noaa.gov</a><br>
+]
+.date[
+### 2026/04/23
+]
+
+---
+
+
+layout: true
+
+  
+
+
+.footnote[U.S. Department of Commerce | National Oceanic and Atmospheric Administration | National Marine Fisheries Service]
+
+
+&lt;style type="text/css"&gt;
+
+code.cpp{
+  font-size: 20px;
+}
+code.r{
+  font-size: 20px;
+}
+code.Rcpp{
+  font-size: 20px;
+}
+
+
+&lt;/style&gt;
+
+
+
+
+&lt;!-- Start of slides --&gt;
+
+
+---
+# Outline
+
+- Hierarchical Modeling in Stock Assessments
+
+- Guiding Principles in Design
+
+- C++ architecture
+
+- User Interface
+
+- Informing Decisions via Sparsity Analysis
+
+- Future Development Plans
+
+---
+
+# Hierarchical Modeling in Stock Assessments
+
+&lt;br&gt;
+&lt;br&gt;
+.center[
+.large[
+
+`\(Index \sim LogNormal(\hat{\mathbf{I}}, \sigma_{I})\)`
+
+&lt;br&gt;
+
+`\(\hat{\mathbf{I}} = f(Growth, Maturity, Mortality, \mathbf{Recruitment}, Selectivity)\)`
+
+&lt;br&gt;
+
+`\(\log(\mathbf{Recruitment}) \sim Normal(\log(\hat{R}), \sigma_{R})\)`
+]]
+
+
+---
+
+# Fitting Hierarchical Models: Speed vs. Accuracy
+
+
+
+.pull-left[
+**Penalized likelihood**
+- Fixed effects estimation (fastest)
+- Uses a Constrained optimization approach
+
+**Laplace approximation**
+- Random effects estimation (moderate)
+- Uses 2nd-order Taylor series approximation
+
+**MCMC**
+  - Full posterior sampling (slowest)
+  - Asymptotically exact posterior
+]
+
+.pull-right[
+![](slides_20260423_Random_Effects_files/figure-html/unnamed-chunk-1-1.png)&lt;!-- --&gt;
+]
+
+---
+# FIMS Random Effects Requirements
+&lt;br&gt;&lt;br&gt;
+
+- Include random effects option for fitting state-space models
+
+- Temporal and spatial varying random effects
+
+- Capture process variability and measurement error
+
+- Shared parameterizations across fleets and populations
+
+- Multivariate random effects
+
+- Hierarchical estimation across processes, species, areas, etc.
+
+---
+# Guiding Principles in Design
+&lt;br&gt;&lt;br&gt;
+
+- Generic and Flexible
+
+- Extensible
+
+- Separate the biological math from the statistics
+
+- Dependency on TMB and access to the Laplace Approximation
+---
+# Choosing the default
+&lt;br&gt;&lt;br&gt;
+
+.center[
+.quote-card[
+Unbiased estimation of parameter deviations (such as recruitment or selectivity) &lt;br&gt;in models without random effects requires iterative bias adjustment algorithms &lt;br&gt;which are inefficient and prone to error.
+]
+]
+
+&lt;br&gt;
+&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp;&amp;emsp; ~ FIMS Requirements Documents
+---
+.large[**Decoupling Biological Processes from Statistical Likelihood**]
+<div id="htmlwidget-6d8a6da7e496c30973c2" style="width:100%;height:85%;" class="grViz html-widget"></div>
+<script type="application/json" data-for="htmlwidget-6d8a6da7e496c30973c2">{"x":{"diagram":"\ndigraph fims {\n  # Global settings\n  graph [rankdir=LR, bgcolor=\"transparent\", compound=true, nodesep=0.5, ranksep=0.6]\n  node [shape=box, style=\"filled, rounded\", color=\"#5b8db8\", fillcolor=\"#f0f7ff\", fontname=\"Arial\", fontcolor=\"#333333\", fontsize=28, width=2.5, height=0.8]\n  edge [color=\"#666666\", arrowhead=vee, penwidth=1.2, fontsize = 24]\n\n  # User Layer\n  subgraph cluster_user {\n    label=\"User Layer\"; fontname=\"Arial-Bold\"; fontcolor=\"#5b8db8\"; style=\"dashed\"; color=\"#5b8db8\"; fontsize = 28;\n    node [fillcolor=\"#e1f5fe\", color=\"#01579b\"]\n    A [label=\"R User Interface\"]\n  }\n\n  # Central Dispatch\n  subgraph cluster_logic {\n    label=\"Central Dispatch\"; fontname=\"Arial-Bold\"; fontcolor=\"#c88a2a\"; style=\"dashed\"; color=\"#c88a2a\"; fontsize = 28;\n    node [fillcolor=\"#fff3e0\", color=\"#e65100\"]\n    B [label=\"Rcpp Interface\"]\n    C [label=\"FIMS.cpp\"]\n    D [label=\"Information\"]\n  }\n\n  # Calculation Engine\n  subgraph cluster_engine {\n    label=\"Calculation Engine\"; fontname=\"Arial-Bold\"; fontcolor=\"#4f9a63\"; style=\"dashed\"; color=\"#4f9a63\"; fontsize = 28;\n    node [fillcolor=\"#e8f5e9\", color=\"#2e7d32\"]\n   \n    E [label=\"Population Dynamics\"]\n    H [label=\"Catch-At-Age\"]\n    F [label=\"Distributions\"]\n    J [label=\"Data\"]\n  }\n\n  # Results\n  subgraph cluster_results {\n    label=\"Results\"; fontname=\"Arial-Bold\"; fontcolor=\"#b85a7a\"; style=\"dashed\"; color=\"#b85a7a\"; fontsize = 28;\n    node [fillcolor=\"#fce4ec\", color=\"#880e4f\", fontsize = 24]\n    G [label=\"model.hpp\"]\n    I [label=\"Negative Log-Likelihood\"]\n  }\n\n  # Layout constraints (forcing order)\n  {rank=same; B C}\n  {rank=same; E H F J}\n\n  # Edges\n  A -> B\n  A -> C\n  B -> D\n  D -> E\n  D -> H\n\n  D -> F\n  D -> J \n  \n  J -> F [constraint=false, style=solid]\n  E -> H\n  \n  # Grouping the outputs to model.hpp\n  {H F} -> G\n  C -> G\n  G -> I\n  \n  # Feedback loops (using \"constraint=false\" so they don\"t mess up the LR flow)\n  I -> C [constraint=false, style=dotted, label=\"value/gradient\", fontsize = 28]\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+---
+# Globally Available Variable Map
+&lt;br&gt;&lt;br&gt;
+
+```cpp
+std::unordered_map&lt;uint32_t, fims::Vector&lt;Type&gt;*&gt; variable_map;
+```
+
+uint32_t: Parameter's unique ID&lt;br&gt;
+fims::Vector&lt;Type&gt;*: pointer to a FIMS vector
+&lt;br&gt;&lt;br&gt;
+
+C++ map that stores pointers to all model parameters at the global scope
+
+---
+# Globally Available Variable Map
+
+```cpp
+std::unordered_map&lt;uint32_t, fims::Vector&lt;Type&gt;*&gt; variable_map;
+```
+
+.midi[
+uint32_t: Parameter's unique ID&lt;br&gt;
+fims::Vector&lt;Type&gt;*: pointer to a FIMS vector
+&lt;br&gt;
+
+
+.pull-left[
+**Rcpp Interface** &lt;br&gt;Populates the variable map with pointers to all model parameters, including random effects.&lt;br&gt;&lt;br&gt;
+**Information** &lt;br&gt;Stores the variable map, which is accessible across all C++ files. &lt;br&gt;&lt;br&gt;
+**Distributions** &lt;br&gt;Accesses the variable map to compute likelihood contributions. 
+]]
+
+---
+# Globally Available Variable Map
+
+```cpp
+std::unordered_map&lt;uint32_t, fims::Vector&lt;Type&gt;*&gt; variable_map;
+```
+
+.midi[
+uint32_t: Parameter's unique ID&lt;br&gt;
+fims::Vector&lt;Type&gt;*: pointer to a FIMS vector
+&lt;br&gt;
+
+
+.pull-left[
+**Rcpp Interface** &lt;br&gt;Populates the variable map with pointers to all model parameters, including random effects.&lt;br&gt;&lt;br&gt;
+**Information** &lt;br&gt;Stores the variable map, which is accessible across all C++ files. &lt;br&gt;&lt;br&gt;
+**Distributions** &lt;br&gt;Accesses the variable map to compute likelihood contributions. 
+]
+
+.pull-right[
+**Prior Likelihood**&lt;br&gt;
+observed_value -&gt; parameter 
+&lt;br&gt;&lt;br&gt;
+**Random Effects Likelihood**&lt;br&gt;
+observed_value -&gt; random effect parameter&lt;br&gt;
+expected_value -&gt; derived quantity (or vector of 0s)
+&lt;br&gt;&lt;br&gt;
+**Data Likelihood**&lt;br&gt;
+observed_value -&gt; data vector&lt;br&gt;
+expected_value -&gt; derived quantity 
+]]
+---
+# Connecting Random Effects to TMB
+
+
+``` r
+recruitment$log_devs[i]$set_estimation_type("random_effects")
+```
+
+In the Rcpp Interface, if a parameter's estimation type is set to "random_effects":
+- The parameter gets added to the global `random_effects_parameters` vector.
+- An R function returns the list of random effects parameters for a model.
+- The random effects list is passed into FIMS.cpp through MakeADFun and is linked
+   to the global `random_effects_parameters` vector.
+
+
+``` r
+parameters &lt;- list(
+    p = get_fixed(),
+    re = get_random()
+  )
+  obj &lt;- TMB::MakeADFun(
+    data = list(), parameters, DLL = "FIMS",
+    silent = TRUE, map = map, random = "re"
+  )
+```
+
+---
+
+# Default FIMS Model
+
+
+``` r
+library(FIMS)
+# Prepare the package data for being used in a FIMS model
+data("data_big")
+data_4_model &lt;- FIMSFrame(data_big)
+
+# Set up the default configurations and parameters for the model
+default_configurations &lt;- 
+  create_default_configurations(data = data_4_model)
+default_parameters &lt;- create_default_parameters(
+  configurations = default_configurations,
+  data = data_4_model
+)
+
+# run the model
+fit &lt;- default_parameters |&gt;
+  initialize_fims(data = data_4_model) |&gt;
+  fit_fims(optimize = TRUE)
+```
+
+---
+# Recruitment Deviations are random effects by default
+
+
+
+
+
+``` r
+default_parameters |&gt; 
+  tidyr::unnest(cols = data) |&gt;
+  dplyr::filter(
+    label == "log_devs"
+  ) 
+```
+
+```
+## # A tibble: 29 × 12
+##    model_family module_name fleet_name module_type  label      age length  time value estimation_type distribution_type distribution
+##    &lt;chr&gt;        &lt;chr&gt;       &lt;chr&gt;      &lt;chr&gt;        &lt;chr&gt;    &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;           &lt;chr&gt;             &lt;chr&gt;       
+##  1 catch_at_age Recruitment &lt;NA&gt;       BevertonHolt log_devs    NA     NA     2     0 random_effects  process           Dnorm       
+##  2 catch_at_age Recruitment &lt;NA&gt;       BevertonHolt log_devs    NA     NA     3     0 random_effects  process           Dnorm       
+##  3 catch_at_age Recruitment &lt;NA&gt;       BevertonHolt log_devs    NA     NA     4     0 random_effects  process           Dnorm       
+##  4 catch_at_age Recruitment &lt;NA&gt;       BevertonHolt log_devs    NA     NA     5     0 random_effects  process           Dnorm       
+##  5 catch_at_age Recruitment &lt;NA&gt;       BevertonHolt log_devs    NA     NA     6     0 random_effects  process           Dnorm       
+##  6 catch_at_age Recruitment &lt;NA&gt;       BevertonHolt log_devs    NA     NA     7     0 random_effects  process           Dnorm       
+##  7 catch_at_age Recruitment &lt;NA&gt;       BevertonHolt log_devs    NA     NA     8     0 random_effects  process           Dnorm       
+##  8 catch_at_age Recruitment &lt;NA&gt;       BevertonHolt log_devs    NA     NA     9     0 random_effects  process           Dnorm       
+##  9 catch_at_age Recruitment &lt;NA&gt;       BevertonHolt log_devs    NA     NA    10     0 random_effects  process           Dnorm       
+## 10 catch_at_age Recruitment &lt;NA&gt;       BevertonHolt log_devs    NA     NA    11     0 random_effects  process           Dnorm       
+## # ℹ 19 more rows
+```
+
+---
+# Change to fixed effect
+Estimate with constrained optimization (penalized likelihood)
+
+``` r
+# set estimation_type of log_devs to fixed_effects
+default_parameters &lt;- default_parameters |&gt;
+  tidyr::unnest(cols = data) |&gt;
+  dplyr::mutate(
+    estimation_type = ifelse(label == "log_devs", 
+      "fixed_effects", estimation_type)
+  )
+# fix Recruitment Distribution log_sd to "constant"
+default_parameters &lt;- default_parameters |&gt;
+  dplyr::mutate(
+    estimation_type = ifelse(label == "log_sd" &amp; 
+        module_name == "Recruitment", 
+      "constant", estimation_type)
+  )
+```
+---
+# Upcoming User Interface Enhancements
+
+New helper functions to set random effects for any process (GitHub Issue [#1235](https://github.com/NOAA-FIMS/FIMS/issues/1235))
+&lt;br&gt;
+
+``` r
+add_process(
+  module_name = “selectivity”,
+  fleet_name = “fleet1”,
+  specification_type = “semi_parametric”,
+  strucutre = “AR1”,
+  base_function = “logistic”,
+  logit_rho = 0)
+
+
+add_priors(
+    fleet = c(fleet1, fleet2),
+    module = selectivity,
+    slope ~ normal(1.5, 10),
+    inflection_point ~ normal(2, 10)
+)
+```
+
+---
+# Advanced User Implementation
+
+``` r
+# Create a recruitment module
+recruitment &lt;- new(BevertonHoltRecruitment)
+
+# Set the log_devs parameter to be estimated as random effects
+recruitment$log_devs$resize(n_years - 1)
+recruitment$log_devs$set_all_random(TRUE)
+
+# Set up a recruitment distribution module
+recruitment_distribution &lt;- methods::new(DnormDistribution)
+recruitment_distribution$expected_values$resize(n_years - 1)
+recruitment_distribution$log_sd[1]$set_estimation_type("fixed_effects")
+
+# Link the observed values of the recruitment_distribution
+# to the log_devs parameter vector
+recruitment_distribution$set_distribution_links("process", 
+  recruitment$log_devs$get_id())
+```
+🚧 : The `set_distribution_links` function is being refactored in GitHub Issue [#1194](https://github.com/NOAA-FIMS/FIMS/issues/1194)
+
+
+---
+# Sparse parameterization of recruitment
+
+$$
+`\begin{align}
+log\_r &amp;\sim Normal(\widehat{log\_r}, \sigma_{r})\\
+\widehat{log\_r} &amp;= log(BevertonHolt(SSB, parameters))
+\end{align}`
+$$
+
+``` r
+# Create a recruitment module
+recruitment &lt;- new(BevertonHoltRecruitment)
+
+# Set the log_devs parameter to be estimated as random effects
+recruitment$log_r$resize(n_years - 1)
+recruitment$log_r$set_all_random(TRUE)
+
+# Set up a recruitment distribution module
+recruitment_distribution &lt;- methods::new(DnormDistribution)
+recruitment_distribution$log_sd[1]$set_estimation_type("fixed_effects")
+
+# Link the observed values of the recruitment_distribution
+# to the log_r parameter vector and log_expected_recruitment derived quantity
+recruitment_distribution$set_distribution_links("process", 
+  c(recruitment$log_r$get_id(), recruitment$log_expected_recruitment$get_id()))
+```
+---
+# Hessian Inversion with the Cholesky Factorization
+
+To avoid the computational burden of a full matrix inversion, we use the Cholesky Factorization 
+
+$$
+H = LL^T\mathrm{~where~} L \mathrm{~is~a~lower~triangular~matrix}
+$$ 
+
+.pull-left[.large[**Penalized Likelihood**]
+&lt;br&gt;&lt;br&gt;
+.left[
+- Uses the Cholesky factor, `\(L\)`, to calculate the Variance-Covariance matrix **once** at the MLE for uncertainty estimation
+
+]
+]
+
+
+.pull-right[.large[**Laplace Approximation**]
+&lt;br&gt;
+.left[
+- Uses the Cholesky factor, `\(L\)`, to evaluate the Marginal Likelihood during **every iteration** of the optimizer
+]]
+&lt;br&gt;&lt;br&gt;&lt;br&gt;
+**This factorization is efficient but its performance depends entirely on matrix structure**
+---
+
+# The Scalability Bottleneck
+&lt;br&gt;
+
+
+.large[The ] `\(\Large{O(n^3)}\)` .large[ wall]
+
+&lt;br&gt;
+.large[
+- Dense Cholesky factorization scales at `\(O(n^3)\)`
+&lt;br&gt;&lt;br&gt;
+- In the Laplace Approximation this cost is paid at **every iteration**
+&lt;br&gt;&lt;br&gt;
+- To move beyond moderate-sized models, we must exploit **Sparsity**]
+
+---
+# Sparsity and TMB
+- Laplace Approximation requires the **Cholesky factorization** of the Hessian at **every iteration**
+&lt;br&gt;&lt;br&gt;
+- Template Model Builder (TMB) makes this fast by taking advantage of **sparsity**
+&lt;br&gt;&lt;br&gt;
+- After building the **static** computational graph, TMB **automatically detects** sparseness and **optimizes** the tape by removing operations involving constants of `\(0\)`
+&lt;br&gt;&lt;br&gt;
+- When evaluating the Laplace Approximation, TMB uses the **sparse Cholesky factorization**, which eliminates all `\(0\)` calculations
+&lt;br&gt;&lt;br&gt;&lt;br&gt;
+`\(O(n^3)\)`: Dense Hessian &lt;br&gt;
+`\(O(n^{3/2})\)`: Sparse Spatial Hessian (GMRF / 2D Grid)  
+`\(O(n)\)`: Sparse Time Series Hessian (AR1, RW / 1D)
+---
+# Parameterization affects sparsity of Hessian
+
+.mylarge[
+**AR1 model:** `\(x_t = \phi x_{t-1} + w_t\)`]
+
+.pull-left[
+**Process Parameterization**  
+
+`\(x_t \sim N(\phi x_{t-1}, \sigma^{2}_{x})\)`
+&lt;br&gt;
+
+&lt;img src="static/ar1hess_process.jpg" alt="Hessian under the Process Parameterization" width="40%" /&gt;
+
+Sparse Hessian, Cholesky factorization: `\(O(n)\)`
+]
+
+.pull-right[
+** Deviations Parameterization**  
+
+.narrowtopbottommargin[
+`\(x_{t} = \phi x_{t-1} + \sigma_x w_{t}\)`&lt;br&gt;
+`\(w_{t} \sim N(0,1)\)`]
+
+&lt;img src="static/ar1hess_deviations.jpg" alt="Hessian under the Deviations Parameterization" width="39%" /&gt;
+
+.normal[
+Dense Hessian, Cholesky factorization: `\(O(n^3)\)`]
+]
+
+`\(w_t\)` is white noise and `\(\phi \neq 0\)` for an order-_1_ process
+
+---
+# Benchmarking AR1
+.pull-left[
+  Speed&lt;br&gt;
+&lt;img src="static/ar1_benchmark.png" alt="Benchmarking the speed of AR1 Parameterizations" width="100%" /&gt;
+]
+
+.pull-right[
+  Memory&lt;br&gt;
+&lt;img src="static/ar1_memory.png" alt="Benchmarking the memory of AR1 Parameterizations" width="100%" /&gt;
+]
+---
+# Applications in Stock Assessments
+
+.pull-left[
+**Case Study: Catch-at-age Model**
+
+- Models fit using a modified **babySAM** in RTMB
+&lt;br&gt;&lt;br&gt;
+- Recruitment, Numbers at Age, and Fishing Mortality are AR1 processes
+&lt;br&gt;&lt;br&gt;
+- **Focus:** Comparing parameterizations in Recruitment
+]
+
+.pull-right[
+**Parameterizing Recruitment**&lt;br&gt;
+
+**Process:**
+`\begin{aligned}
+log(\widehat{N_{y,1}}) &amp;= log(N_{y-1,1})\\
+log(N_{y,1}) &amp;\sim Normal(\bar{r} + \phi(log(\widehat{N_{y,1}}) - \bar{r}), \sigma^{2}_{r})
+\end{aligned}`
+
+
+
+**Deviations:**
+.narrowtopmargin[
+`\begin{aligned}
+z_{1} &amp;\sim Normal\big(0, \sqrt{\sigma_{r}^{2}/(1 - \phi^2)}\big)\\
+z_{2:n} &amp;\sim Normal(0, \sigma_{r})\\
+dev_{1} &amp;= z_{1}\\
+dev_{y} &amp;= \phi dev_{y-1} + z_{y}\\
+log(N_{y,1}) &amp;= \bar{r} + dev_{y}
+\end{aligned}`
+]]
+
+---
+# Speed and Memory Test Results
+
+- Relative results from 100 interactions using `bench::mark`
+- Model fit `\(n=45\)` years of recruitment 
+
+&lt;br&gt;
+
+
+|Intercept|Model       |Relative time difference |Relative memory allocation  |
+|---------|------------|-------------------------|----------------------------|
+|Y        |**process** |**1**                    |**1**                       |
+|N        |**process** |**1**                    |**1**                       |
+|Y        |deviations  |1.4                      |1.4                         |
+|N        |deviations  |1.6                      |1.4                         |
+
+
+&lt;br&gt;
+At these sample sizes, the ~**1.5x speedup** reflects the reduction in the recruitment block's computational cost. The true `\(O(n^3)\)` "wall" becomes more visible as model scales up in complexity
+
+
+---
+# Moving average (MA) models
+
+
+**MA1 model:** `\(x_t = w_t + \theta w_{t-1}\)`
+.pull-left[
+**Process Parameterization**  
+
+`\(w_{t} = x_{t} - \theta w_{t-1}\)`&lt;br&gt;
+`\(w_t \sim N(0, \sigma_{x})\)`&lt;br&gt;
+`\(y_{t} \sim N(x_{t}, \sigma_{y})\)`&lt;br&gt;
+where `\(w\)` and `\(x\)` are treated as random
+
+&lt;img src="static/ma1hess_process.jpeg" alt="Hessian under the Process Parameterization" width="40%" /&gt;
+
+]
+.pull-right[
+** Deviations Parameterization**  
+
+`\(w_t \sim N(0, \sigma_{w})\)`&lt;br&gt;
+`\(x_{t} = w_{t} + \theta w_{t-1}\)`&lt;br&gt;
+`\(y_{t} \sim N(x_{t}, \sigma_{y})\)`&lt;br&gt;
+where `\(w\)` is treated as random
+
+&lt;img src="static/ma1hess_deviations.jpeg" alt="Hessian under the Deviations Parameterization" width="40%" /&gt;
+
+]
+---
+# Next Generation Models
+&lt;br&gt;
+.large[
+- **Recommendation**: 
+  - **AR1**: process approach
+  - **MA1**: deviations approach
+&lt;br&gt;&lt;br&gt;
+- No universal best parameterization but **optimal sparsity** depends on model structure
+&lt;br&gt;&lt;br&gt;
+- For next gen TMB models, **good practices in efficiency and inference** should be evaluated through the lens of the Laplace Approximation
+]
+---
+# Future FIMS RE Development Goals
+&lt;br&gt;
+.large[
+- Add a generic **ARn** distribution (Issue [#582](https://github.com/NOAA-FIMS/FIMS/issues/582))
+&lt;br&gt;&lt;br&gt;
+- Add multivariate functionality 
+  - **GMRF** distribtion (Issue [#582](https://github.com/NOAA-FIMS/FIMS/issues/582))
+  - Ability to set **multivariate pointers**
+  &lt;br&gt;&lt;br&gt;
+- Fully develop **non-parametric** and **semi-parametric** functionality for all time-varying parameters 
+  - Age-based selectivity Issue [#1206](https://github.com/NOAA-FIMS/FIMS/issues/1206)
+  &lt;br&gt;&lt;br&gt;
+- Refactor **Numbers At Age** with random effect capability
+&lt;br&gt;&lt;br&gt;
+- Add OSA residuals (Issue [#546](https://github.com/NOAA-FIMS/FIMS/issues/546))
+]
+---
+# Summary
+&lt;br&gt;
+.large[
+- FIMS Random Effects are designed to be **generic**, **flexible**, and **extensible**
+  &lt;br&gt;&lt;br&gt;
+- FIMS keep the biological math **separate** from the statistical likelihood 
+  &lt;br&gt;&lt;br&gt;
+- The global **variable map** allows any **parameter** or **derived quantity** to be linked to random effect distributions
+  &lt;br&gt;&lt;br&gt;
+- The current **default model** fits recruitment deviations as **random effects** with a Normal iid distribution
+]
+
+---
+# &amp;#x1F44B; Thank you!
+
+&lt;div style="text-align: center;"&gt;
+  &lt;img src="static/FIMS_hexlogo.png" style="width: 100%; max-width: 300px;" /&gt;
+&lt;/div&gt;
+
+&amp;#x1F4E9; andrea.havron@noaa.gov
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+  "ratio": "16:9",
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "countIncrementalSlides": false,
+  "slideNumberFormat": "<div class=\"progress-bar-container\">\n  <div class=\"progress-bar\" style=\"width: calc( (%current% - 1) / (%total% - 1) * 100%);\">\n  </div>\n</div>"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
