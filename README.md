@@ -21,4 +21,4 @@ A repository for National Stock Assessment Program presentations
 
 [Priority graph](https://noaa-fims.github.io/presentations/Priority.html)
 
-[Random Effects in Fisheries Integrated Modeling System (FIMS)](https://noaa-fims.github.io/presentations/random_effects_presentation/slides_20260423_Random_Effects.html#7)
+[Random Effects in Fisheries Integrated Modeling System (FIMS)](https://noaa-fims.github.io/presentations/slides_20260423_Random_Effects.html#7)
