@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>{ecosystemom}</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Bai Li    Contractor with ECS Federal LLC in support of   NOAA Fisheries Office of Science and Technology   Email: bai.li@noaa.gov" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/htmltools-fill/fill.css" rel="stylesheet" />
+    <script src="libs/htmlwidgets/htmlwidgets.js"></script>
+    <script src="libs/viz/viz.js"></script>
+    <link href="libs/DiagrammeR-styles/styles.css" rel="stylesheet" />
+    <script src="libs/grViz-binding/grViz.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# {ecosystemom}
+]
+.author[
+### Bai Li <br><br> Contractor with ECS Federal LLC in support of <br> NOAA Fisheries Office of Science and Technology <br> Email: <a href="mailto:bai.li@noaa.gov" class="email">bai.li@noaa.gov</a>
+]
+.institute[
+### GOA-CLIM Monthly All-Hands Meeting
+]
+.date[
+### 2026/05/27
+]
+
+---
+
+
+layout: true
+
+&lt;style&gt;
+.progress-bar {
+  position: fixed; left: 0; right: 0; bottom: 0;
+  height: 8px; background-color: #0085CA; z-index: 100;
+}
+
+.left-wide {
+  width: 65%;
+  float: left;
+}
+
+.right-narrow {
+  width: 30%;
+  float: right;
+}
+&lt;/style&gt;
+  
+
+
+.footnote[U.S. Department of Commerce | National Oceanic and Atmospheric Administration | National Marine Fisheries Service]
+
+
+
+---
+# Outline
+
+- Fisheries Integrated Modeling System (FIMS) organization
+- Why are we building {ecosystemom}?
+- Features
+- Main challenges
+- Collaboration and contributions
+- Ecosystem-to-stock-assessment simulation workflow demo
+
+---
+# Fisheries Integrated Modeling System (FIMS) Organization
+
+<div class="grViz html-widget html-fill-item" id="htmlwidget-534fa4615b056b3f67f4" style="width:50%;height:504px;"></div>
+<script type="application/json" data-for="htmlwidget-534fa4615b056b3f67f4">{"x":{"diagram":"\ndigraph flowchart {\n  node [shape = rectangle]\n  A [label = \"NOAA-FIMS\"]\n  B [label = \"FIMS\"]\n  BB [label = \"FIMSRTMB\"]\n  C [label = \"fishprior\"]\n  D [label = \"ecosystemom\", color=\"blue\"]\n  E [label = \"FIMSdiags\"]\n  A -> B\n  A -> BB\n  B -> BB\n  A -> C\n  A -> D\n  D -> B\n  A -> E\n  B -> E\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+
+???
+FIMS is a flexible suite of software tools to support sustainable fishery management
+
+.footnote[
+[1] FIMS website: .hyperlink-style[[https://noaa-fims.github.io/](https://noaa-fims.github.io/)]
+]
+
+---
+
+# Why are We Building {ecosystemom}?
+
+- 🏗️ Create a flexible ecosystem-to-stock-assessment simulation framework
+- 🧪 Test FIMS using ecosystem models as operating models
+- 🔍 Explore ecosystem-informed stock assessment approaches
+- 🤝 Create interdisciplinary research and collaboration opportunities
+
+---
+# Features
+
+Import and standardize outputs from ecosystem operating models
+
+- Ecopath with Ecosim
+  - 🧪 Ecosim
+  - 🛠️ Ecospace
+  - 🔎 Individual-based version of Ecospace
+- 🔎 Atlantis
+
+
+&lt;iframe src="https://noaa-fims.github.io/ecosystemom/articles/ewe-ecosim-base-simulation.html#load-ewe-model-outputs" width="100%" height="400px" data-external="1"&gt;&lt;/iframe&gt;
+
+---
+# Features
+Extract “true” population quantities from OMs, including annual or monthly trajectories and age compositions
+
+&lt;iframe src="https://noaa-fims.github.io/ecosystemom/articles/ewe-ecosim-base-simulation.html#extract-truth-from-the-om" width="100%" height="400px" data-external="1"&gt;&lt;/iframe&gt;
+
+---
+# Features
+Generate sampled observations from OM outputs for use in fisheries stock assessment models such as FIMS
+
+- `sample_lognormal()`
+- `sample_multinomial()`
+- `sample_dirichlet_multinomial()`
+
+---
+# Features
+Reshape environmental or diet composition data from OMs to support time series analyses such as Dynamic Structural Equation Models (DSEMs)
+
+&lt;iframe src="https://noaa-fims.github.io/ecosystemom/articles/ewe-ecosim-base-simulation.html#create-dsem-inputs" width="100%" height="400px" data-external="1"&gt;&lt;/iframe&gt;
+
+---
+# Main Challenges
+Different ecosystem models 
+
+- produce different output formats
+- has different spatial and temporal structures
+- use different assumptions and parameterizations
+
+---
+# Collaboration and Contributions
+
+.pull-left[
+**💻Weekly coding sessions**
+
+Mondays
+
+- 3:30-5 PM ET
+- 12:30-2 PM PT
+- 9:30-11 AM HT
+
+Starting June 1, 2026
+]
+
+.pull-right[
+- Mix of development, training, and Q&amp;A
+- Topics provided beforehand 
+- Work on {ecosystemom} and related workflows for sampling ecosystem model outputs to generate data for stock assessment models
+]
+
+---
+# Ecosystem-to-Stock-Assessment Simulation Workflow Demo
+
+Demo vignette: [https://noaa-fims.github.io/ecosystemom/articles/ewe-ecosim-base-simulation.html](https://noaa-fims.github.io/ecosystemom/articles/ewe-ecosim-base-simulation.html)
+
+
+&lt;script&gt;
+(function() {
+  var bar = document.createElement('div');
+  bar.className = 'progress-bar';
+  document.querySelector('.remark-slides-area').appendChild(bar);
+
+  slideshow.on('afterShowSlide', function(slide) {
+    var count = slideshow.getSlideCount();
+    var index = slide.getSlideIndex();
+    bar.style.width = (index / (count - 1) * 100) + '%';
+  });
+})();
+&lt;/script&gt;
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+  "ratio": "4:3",
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "countIncrementalSlides": false,
+  "slideNumberFormat": "Page %current%"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

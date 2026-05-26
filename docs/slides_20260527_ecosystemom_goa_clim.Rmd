@@ -1,0 +1,239 @@
+---
+title: "{ecosystemom}"
+author: "Bai Li <br><br> Contractor with ECS Federal LLC in support of <br> NOAA Fisheries Office of Science and Technology <br> Email: bai.li@noaa.gov"
+institute: GOA-CLIM Monthly All-Hands Meeting
+date: 2026/05/27
+output:
+  xaringan::moon_reader:
+    css: ["xaringan-themer.css"]
+    lib_dir: libs
+    nature:
+      ratio: '4:3'
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      slideNumberFormat: "Page %current%"
+---
+
+layout: true
+
+<style>
+.progress-bar {
+  position: fixed; left: 0; right: 0; bottom: 0;
+  height: 8px; background-color: #0085CA; z-index: 100;
+}
+
+.left-wide {
+  width: 65%;
+  float: left;
+}
+
+.right-narrow {
+  width: 30%;
+  float: right;
+}
+</style>
+  
+```{r xaringanthemer, include=FALSE, warning=FALSE}
+required_pkg <- c("xaringanthemer", "remotes", "webshot2", "xfun")
+pkg_to_install <- required_pkg[!(required_pkg %in%
+                                   installed.packages()[, "Package"])]
+if (length(pkg_to_install)) install.packages(pkg_to_install)
+lapply(required_pkg, library, character.only = TRUE)
+
+remotes::install_github("nmfs-ost/nmfspalette")
+library(nmfspalette)
+
+style_xaringan(
+
+  base_font_size = "15px",
+  text_font_size = "1.5rem",
+
+  title_slide_background_color = unname(nmfs_cols("darkblue")),
+  title_slide_text_color = unname(nmfs_cols("white")),
+  title_slide_background_size = "cover",
+  title_slide_background_image = file.path("static", "slideswooshver.png"),
+
+  background_image = file.path("static", "slideswoosh.PNG"),
+  background_size = "cover",
+  background_color = unname(nmfs_cols("white")),
+
+  header_font_google = google_font("Arimo"),
+  header_color = unname(nmfs_cols("darkblue")),
+
+  text_color = unname(nmfs_cols("darkblue")),
+  text_slide_number_color = unname(nmfs_cols("lightteal")),
+
+  code_font_google = google_font("Source Code Pro"),
+  code_highlight_color = unname(nmfs_cols("medteal")),
+
+  inverse_background_color = unname(nmfs_cols("processblue")),
+  inverse_text_color = unname(nmfs_cols("supltgray")),
+
+  footnote_font_size = "0.6em",
+  footnote_color = unname(nmfs_cols("darkblue")),
+  footnote_position_bottom = "10px",
+
+  link_color = unname(nmfs_cols("medteal")),
+
+
+  extra_css = list(
+    ".remark-slide-number" = list(
+      "font-size" = "0.4em",
+      "font-weight" = "bold",
+      "margin" = "0px 840px -2px 0px"),
+
+    ".title-slide h1, h2, h3" = list(
+      "text-align" = "right"), 
+    
+    ".hyperlink-style" = list(
+      "color" = "blue")
+  )
+)
+```
+
+.footnote[U.S. Department of Commerce | National Oceanic and Atmospheric Administration | National Marine Fisheries Service]
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+```
+
+---
+# Outline
+
+- Fisheries Integrated Modeling System (FIMS) organization
+- Why are we building {ecosystemom}?
+- Features
+- Main challenges
+- Collaboration and contributions
+- Ecosystem-to-stock-assessment simulation workflow demo
+
+---
+# Fisheries Integrated Modeling System (FIMS) Organization
+
+```{r noaa-fims-architecture, echo=FALSE, out.width = "50%", crop=TRUE, fig.align='left'}
+DiagrammeR::grViz("
+digraph flowchart {
+  node [shape = rectangle]
+  A [label = 'NOAA-FIMS']
+  B [label = 'FIMS']
+  BB [label = 'FIMSRTMB']
+  C [label = 'fishprior']
+  D [label = 'ecosystemom', color='blue']
+  E [label = 'FIMSdiags']
+  A -> B
+  A -> BB
+  B -> BB
+  A -> C
+  A -> D
+  D -> B
+  A -> E
+  B -> E
+}
+"
+)
+```
+
+???
+FIMS is a flexible suite of software tools to support sustainable fishery management
+
+.footnote[
+[1] FIMS website: .hyperlink-style[[https://noaa-fims.github.io/](https://noaa-fims.github.io/)]
+]
+
+---
+
+# Why are We Building {ecosystemom}?
+
+- 🏗️ Create a flexible ecosystem-to-stock-assessment simulation framework
+- 🧪 Test FIMS using ecosystem models as operating models
+- 🔍 Explore ecosystem-informed stock assessment approaches
+- 🤝 Create interdisciplinary research and collaboration opportunities
+
+---
+# Features
+
+Import and standardize outputs from ecosystem operating models
+
+- Ecopath with Ecosim
+  - 🧪 Ecosim
+  - 🛠️ Ecospace
+  - 🔎 Individual-based version of Ecospace
+- 🔎 Atlantis
+
+
+```{r, echo=FALSE, fig.height=1, fig.width=1}
+knitr::include_url("https://noaa-fims.github.io/ecosystemom/articles/ewe-ecosim-base-simulation.html#load-ewe-model-outputs")
+```
+
+---
+# Features
+Extract “true” population quantities from OMs, including annual or monthly trajectories and age compositions
+
+```{r, echo=FALSE, fig.height=1, fig.width=1}
+knitr::include_url("https://noaa-fims.github.io/ecosystemom/articles/ewe-ecosim-base-simulation.html#extract-truth-from-the-om")
+```
+
+---
+# Features
+Generate sampled observations from OM outputs for use in fisheries stock assessment models such as FIMS
+
+- `sample_lognormal()`
+- `sample_multinomial()`
+- `sample_dirichlet_multinomial()`
+
+---
+# Features
+Reshape environmental or diet composition data from OMs to support time series analyses such as Dynamic Structural Equation Models (DSEMs)
+
+```{r, echo=FALSE, fig.height=1, fig.width=1}
+knitr::include_url("https://noaa-fims.github.io/ecosystemom/articles/ewe-ecosim-base-simulation.html#create-dsem-inputs")
+```
+
+---
+# Main Challenges
+Different ecosystem models 
+
+- produce different output formats
+- has different spatial and temporal structures
+- use different assumptions and parameterizations
+
+---
+# Collaboration and Contributions
+
+.pull-left[
+**💻Weekly coding sessions**
+
+Mondays
+
+- 3:30-5 PM ET
+- 12:30-2 PM PT
+- 9:30-11 AM HT
+
+Starting June 1, 2026
+]
+
+.pull-right[
+- Mix of development, training, and Q&A
+- Topics provided beforehand 
+- Work on {ecosystemom} and related workflows for sampling ecosystem model outputs to generate data for stock assessment models
+]
+
+---
+# Ecosystem-to-Stock-Assessment Simulation Workflow Demo
+
+Demo vignette: [https://noaa-fims.github.io/ecosystemom/articles/ewe-ecosim-base-simulation.html](https://noaa-fims.github.io/ecosystemom/articles/ewe-ecosim-base-simulation.html)
+
+
+```{js, echo=FALSE}
+(function() {
+  var bar = document.createElement('div');
+  bar.className = 'progress-bar';
+  document.querySelector('.remark-slides-area').appendChild(bar);
+
+  slideshow.on('afterShowSlide', function(slide) {
+    var count = slideshow.getSlideCount();
+    var index = slide.getSlideIndex();
+    bar.style.width = (index / (count - 1) * 100) + '%';
+  });
+})();
