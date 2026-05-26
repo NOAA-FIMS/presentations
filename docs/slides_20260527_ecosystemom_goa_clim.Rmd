@@ -155,12 +155,14 @@ FIMS is a flexible suite of software tools to support sustainable fishery manage
 
 Import and standardize outputs from ecosystem operating models
 
-- Ecopath with Ecosim
+- Ecopath with Ecosim (EwE)
   - 🧪 Ecosim
   - 🛠️ Ecospace
   - 🔎 Individual-based version of Ecospace
 - 🔎 Atlantis
 
+---
+# Example of Loading EwE outputs
 
 ```{r, echo=FALSE, fig.height=1, fig.width=1}
 knitr::include_url("https://noaa-fims.github.io/ecosystemom/articles/ewe-ecosim-base-simulation.html#load-ewe-model-outputs")
@@ -170,6 +172,8 @@ knitr::include_url("https://noaa-fims.github.io/ecosystemom/articles/ewe-ecosim-
 # Features
 Extract “true” population quantities from OMs, including annual or monthly trajectories and age compositions
 
+---
+# Example of Extracting Truth from EwE
 ```{r, echo=FALSE, fig.height=1, fig.width=1}
 knitr::include_url("https://noaa-fims.github.io/ecosystemom/articles/ewe-ecosim-base-simulation.html#extract-truth-from-the-om")
 ```
@@ -183,9 +187,18 @@ Generate sampled observations from OM outputs for use in fisheries stock assessm
 - `sample_dirichlet_multinomial()`
 
 ---
+# Example of Generating Sampled Data
+
+```{r, echo=FALSE, fig.height=1, fig.width=1}
+knitr::include_url("https://noaa-fims.github.io/ecosystemom/articles/ewe-ecosim-base-simulation.html#fishery-dependent-data")
+```
+
+---
 # Features
 Reshape environmental or diet composition data from OMs to support time series analyses such as Dynamic Structural Equation Models (DSEMs)
 
+---
+# Example of Creating Inputs for {dsem}
 ```{r, echo=FALSE, fig.height=1, fig.width=1}
 knitr::include_url("https://noaa-fims.github.io/ecosystemom/articles/ewe-ecosim-base-simulation.html#create-dsem-inputs")
 ```
@@ -222,7 +235,7 @@ Starting June 1, 2026
 ---
 # Ecosystem-to-Stock-Assessment Simulation Workflow Demo
 
-Demo vignette: [https://noaa-fims.github.io/ecosystemom/articles/ewe-ecosim-base-simulation.html](https://noaa-fims.github.io/ecosystemom/articles/ewe-ecosim-base-simulation.html)
+Demo vignette: .hyperlink-style[[https://noaa-fims.github.io/ecosystemom/articles/ewe-ecosim-base-simulation.html](https://noaa-fims.github.io/ecosystemom/articles/ewe-ecosim-base-simulation.html)]
 
 
 ```{js, echo=FALSE}

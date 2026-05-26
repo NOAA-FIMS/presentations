@@ -70,8 +70,8 @@ layout: true
 ---
 # Fisheries Integrated Modeling System (FIMS) Organization
 
-<div class="grViz html-widget html-fill-item" id="htmlwidget-534fa4615b056b3f67f4" style="width:50%;height:504px;"></div>
-<script type="application/json" data-for="htmlwidget-534fa4615b056b3f67f4">{"x":{"diagram":"\ndigraph flowchart {\n  node [shape = rectangle]\n  A [label = \"NOAA-FIMS\"]\n  B [label = \"FIMS\"]\n  BB [label = \"FIMSRTMB\"]\n  C [label = \"fishprior\"]\n  D [label = \"ecosystemom\", color=\"blue\"]\n  E [label = \"FIMSdiags\"]\n  A -> B\n  A -> BB\n  B -> BB\n  A -> C\n  A -> D\n  D -> B\n  A -> E\n  B -> E\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div class="grViz html-widget html-fill-item" id="htmlwidget-954eabdbd0daf01fc7e2" style="width:50%;height:504px;"></div>
+<script type="application/json" data-for="htmlwidget-954eabdbd0daf01fc7e2">{"x":{"diagram":"\ndigraph flowchart {\n  node [shape = rectangle]\n  A [label = \"NOAA-FIMS\"]\n  B [label = \"FIMS\"]\n  BB [label = \"FIMSRTMB\"]\n  C [label = \"fishprior\"]\n  D [label = \"ecosystemom\", color=\"blue\"]\n  E [label = \"FIMSdiags\"]\n  A -> B\n  A -> BB\n  B -> BB\n  A -> C\n  A -> D\n  D -> B\n  A -> E\n  B -> E\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 
 ???
 FIMS is a flexible suite of software tools to support sustainable fishery management
@@ -94,12 +94,14 @@ FIMS is a flexible suite of software tools to support sustainable fishery manage
 
 Import and standardize outputs from ecosystem operating models
 
-- Ecopath with Ecosim
+- Ecopath with Ecosim (EwE)
   - 🧪 Ecosim
   - 🛠️ Ecospace
   - 🔎 Individual-based version of Ecospace
 - 🔎 Atlantis
 
+---
+# Example of Loading EwE outputs
 
 &lt;iframe src="https://noaa-fims.github.io/ecosystemom/articles/ewe-ecosim-base-simulation.html#load-ewe-model-outputs" width="100%" height="400px" data-external="1"&gt;&lt;/iframe&gt;
 
@@ -107,6 +109,8 @@ Import and standardize outputs from ecosystem operating models
 # Features
 Extract “true” population quantities from OMs, including annual or monthly trajectories and age compositions
 
+---
+# Example of Extracting Truth from EwE
 &lt;iframe src="https://noaa-fims.github.io/ecosystemom/articles/ewe-ecosim-base-simulation.html#extract-truth-from-the-om" width="100%" height="400px" data-external="1"&gt;&lt;/iframe&gt;
 
 ---
@@ -118,9 +122,16 @@ Generate sampled observations from OM outputs for use in fisheries stock assessm
 - `sample_dirichlet_multinomial()`
 
 ---
+# Example of Generating Sampled Data
+
+&lt;iframe src="https://noaa-fims.github.io/ecosystemom/articles/ewe-ecosim-base-simulation.html#fishery-dependent-data" width="100%" height="400px" data-external="1"&gt;&lt;/iframe&gt;
+
+---
 # Features
 Reshape environmental or diet composition data from OMs to support time series analyses such as Dynamic Structural Equation Models (DSEMs)
 
+---
+# Example of Creating Inputs for {dsem}
 &lt;iframe src="https://noaa-fims.github.io/ecosystemom/articles/ewe-ecosim-base-simulation.html#create-dsem-inputs" width="100%" height="400px" data-external="1"&gt;&lt;/iframe&gt;
 
 ---
@@ -155,7 +166,7 @@ Starting June 1, 2026
 ---
 # Ecosystem-to-Stock-Assessment Simulation Workflow Demo
 
-Demo vignette: [https://noaa-fims.github.io/ecosystemom/articles/ewe-ecosim-base-simulation.html](https://noaa-fims.github.io/ecosystemom/articles/ewe-ecosim-base-simulation.html)
+Demo vignette: .hyperlink-style[[https://noaa-fims.github.io/ecosystemom/articles/ewe-ecosim-base-simulation.html](https://noaa-fims.github.io/ecosystemom/articles/ewe-ecosim-base-simulation.html)]
 
 
 &lt;script&gt;
