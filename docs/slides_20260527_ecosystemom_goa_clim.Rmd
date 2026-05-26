@@ -120,15 +120,12 @@ digraph flowchart {
   BB [label = 'FIMSRTMB']
   C [label = 'fishprior']
   D [label = 'ecosystemom', color='blue']
-  E [label = 'FIMSdiags']
   A -> B
   A -> BB
   B -> BB
   A -> C
   A -> D
   D -> B
-  A -> E
-  B -> E
 }
 "
 )
