@@ -143,8 +143,11 @@ FIMS is a flexible suite of software tools to support sustainable fishery manage
 # Why are We Building {ecosystemom}?
 
 - 🏗️ Create a flexible ecosystem-to-stock-assessment simulation framework
+
 - 🧪 Test FIMS using ecosystem models as operating models
+
 - 🔍 Explore ecosystem-informed stock assessment approaches
+
 - 🤝 Create interdisciplinary research and collaboration opportunities
 
 ---
