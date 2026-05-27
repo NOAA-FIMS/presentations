@@ -155,7 +155,7 @@ Import and standardize outputs from ecosystem operating models
 
 - Current and planned ecosystem modeling platform support
 
-  - Ecopath with Ecosim (EwE): 🧪 Ecosim, 🚧️ Ecospac, 🚧 Individual-based version of Ecospace
+  - Ecopath with Ecosim (EwE): 🧪 Ecosim, 🚧️ Ecospace, 🚧 Individual-based version of Ecospace
   
   - 🔎 Atlantis
 
