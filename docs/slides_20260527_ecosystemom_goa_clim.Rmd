@@ -101,7 +101,7 @@ options(htmltools.dir.version = FALSE)
 ---
 # Outline
 
-- Fisheries Integrated Modeling System (FIMS) organization
+- .hyperlink-style[[Fisheries Integrated Modeling System](https://noaa-fims.github.io/)] (FIMS) organization
 - Why are we building {.hyperlink-style[[ecosystemom](https://noaa-fims.github.io/ecosystemom/)]}?
 - Features
 - Main challenges
@@ -134,15 +134,11 @@ digraph flowchart {
 ???
 FIMS is a flexible suite of software tools to support sustainable fishery management
 
-.footnote[
-[1] FIMS website: .hyperlink-style[[https://noaa-fims.github.io/](https://noaa-fims.github.io/)]
-]
-
 ---
 
 # Why are We Building {ecosystemom}?
 
-- 🏗️ Create a flexible ecosystem-to-stock-assessment simulation framework
+- 🏗️️ Create a flexible ecosystem-to-stock-assessment simulation framework
 
 - 🧪 Test FIMS using ecosystem models as operating models
 
@@ -155,11 +151,13 @@ FIMS is a flexible suite of software tools to support sustainable fishery manage
 
 Import and standardize outputs from ecosystem operating models
 
-- Ecopath with Ecosim (EwE)
-  - 🧪 Ecosim
-  - 🛠️ Ecospace
-  - 🔎 Individual-based version of Ecospace
-- 🔎 Atlantis
+- `load_model()`
+
+- Current and planned ecosystem modeling platform support
+
+  - Ecopath with Ecosim (EwE): 🧪 Ecosim, 🚧️ Ecospac, 🚧 Individual-based version of Ecospace
+  
+  - 🔎 Atlantis
 
 ---
 # Example of Loading EwE outputs
@@ -171,6 +169,8 @@ knitr::include_url("https://noaa-fims.github.io/ecosystemom/articles/ewe-ecosim-
 ---
 # Features
 Extract “true” population quantities from OMs, including annual or monthly trajectories and age compositions
+
+- `calc_truth()`
 
 ---
 # Example of Extracting Truth from EwE
@@ -196,6 +196,8 @@ knitr::include_url("https://noaa-fims.github.io/ecosystemom/articles/ewe-ecosim-
 ---
 # Features
 Reshape environmental or diet composition data from OMs to support time series analyses such as Dynamic Structural Equation Models (DSEMs)
+
+- `create_dsem_inputs()`
 
 ---
 # Example of Creating Inputs for {dsem}
@@ -230,6 +232,11 @@ Starting June 1, 2026
 - Mix of development, training, and Q&A
 - Topics provided beforehand 
 - Work on {ecosystemom} and related workflows for sampling ecosystem model outputs to generate data for stock assessment models
+]
+
+.footnote[
+[1] Weekly Google meet link: .hyperlink-style[[ https://meet.google.com/umk-toiv-ifs](https://meet.google.com/umk-toiv-ifs)] <br>
+[2] GitHub issues page: .hyperlink-style[[https://github.com/NOAA-FIMS/ecosystemom/issues](https://github.com/NOAA-FIMS/ecosystemom/issues)]
 ]
 
 ---

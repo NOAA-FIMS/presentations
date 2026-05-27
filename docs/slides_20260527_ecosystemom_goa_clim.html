@@ -60,7 +60,7 @@ layout: true
 ---
 # Outline
 
-- Fisheries Integrated Modeling System (FIMS) organization
+- .hyperlink-style[[Fisheries Integrated Modeling System](https://noaa-fims.github.io/)] (FIMS) organization
 - Why are we building {.hyperlink-style[[ecosystemom](https://noaa-fims.github.io/ecosystemom/)]}?
 - Features
 - Main challenges
@@ -70,21 +70,17 @@ layout: true
 ---
 # Fisheries Integrated Modeling System (FIMS) Organization
 
-<div class="grViz html-widget html-fill-item" id="htmlwidget-c345b5eeb764609e76f9" style="width:50%;height:504px;"></div>
-<script type="application/json" data-for="htmlwidget-c345b5eeb764609e76f9">{"x":{"diagram":"\ndigraph flowchart {\n  node [shape = rectangle]\n  A [label = \"NOAA-FIMS\"]\n  B [label = \"FIMS\"]\n  BB [label = \"FIMSRTMB\"]\n  C [label = \"fishprior\"]\n  D [label = \"ecosystemom\", color=\"blue\"]\n  A -> B\n  A -> BB\n  B -> BB\n  A -> C\n  A -> D\n  D -> B\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div class="grViz html-widget html-fill-item" id="htmlwidget-39242cf1a1fa09f24ed5" style="width:50%;height:504px;"></div>
+<script type="application/json" data-for="htmlwidget-39242cf1a1fa09f24ed5">{"x":{"diagram":"\ndigraph flowchart {\n  node [shape = rectangle]\n  A [label = \"NOAA-FIMS\"]\n  B [label = \"FIMS\"]\n  BB [label = \"FIMSRTMB\"]\n  C [label = \"fishprior\"]\n  D [label = \"ecosystemom\", color=\"blue\"]\n  A -> B\n  A -> BB\n  B -> BB\n  A -> C\n  A -> D\n  D -> B\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 
 ???
 FIMS is a flexible suite of software tools to support sustainable fishery management
-
-.footnote[
-[1] FIMS website: .hyperlink-style[[https://noaa-fims.github.io/](https://noaa-fims.github.io/)]
-]
 
 ---
 
 # Why are We Building {ecosystemom}?
 
-- 🏗️ Create a flexible ecosystem-to-stock-assessment simulation framework
+- 🏗️️ Create a flexible ecosystem-to-stock-assessment simulation framework
 
 - 🧪 Test FIMS using ecosystem models as operating models
 
@@ -97,11 +93,13 @@ FIMS is a flexible suite of software tools to support sustainable fishery manage
 
 Import and standardize outputs from ecosystem operating models
 
-- Ecopath with Ecosim (EwE)
-  - 🧪 Ecosim
-  - 🛠️ Ecospace
-  - 🔎 Individual-based version of Ecospace
-- 🔎 Atlantis
+- `load_model()`
+
+- Current and planned ecosystem modeling platform support
+
+  - Ecopath with Ecosim (EwE): 🧪 Ecosim, 🚧️ Ecospac, 🚧 Individual-based version of Ecospace
+  
+  - 🔎 Atlantis
 
 ---
 # Example of Loading EwE outputs
@@ -111,6 +109,8 @@ Import and standardize outputs from ecosystem operating models
 ---
 # Features
 Extract “true” population quantities from OMs, including annual or monthly trajectories and age compositions
+
+- `calc_truth()`
 
 ---
 # Example of Extracting Truth from EwE
@@ -132,6 +132,8 @@ Generate sampled observations from OM outputs for use in fisheries stock assessm
 ---
 # Features
 Reshape environmental or diet composition data from OMs to support time series analyses such as Dynamic Structural Equation Models (DSEMs)
+
+- `create_dsem_inputs()`
 
 ---
 # Example of Creating Inputs for {dsem}
@@ -164,6 +166,11 @@ Starting June 1, 2026
 - Mix of development, training, and Q&amp;A
 - Topics provided beforehand 
 - Work on {ecosystemom} and related workflows for sampling ecosystem model outputs to generate data for stock assessment models
+]
+
+.footnote[
+[1] Weekly Google meet link: .hyperlink-style[[ https://meet.google.com/umk-toiv-ifs](https://meet.google.com/umk-toiv-ifs)] &lt;br&gt;
+[2] GitHub issues page: .hyperlink-style[[https://github.com/NOAA-FIMS/ecosystemom/issues](https://github.com/NOAA-FIMS/ecosystemom/issues)]
 ]
 
 ---
