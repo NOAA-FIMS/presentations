@@ -75,7 +75,7 @@ h1, h2, h3 {
 .remark-slide-content {
   background-color: var(--background-color);
   font-size: 1.5rem;
-  background-image: url(static/slideswoosh.PNG);
+  background-image: url(static/slideswoosh_16_9.PNG);
   background-size: cover;
   padding: 16px 64px 16px 64px;
   width: 100%;
@@ -277,9 +277,11 @@ table.dataTable.hover tbody tr:hover, table.dataTable.display tbody tr:hover {
 
 /* Extra CSS */
 .remark-slide-number {
-  font-size: 0.4em;
+  font-size: 0.5em;
   font-weight: bold;
-  margin: 0px 840px -2px 0px;
+  bottom: 10px;
+  right: 300px;
+  margin: 0px;
 }
 .title-slide h1, h2, h3 {
   text-align: right;

@@ -2,6 +2,8 @@
 A repository for National Stock Assessment Program presentations
 
 ## FIMS
+[FIMS {ecosystemom} (20260917)](https://noaa-fims.github.io/presentations/slides_20260917_ecosystemom_ices.html)
+
 [FIMS {ecosystemom} (20260527)](https://noaa-fims.github.io/presentations/slides_20260527_ecosystemom_goa_clim.html)
 
 [Background and rationale of FIMS (20260421)](https://noaa-fims.github.io/presentations/slides_20260421_background.html)
