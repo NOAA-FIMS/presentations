@@ -260,13 +260,13 @@ knitr::include_graphics(file.path("static", "ecosystemom_atlantic_menhaden_recru
 - Assuming perfectly known time-varying M is not applicable to real-world assessments
 
 .pull-left[
-```{r biomass, echo=FALSE, fig.align='center', out.width='90%'}
+```{r biomass, echo=FALSE, fig.align='center', out.width='80%'}
 knitr::include_graphics(file.path("static", "ecosystemom_atlantic_menhaden_biomass_comparison.png"))
 ```
 ]
 
 .pull-right[
-```{r fishing-mortality, echo=FALSE, fig.align='center', out.width='90%'}
+```{r fishing-mortality, echo=FALSE, fig.align='center', out.width='80%'}
 knitr::include_graphics(file.path("static", "ecosystemom_atlantic_menhaden_fishing_mortality_comparison.png"))
 ```
 ]
