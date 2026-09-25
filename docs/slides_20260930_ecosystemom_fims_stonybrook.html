@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>{FIMS} and {ecosystemom}:   Integrating Ecosystem Information into   Stock Assessment</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Presenter: Bai Li" />
+    <meta name="author" content="Contractor with ECS Federal LLC in support of   NOAA Fisheries Office of Science and Technology" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/htmltools-fill/fill.css" rel="stylesheet" />
+    <script src="libs/htmlwidgets/htmlwidgets.js"></script>
+    <script src="libs/viz/viz.js"></script>
+    <link href="libs/DiagrammeR-styles/styles.css" rel="stylesheet" />
+    <script src="libs/grViz-binding/grViz.js"></script>
+    <script src="libs/kePrint/kePrint.js"></script>
+    <link href="libs/lightable/lightable.css" rel="stylesheet" />
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+.title[
+# {FIMS} and {ecosystemom}: <br> Integrating Ecosystem Information into <br> Stock Assessment
+]
+.author[
+### <b>Presenter: Bai Li</b>
+]
+.author[
+### Contractor with ECS Federal LLC in support of <br> NOAA Fisheries Office of Science and Technology
+]
+.institute[
+### State University of New York at Stony Brook | Chen Lab
+]
+.date[
+### 2026/09/30
+]
+
+---
+
+
+layout: true
+
+&lt;style&gt;
+.progress-bar {
+  position: fixed; left: 0; right: 0; bottom: 0;
+  height: 8px; background-color: #0085CA; z-index: 100;
+}
+
+.left-wide {
+  width: 65%;
+  float: left;
+}
+
+.right-narrow {
+  width: 30%;
+  float: right;
+}
+&lt;/style&gt;
+  
+
+
+.footnote[U.S. Department of Commerce | National Oceanic and Atmospheric Administration | National Marine Fisheries Service]
+
+
+
+---
+# Outline
+
+- {FIMS}
+  - Why was Fisheries Integrated Modeling System (FIMS) Created
+  - FIMS Mission Statement
+  - Who is involved in FIMS
+  - FIMS organizations
+  - Model Family Architecture
+- {ecosystemom}
+ - Single-Species Advice in Dynamic Ecosystems
+ - Overview of {ecosystemom}
+ - End-to-End Simulation Case Study
+ - Lessons Learned: Surveys, Natural Mortality, and Environmental Drivers
+ - Future Directions
+
+---
+# Why was Fisheries Integrated Modeling System (FIMS) Created
+
+
+&lt;ul&gt; &lt;li&gt;FIMS was created, according to its Terms of Reference, to increase the pool of developers, designers, and testers that contribute to a commonly-used stock assessment modeling system that can be used across regions.&lt;/li&gt;&lt;br&gt;&lt;li&gt;The commitment to build FIMS was made by the National Marine Fisheries Service (NMFS) Science Board in 2020 partly in response to the Center for the Advancement of Population Assessment Methodology (CAPAM) workshop on Next Generation Models and the recommendations in Implementing a Next Generation Stock Assessment Enterprise, a NOAA Fisheries strategic document that calls for the development of general modeling platforms that facilitate ease of use, robust testing, modular applications, and best practices and to improve the professionalism of model development.&lt;/li&gt;&lt;br&gt; &lt;/ul&gt;
+
+&lt;img src="static/FIMS_hexlogo.png" style="float: right; width: 80%; max-width: 100px; margin-right: 10%;" /&gt;
+
+---
+# FIMS Mission Statement
+
+&lt;iframe src="https://noaa-fims.github.io/about/" width="100%" height="400px" data-external="1"&gt;&lt;/iframe&gt;
+
+---
+# Who is involved in FIMS
+
+
+- .hyperlink-style[[FIMS Implementation Team](https://noaa-fims.github.io/contact/contributors.html#core-developers)]
+  - Dedicated Project Lead (currently Kelli Johnson)
+  - 2 Scientists from each of the 6 Science Centers
+  - Members of the Office of Science and Technology's National Stock Assessment Program
+  - Rotation is encouraged to spread knowledge
+
+- .hyperlink-style[[FIMS Council](https://noaa-fims.github.io/contact/contributors.html#fims-council)]
+  - Members from the academic community and global partners
+  - One-year terms if desired
+
+- Support from the National Marine Fisheries Service Science Board, the senior leadership team
+---
+# FIMS Organization
+
+
+### One &amp;#x1F3E0; for code, conversation, and collaboration
+
+Everything for FIMS lives in one shared place, making it easy to find the code, follow discussions, and jump in.
+
+**Explore the GitHub organization**
+   1. .hyperlink-style[https://github.com/NOAA-FIMS] stores many repositories
+   2. &amp;#x1F50D; Find code, issues, and discussions in one search
+   3. Trace decisions from .hyperlink-style[[Discussions](https://github.com/orgs/NOAA-FIMS/discussions)] &amp;#x2192; Issues &amp;#x2192; Pull Requests
+   4. &amp;#x1F680; Reuse solutions across teams and repositories
+   5. &amp;#x1F91D; Onboard contributors faster with shared context
+   6. .hyperlink-style[https://noaa-fims.github.io]
+---
+# Model Family Architecture
+
+&lt;div style="margin-bottom:-28px;"&gt;&lt;/div&gt;
+<div class="grViz html-widget html-fill-item" id="htmlwidget-cc5fc544534ba48f21c3" style="width:100%;height:504px;"></div>
+<script type="application/json" data-for="htmlwidget-cc5fc544534ba48f21c3">{"x":{"diagram":"\ndigraph fims_architecture {\n  rankdir=TB;\n\n  // Model nodes\n  catch_at_age [label=\"functors/catch-at-age.hpp\", shape=box, color=\"#00797F\", penwidth = 2]\n  surplus_production [label=\"functors/surplus-production.hpp\", shape=box, color=\"#DB6015\", penwidth = 2]\n\n  // Population nodes\n  depletion [label=\"depletion\", shape=box]\n  fleet [label=\"fleet\", shape=box]\n  growth [label=\"growth\", shape=box]\n  maturity [label=\"maturity\", shape=box]\n  population [label=\"population\", shape=box]\n  recruitment [label=\"recruitment\", shape=box]\n  selectivity [label=\"selectivity\", shape=box]\n\n  // Grouping (optional, for visual grouping)\n  subgraph cluster_models {\n    label = \"models\"\n    // style = \"dashed\"\n    catch_at_age; surplus_production; \n  }\n  subgraph cluster_population {\n    label = \"population_dynamics\"\n    // style = \"dashed\"\n    depletion; fleet; growth; maturity; population; recruitment; selectivity;\n  }\n\n  // Connections\n  // nmfspalette::nmfs_palette(\"regional_alt1\")(6)\n  catch_at_age -> fleet [color=\"#00797F\", penwidth = 2]\n  catch_at_age -> growth [color=\"#00797F\", penwidth = 2]\n  catch_at_age -> maturity [color=\"#00797F\", penwidth = 2]\n  catch_at_age -> population [color=\"#00797F\", penwidth = 2]\n  catch_at_age -> recruitment [color=\"#00797F\", penwidth = 2]\n  catch_at_age -> selectivity [color=\"#00797F\", penwidth = 2]\n  surplus_production -> depletion [color=\"#DB6015\", penwidth = 2]\n  surplus_production -> fleet [color=\"#DB6015\", penwidth = 2]\n  surplus_production -> population [color=\"#DB6015\", penwidth = 2]\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+
+---
+# Single-Species Advice in Dynamic Ecosystems
+
+- Single-species assessments remain central to tactical fisheries-management advice worldwide
+- Current testing frameworks often suggest robust performance when using single-species operating models (OMs)
+- Real-world fish stocks inhabit dynamic oceans driven by environmental forcing and changing trophic interactions
+- The key gap is integration, i.e., connecting ecosystem models to tactical stock assessment tools
+
+&lt;img src="static/single_species_advice_in_dynamic_ecosystems.jpg" width="50%" style="display: block; margin: auto;" /&gt;
+
+.footnote[
+Figure generated by Gemini 3.6, Google, September 2026
+]
+---
+
+# Overview of {ecosystemom}
+
+A flexible ecosystem-to-stock-assessment simulation framework within the open-source .hyperlink-style[[NOAA-FIMS GitHub organization](https://noaa-fims.github.io/)]
+
+--
+
+- 🔍 Explore ecosystem-informed stock assessment approaches
+
+--
+
+- 🤝 Create interdisciplinary research and collaboration opportunities
+
+--
+
+- 💻 Operating models (OMs) and estimation models (EMs)
+
+.pull-left-75[
+&lt;u&gt;__OM support__&lt;/u&gt;
+
+&lt;div style="display: flex; align-items: flex-end; justify-content: space-evenly; text-align: center; margin-top: 20px;"&gt;
+  
+  &lt;!-- Logo 1 --&gt;
+  &lt;div style="display: flex; flex-direction: column; align-items: center;"&gt;
+    &lt;img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/EwE6Logo_Transparent.png/250px-EwE6Logo_Transparent.png" height="90px" alt="EwE Logo" /&gt;
+    &lt;span style="margin-top: 10px; font-weight: bold;"&gt;Ecopath with Ecosim (EwE)&lt;/span&gt;
+  &lt;/div&gt;
+
+  &lt;!-- Logo 2 --&gt;
+  &lt;div style="display: flex; flex-direction: column; align-items: center;"&gt;
+    &lt;img src="https://avatars.githubusercontent.com/u/43390982?s=200&amp;v=4" height="90px" alt="Atlantis Logo" /&gt;
+    &lt;span style="margin-top: 10px; font-weight: bold;"&gt;Atlantis&lt;/span&gt;
+  &lt;/div&gt;
+
+  &lt;!-- Logo 3 --&gt;
+  &lt;div style="display: flex; flex-direction: column; align-items: center;"&gt;
+    &lt;img src="https://noaa-edab.github.io/Rpath/logo.png" height="90px" alt="Rpath Logo" /&gt;
+    &lt;span style="margin-top: 10px; font-weight: bold;"&gt;Rpath&lt;/span&gt;
+  &lt;/div&gt;
+
+&lt;/div&gt;
+  
+]
+
+--
+
+.pull-right-25[
+&lt;u&gt;__EM support__&lt;/u&gt;
+  &lt;!-- Logo 1 --&gt;
+  &lt;div style="display: flex; flex-direction: column; align-items: center;"&gt;
+    &lt;img src="https://noaa-fims.github.io/FIMS/logo.png" height="90px" alt="FIMS Logo" /&gt;
+    &lt;span style="margin-top: 10px; font-weight: bold;"&gt;FIMS&lt;/span&gt;
+  &lt;/div&gt;
+]
+
+.clear[]
+
+.footnote[
+[1] .hyperlink-style[[FIMS Website: https://noaa-fims.github.io/FIMS/](https://noaa-fims.github.io/FIMS/)]&lt;br&gt;
+[2] .hyperlink-style[[ecosystemom Website: https://noaa-fims.github.io/ecosystemom/](https://noaa-fims.github.io/ecosystemom/)]
+]
+---
+
+# Overview of {ecosystemom}
+
+- `load_model()`: Import and standardize outputs from ecosystem OMs
+
+--
+
+- `get_truth()`: Extract “true” population quantities from OMs
+
+&lt;table class="table" style="font-size: 14px; margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; species_name &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; truth_label &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; truth_type &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; truth_time_step &lt;/th&gt;
+   &lt;th style="text-align:left;"&gt; truth_om &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; menhaden &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; biomass &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; index &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; yearly &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; &amp;lt;tibble [33 × 3]&amp;gt; &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; menhaden &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; catch &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; index &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; yearly &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; &amp;lt;tibble [33 × 3]&amp;gt; &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; menhaden &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; catch &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; agecomp &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; yearly &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; &amp;lt;tibble [231 × 4]&amp;gt; &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; menhaden &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; fishing_mortality &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; index &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; yearly &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; &amp;lt;tibble [33 × 3]&amp;gt; &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; menhaden &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; natural_mortality &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; agecomp &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; yearly &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; &amp;lt;tibble [231 × 4]&amp;gt; &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; menhaden &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; numbers &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; agecomp &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; yearly &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; &amp;lt;tibble [231 × 4]&amp;gt; &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+--
+
+- `sample_*()`: Generate sampled observations from OM outputs for use in fisheries stock assessment models such as FIMS
+
+--
+
+- `create_dsem_inputs()`: Prepare environmental covariates or diet-composition data from the OM to support candidate model specifications for dynamic structural equation models (DSEMs)
+
+---
+# End-to-End Simulation Case Study
+
+- Ecosystem: Northwest Atlantic EwE Ecosim model (Adapted from Chagaris et al., 2020)
+
+- Focal stock: Atlantic menhaden-like species &lt;img src="https://www.fisheries.noaa.gov/s3/styles/original/s3/2021-01/640x427-Atlantic_Menhaden_NB_W.jpg?itok=QBXXGzDD" alt="Image of Atlantic menhaden fish" width = "100"&gt;
+
+--
+
+- OM scenarios:
+  - Scenario 1 (S1): base scenario without environmental forcing
+  - Scenario 2 (S2): environmental forcing scenario
+  
+--
+
+- EM scenarios:
+  - FIMS without young-of-the-year (YOY) survey
+  - FIMS with young-of-the-year (YOY) survey
+
+.footnote[
+.hyperlink-style[[Chagaris, D., Drew, K., Schueller, A., Cieri, M., Brito, J., and Buchheister, A. 2020. Ecological reference points for Atlantic menhaden established using &lt;br&gt; an ecosystem model of intermediate complexity. Frontiers in Marine Science, 7:606417. 10.3389/fmars.2020.606417.](https://doi.org/10.3389/fmars.2020.606417)]&lt;br&gt;
+]
+
+---
+# Lessons Learned #1: Sample Size vs. Survey Types
+
+- Increasing age composition sample size did not fix non-convergence in the EM
+
+- Simulating a dedicated young-of-the-year (YOY) survey index improved model fits and recruitment tracking
+
+.pull-left[
+&lt;img src="static/ecosystemom_atlantic_menhaden_recruitment_without_yoy.png" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+&lt;img src="static/ecosystemom_atlantic_menhaden_recruitment_with_yoy.png" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+--
+
+💡 **{ecosystemom} provides a testbed to evaluate alternative survey designs**
+
+---
+# Lessons Learned #2: Perfectly Known Natural Mortality
+
+- Passing the "true" time-varying and age-varying natural mortality (M) matrix from the OM (S1) yielded matching estimates
+
+- Assuming perfectly known time-varying M is not applicable to real-world assessments
+
+.pull-left[
+&lt;img src="static/ecosystemom_atlantic_menhaden_biomass_comparison.png" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+.pull-right[
+&lt;img src="static/ecosystemom_atlantic_menhaden_fishing_mortality_comparison.png" width="80%" style="display: block; margin: auto;" /&gt;
+]
+
+--
+
+💡 **{ecosystemom} provides a testbed to explore parameter and process misspecifications**
+
+---
+# Lessons Learned #3: Incorporating Environmental Drivers
+
+- 🚧 Implementing dynamic structural equation model (DSEM) in FIMS is currently a work in progress 🚧
+
+- Active environmental forcing (S2) in the OM creates challenges with parameter estimation when the EM cannot fit to the environmental driver
+
+```md
+
+⚠️ FIMS Warning ⚠️
+
+#&gt; Warning: ! Large condition number detected in Hessian; the matrix may be near singular.
+#&gt; ℹ Condition number of Hessian ("1.406917e+05") exceeds threshold of 1e+05.
+#&gt; ℹ This suggests the model is weakly identified and results may be unreliable.
+#&gt; ℹ Consider simplifying the model, improving data quality, or fixing poorly
+#&gt;   informed parameters.
+#&gt; ℹ The 2 largest standard error values are for parameters:
+#&gt; ℹ 1. "expected_recruitment": "8.273532e+09"
+#&gt; ℹ 2. "numbers_at_age": "8.273532e+09"
+```
+
+--
+
+💡 **{ecosystemom} provides a testbed to evaluate how to best incorporate climate and ecosystem information into stock assessment models**
+
+---
+# Summary
+
+🎉 **FIMS successfully recovers "true" focal stock dynamics from Ecosim OMs** 🎉
+
+✅️ Extract "true" underlying biomass, age structures, fishing mortality, and time-varying natural mortality using `get_truth()` for comparisons
+
+✅️ Simulate realistic fleets and generate required data for FIMS using `sample_*()`
+
+✅️ Automatically map Ecosim outputs into starting parameters for seamless setup
+
+---
+# Future Directions 
+
+&lt;img src="static/ecosystemom_future_directions.jpg" width="65%" style="display: block; margin: auto;" /&gt;
+
+🤝 To contribute or share feedback on {ecosystemom}, visit the repository or email Bai Li at bai.li@noaa.gov.
+
+.footnote[
+[1] Figure generated by Gemini 3.6, Google, September 2026 &lt;br&gt;
+[2] Weekly Google meet link: .hyperlink-style[[ https://meet.google.com/umk-toiv-ifs](https://meet.google.com/umk-toiv-ifs)]
+]
+
+???
+- Expanding {ecosystemom} to ingest spatially explicit operating models like Ecospace and Atlantis
+
+- Simulating spatial survey sampling and index generation under shifting species distributions
+
+- Coupling single-species assessments into closed-loop Management Strategy Evaluations to test climate-ready harvest control rules
+
+- Continuing to build on FAIR open-science principles through transparent, community-driven development, and weekly public working sessions
+
+&lt;script&gt;
+(function() {
+  var bar = document.createElement('div');
+  bar.className = 'progress-bar';
+  document.querySelector('.remark-slides-area').appendChild(bar);
+
+  slideshow.on('afterShowSlide', function(slide) {
+    var count = slideshow.getSlideCount();
+    var index = slide.getSlideIndex();
+    bar.style.width = (index / (count - 1) * 100) + '%';
+  });
+})();
+&lt;/script&gt;
+
+&lt;style type="text/css"&gt;
+.pull-left-75 {
+  float: left;
+  width: 75%;
+}
+.pull-right-25 {
+  float: right;
+  width: 25%;
+}
+.clear {
+  clear: both;
+}
+&lt;/style&gt;
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+  "ratio": "16:9",
+  "highlightStyle": "github",
+  "highlightLines": true,
+  "countIncrementalSlides": false,
+  "slideNumberFormat": "Slide %current% of %total%"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// add `data-at-shortcutkeys` attribute to <body> to resolve conflicts with JAWS
+// screen reader (see PR #262)
+(function(d) {
+  let res = {};
+  d.querySelectorAll('.remark-help-content table tr').forEach(tr => {
+    const t = tr.querySelector('td:nth-child(2)').innerText;
+    tr.querySelectorAll('td:first-child .key').forEach(key => {
+      const k = key.innerText;
+      if (/^[a-z]$/.test(k)) res[k] = t;  // must be a single letter (key)
+    });
+  });
+  d.body.setAttribute('data-at-shortcutkeys', JSON.stringify(res));
+})(document);
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
