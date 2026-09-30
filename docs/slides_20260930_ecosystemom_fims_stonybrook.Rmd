@@ -107,7 +107,7 @@ options(htmltools.dir.version = FALSE)
 ```
 
 ---
-# About me
+# About Me
 
 - Education
 
@@ -115,7 +115,7 @@ options(htmltools.dir.version = FALSE)
   - B.S. in Marine Biology, University of Maine, 2013
   - Ph.D. in Marine Biology,University of Maine, 2018
 
-- Research
+- Research and career
 
   - Postdoctoral Researcher, NOAA Fisheries Office of Science and Technology (2019 - 2020): Compared four age-structured stock assessment platforms developed by NOAA Fisheries
   - Research Software Engineer, ECS Federal LLC in support of NOAA Fisheries Office of Science and Technology (2020 - Present)
