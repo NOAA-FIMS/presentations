@@ -3,7 +3,7 @@
   <head>
     <title>{FIMS} and {ecosystemom}:   Integrating Ecosystem Information into   Stock Assessment</title>
     <meta charset="utf-8" />
-    <meta name="author" content="Presenter: Bai Li" />
+    <meta name="author" content="Bai Li" />
     <meta name="author" content="Contractor with ECS Federal LLC in support of   NOAA Fisheries Office of Science and Technology" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link href="libs/htmltools-fill/fill.css" rel="stylesheet" />
@@ -23,7 +23,7 @@ class: center, middle, inverse, title-slide
 # {FIMS} and {ecosystemom}: <br> Integrating Ecosystem Information into <br> Stock Assessment
 ]
 .author[
-### <b>Presenter: Bai Li</b>
+### <b>Bai Li</b>
 ]
 .author[
 ### Contractor with ECS Federal LLC in support of <br> NOAA Fisheries Office of Science and Technology
@@ -87,6 +87,9 @@ layout: true
 
 &lt;img src="static/FIMS_hexlogo.png" style="float: right; width: 80%; max-width: 100px; margin-right: 10%;" /&gt;
 
+.footnote[
+FIMS slides reused from Kelli Johnson’s .hyperlink-style[[presentation](https://noaa-fims.github.io/presentations/slides_20260421_background.html#1)].&lt;br&gt;
+]
 ---
 # FIMS Mission Statement
 
@@ -126,8 +129,8 @@ Everything for FIMS lives in one shared place, making it easy to find the code, 
 # Model Family Architecture
 
 &lt;div style="margin-bottom:-28px;"&gt;&lt;/div&gt;
-<div class="grViz html-widget html-fill-item" id="htmlwidget-cc5fc544534ba48f21c3" style="width:100%;height:504px;"></div>
-<script type="application/json" data-for="htmlwidget-cc5fc544534ba48f21c3">{"x":{"diagram":"\ndigraph fims_architecture {\n  rankdir=TB;\n\n  // Model nodes\n  catch_at_age [label=\"functors/catch-at-age.hpp\", shape=box, color=\"#00797F\", penwidth = 2]\n  surplus_production [label=\"functors/surplus-production.hpp\", shape=box, color=\"#DB6015\", penwidth = 2]\n\n  // Population nodes\n  depletion [label=\"depletion\", shape=box]\n  fleet [label=\"fleet\", shape=box]\n  growth [label=\"growth\", shape=box]\n  maturity [label=\"maturity\", shape=box]\n  population [label=\"population\", shape=box]\n  recruitment [label=\"recruitment\", shape=box]\n  selectivity [label=\"selectivity\", shape=box]\n\n  // Grouping (optional, for visual grouping)\n  subgraph cluster_models {\n    label = \"models\"\n    // style = \"dashed\"\n    catch_at_age; surplus_production; \n  }\n  subgraph cluster_population {\n    label = \"population_dynamics\"\n    // style = \"dashed\"\n    depletion; fleet; growth; maturity; population; recruitment; selectivity;\n  }\n\n  // Connections\n  // nmfspalette::nmfs_palette(\"regional_alt1\")(6)\n  catch_at_age -> fleet [color=\"#00797F\", penwidth = 2]\n  catch_at_age -> growth [color=\"#00797F\", penwidth = 2]\n  catch_at_age -> maturity [color=\"#00797F\", penwidth = 2]\n  catch_at_age -> population [color=\"#00797F\", penwidth = 2]\n  catch_at_age -> recruitment [color=\"#00797F\", penwidth = 2]\n  catch_at_age -> selectivity [color=\"#00797F\", penwidth = 2]\n  surplus_production -> depletion [color=\"#DB6015\", penwidth = 2]\n  surplus_production -> fleet [color=\"#DB6015\", penwidth = 2]\n  surplus_production -> population [color=\"#DB6015\", penwidth = 2]\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div class="grViz html-widget html-fill-item" id="htmlwidget-243e9026b2ed07515d6d" style="width:100%;height:504px;"></div>
+<script type="application/json" data-for="htmlwidget-243e9026b2ed07515d6d">{"x":{"diagram":"\ndigraph fims_architecture {\n  rankdir=TB;\n\n  // Model nodes\n  catch_at_age [label=\"functors/catch-at-age.hpp\", shape=box, color=\"#00797F\", penwidth = 2]\n  surplus_production [label=\"functors/surplus-production.hpp\", shape=box, color=\"#DB6015\", penwidth = 2]\n\n  // Population nodes\n  depletion [label=\"depletion\", shape=box]\n  fleet [label=\"fleet\", shape=box]\n  growth [label=\"growth\", shape=box]\n  maturity [label=\"maturity\", shape=box]\n  population [label=\"population\", shape=box]\n  recruitment [label=\"recruitment\", shape=box]\n  selectivity [label=\"selectivity\", shape=box]\n\n  // Grouping (optional, for visual grouping)\n  subgraph cluster_models {\n    label = \"models\"\n    // style = \"dashed\"\n    catch_at_age; surplus_production; \n  }\n  subgraph cluster_population {\n    label = \"population_dynamics\"\n    // style = \"dashed\"\n    depletion; fleet; growth; maturity; population; recruitment; selectivity;\n  }\n\n  // Connections\n  // nmfspalette::nmfs_palette(\"regional_alt1\")(6)\n  catch_at_age -> fleet [color=\"#00797F\", penwidth = 2]\n  catch_at_age -> growth [color=\"#00797F\", penwidth = 2]\n  catch_at_age -> maturity [color=\"#00797F\", penwidth = 2]\n  catch_at_age -> population [color=\"#00797F\", penwidth = 2]\n  catch_at_age -> recruitment [color=\"#00797F\", penwidth = 2]\n  catch_at_age -> selectivity [color=\"#00797F\", penwidth = 2]\n  surplus_production -> depletion [color=\"#DB6015\", penwidth = 2]\n  surplus_production -> fleet [color=\"#DB6015\", penwidth = 2]\n  surplus_production -> population [color=\"#DB6015\", penwidth = 2]\n}\n","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 
 ---
 # Single-Species Advice in Dynamic Ecosystems

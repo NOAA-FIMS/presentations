@@ -1,7 +1,7 @@
 ---
 title: "{FIMS} and {ecosystemom}: <br> Integrating Ecosystem Information into <br> Stock Assessment"
 author: 
-  - "<b>Presenter: Bai Li</b>"
+  - "<b>Bai Li</b>"
   - "Contractor with ECS Federal LLC in support of <br> NOAA Fisheries Office of Science and Technology"
 institute: "State University of New York at Stony Brook | Chen Lab"
 date: "2026/09/30"
@@ -150,6 +150,9 @@ cat(
 
 <img src="static/FIMS_hexlogo.png" style="float: right; width: 80%; max-width: 100px; margin-right: 10%;" />
 
+.footnote[
+FIMS slides reused from Kelli Johnson’s .hyperlink-style[[presentation](https://noaa-fims.github.io/presentations/slides_20260421_background.html#1)].<br>
+]
 ---
 # FIMS Mission Statement
 
