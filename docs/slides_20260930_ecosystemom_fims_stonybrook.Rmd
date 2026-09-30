@@ -107,6 +107,28 @@ options(htmltools.dir.version = FALSE)
 ```
 
 ---
+# About me
+
+- Education
+
+  - B.S. in Marine Resources, Shanghai Ocean University, 2012
+  - B.S. in Marine Biology, University of Maine, 2013
+  - Ph.D. in Marine Biology,University of Maine, 2018
+
+- Research
+
+  - Postdoctoral Researcher, NOAA Fisheries Office of Science and Technology (2019 - 2020): Compared four age-structured stock assessment platforms developed by NOAA Fisheries
+  - Research Software Engineer, ECS Federal LLC in support of NOAA Fisheries Office of Science and Technology (2020 - Present)
+
+- Current work:
+  - Develop open-source software for next-generation stock assessment
+  - Conduct interdisciplinary research on holistic fisheries assessment
+
+
+
+
+
+---
 # Outline
 
 - {FIMS}
