@@ -1,0 +1,579 @@
+---
+title:  "Hierarchical Modeling in <br>Fisheries Integrated Modeling System (FIMS)"
+subtitle: "DFO Training<br>Nanaimo"
+author: "Andrea Havron, NOAA Fisheries OST<br>andrea.havron@noaa.gov<br>"
+date: 2026/10/07
+output:
+  xaringan::moon_reader:
+    css: ["slides_20260423_Random_Effects_files/simple.css"]
+    nature:
+      ratio: '16:9'
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+      slideNumberFormat: "Page %current%"
+---
+
+layout: true
+
+  
+```{r xaringanthemer, include=FALSE, warning=FALSE}
+options(repos = c(CRAN = "https://cloud.r-project.org"))
+required_pkg <- c("xaringanthemer", "remotes", "DiagrammeR")
+pkg_to_install <- required_pkg[!(required_pkg %in%
+                                   installed.packages()[, "Package"])]
+if (length(pkg_to_install)) install.packages(pkg_to_install)
+lapply(required_pkg, library, character.only = TRUE)
+
+if (!"nmfspalette" %in% installed.packages()[, "Package"]) {
+  remotes::install_github("nmfs-ost/nmfspalette")
+}
+library(nmfspalette)
+
+```
+
+.footnote[U.S. Department of Commerce | National Oceanic and Atmospheric Administration | National Marine Fisheries Service]
+
+
+<style type="text/css">
+
+code.cpp{
+  font-size: 20px;
+}
+code.r{
+  font-size: 20px;
+}
+code.Rcpp{
+  font-size: 20px;
+}
+
+
+</style>
+
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+```
+
+<!-- Start of slides -->
+
+
+---
+# Outline
+
+- Hierarchical Modeling in Stock Assessments
+
+- C++ architecture
+
+- User Interface
+
+- Future Development Plans
+
+---
+
+# Hierarchical Modeling in Stock Assessments
+
+<br>
+<br>
+.center[
+.large[
+
+$Index \sim LogNormal(\hat{\mathbf{I}}, \sigma_{I})$
+
+<br>
+
+$\hat{\mathbf{I}} = f(Growth, Maturity, Mortality, \mathbf{Recruitment}, Selectivity)$
+
+<br>
+
+$\log(\mathbf{Recruitment}) \sim Normal(\log(\hat{R}), \sigma_{R})$
+]]
+
+
+---
+
+# Fitting Hierarchical Models: Speed vs. Accuracy
+
+
+
+.pull-left[
+**Penalized likelihood**
+- Fixed effects estimation (fastest)
+- Uses a Constrained optimization approach
+
+**Laplace approximation**
+- Random effects estimation (moderate)
+- Uses 2nd-order Taylor series approximation
+
+**MCMC**
+  - Full posterior sampling (slowest)
+  - Asymptotically exact posterior
+]
+
+.pull-right[
+```{r, echo = FALSE, warning = FALSE, message = FALSE, fig.width = 10, fig.height = 9}
+library(ggplot2)
+
+methods <- data.frame(
+  name = c("MCMC", "Laplace\nApproximation", "Penalized\nLikelihood"),
+  x_speed = c(.8, 2.6, 4),      # Speed increases to the right
+  y_accuracy = c(4, 2.4, 1),   # Accuracy increases upward
+  label = c("Exact\nSlow", "2nd-order Approximation\nModerate", "Contrained Optimization\nFast")
+)
+
+curve_data <- data.frame(x = seq(1, 4, length.out = 100))
+curve_data$y <- 4 / curve_data$x
+
+ggplot(methods, aes(x = x_speed, y = y_accuracy)) +
+  geom_line(
+    data = curve_data,
+    aes(x = x, y = y),
+    linetype = "dashed",
+    color = "gray60",
+    linewidth = 1
+  ) +
+  geom_text(aes(label = name), vjust = -0.5, size = 7, fontface = "bold") +
+  geom_text(aes(label = label), vjust = 1, size = 6, color = "gray30") +
+  scale_x_continuous(
+    expand = expansion(mult = 0.2),
+    breaks = c(1, 4),
+    labels = c("Slower", "Faster")
+  ) +
+  scale_y_continuous(
+    expand = expansion(mult = 0.2),
+    breaks = c(1, 4),
+    labels = c("Lower", "Higher")
+  ) +
+  labs(x = "Computational Speed", y = "Estimation Accuracy") +
+  theme_bw() +
+  theme(
+    legend.position = "none",
+    panel.border = element_blank(),
+    axis.line.x = element_line(linewidth = 0.5, linetype = "solid", colour = "black"),
+    axis.line.y = element_line(linewidth = 0.5, linetype = "solid", colour = "black"),
+    axis.text.x = element_text(size = 20),
+    axis.text.y = element_text(size = 20),
+    axis.title.x = element_text(size = 20),
+    axis.title.y = element_text(size = 20)
+  ) +
+  coord_cartesian(ylim = c(1, 3.8), xlim = c(1, 4.2))
+```
+]
+
+---
+# Guiding Principles in Design
+<br><br>
+
+- Generic and Flexible
+
+- Extensible
+
+- Separate the biological math from the statistics
+
+- Dependency on TMB and access to the Laplace Approximation
+---
+.large[**Decoupling Biological Processes from Statistical Likelihood**]
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+DiagrammeR::grViz("
+digraph fims {
+  # Global settings
+  graph [rankdir=LR, bgcolor='transparent', compound=true, nodesep=0.5, ranksep=0.6]
+  node [shape=box, style='filled, rounded', color='#5b8db8', fillcolor='#f0f7ff', fontname='Arial', fontcolor='#333333', fontsize=28, width=2.5, height=0.8]
+  edge [color='#666666', arrowhead=vee, penwidth=1.2, fontsize = 24]
+
+  # User Layer
+  subgraph cluster_user {
+    label='User Layer'; fontname='Arial-Bold'; fontcolor='#5b8db8'; style='dashed'; color='#5b8db8'; fontsize = 28;
+    node [fillcolor='#e1f5fe', color='#01579b']
+    A [label='R User Interface']
+  }
+
+  # Central Dispatch
+  subgraph cluster_logic {
+    label='Central Dispatch'; fontname='Arial-Bold'; fontcolor='#c88a2a'; style='dashed'; color='#c88a2a'; fontsize = 28;
+    node [fillcolor='#fff3e0', color='#e65100']
+    B [label='Rcpp Interface']
+    C [label='FIMS.cpp']
+    D [label='Information']
+  }
+
+  # Calculation Engine
+  subgraph cluster_engine {
+    label='Calculation Engine'; fontname='Arial-Bold'; fontcolor='#4f9a63'; style='dashed'; color='#4f9a63'; fontsize = 28;
+    node [fillcolor='#e8f5e9', color='#2e7d32']
+   
+    E [label='Population Dynamics']
+    H [label='Catch-At-Age']
+    F [label='Distributions']
+    J [label='Data']
+  }
+
+  # Results
+  subgraph cluster_results {
+    label='Results'; fontname='Arial-Bold'; fontcolor='#b85a7a'; style='dashed'; color='#b85a7a'; fontsize = 28;
+    node [fillcolor='#fce4ec', color='#880e4f', fontsize = 24]
+    G [label='model.hpp']
+    I [label='Negative Log-Likelihood']
+  }
+
+  # Layout constraints (forcing order)
+  {rank=same; B C}
+  {rank=same; E H F J}
+
+  # Edges
+  A -> B
+  A -> C
+  B -> D
+  D -> E
+  D -> H
+
+  D -> F
+  D -> J 
+  
+  J -> F [constraint=false, style=solid]
+  E -> H
+  
+  # Grouping the outputs to model.hpp
+  {H F} -> G
+  C -> G
+  G -> I
+  
+  # Feedback loops (using 'constraint=false' so they don't mess up the LR flow)
+  I -> C [constraint=false, style=dotted, label='value/gradient', fontsize = 28]
+}
+", width = "100%", height = "85%")
+```
+---
+# Globally Available Variable Map
+variable\_map(Parameter ID, Pointer to the Parameter in Memory)
+.pull-left[
+  <br>
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+DiagrammeR::grViz("
+digraph fims {
+  # Global settings
+
+  graph [rankdir=LR, bgcolor='transparent', compound=true, nodesep=0.5, ranksep=0.6]
+  node [shape=box, style='filled, rounded', color='#5b8db8', fillcolor='#f0f7ff', fontname='Arial', fontcolor='#333333', fontsize=28 width=2.5, height=0.8]
+  edge [color='#666666', arrowhead=vee, penwidth=1.2, fontsize = 28]
+
+
+  # Central Dispatch
+  subgraph cluster_logic {
+    label='Central Dispatch'; fontname='Arial-Bold'; fontcolor='#ffffff'; style='dashed'; color='#ffffff'; fontsize = 28;
+    node [fillcolor='#fff3e0', color='#e65100']
+    A [label='Rcpp Interface']
+    B [label='Variable Map']
+  }
+
+  # Calculation Engine
+  subgraph cluster_engine {
+    label='Calculation Engine'; fontname='Arial-Bold'; fontcolor='#4f9a63'; style='dashed'; color='#4f9a63'; fontsize = 28;
+    node [fillcolor='#e8f5e9', color='#2e7d32']
+   
+    D [label='Population Dynamics']
+    E [label='Catch-At-Age']
+    F [label='Distributions']
+    G [label='Data']
+  }
+
+
+  # Layout constraints (forcing order)
+  {rank=same; D E F G}
+
+  # Edges
+  {A,D} -> B
+
+  D -> E
+  E -> F
+  G -> F [constraint=false, style=solid]
+
+  B -> F
+
+  
+}
+", width = "100%", height = "50%")
+```
+]
+.pull-right[
+**Rcpp Interface** <br>
+_BevertonHolt Interface_<br>
+
+```cpp
+info //link to information.hpp
+r // link to recruitment backend
+
+// interface parameter that gets 
+// user value from R
+Variable log_rzero
+// ID assigned by interface
+int ID = log_rzero.id()
+
+// Store back-end log_rzero in the 
+// variable map using the interface ID
+variable_map[ID] = &(r)->log_rzero
+```
+]
+
+---
+# Globally Available Variable Map
+
+variable\_map(Parameter ID, Pointer to the Parameter in Memory)
+
+.pull-left[
+**Rcpp Interface** <br>Populates the variable map with pointers to all model parameters, including random effects.<br><br>
+**Information** <br>Stores the variable map, which is accessible across all C++ files. <br><br>
+**Distributions** <br>Accesses the variable map to compute likelihood contributions. 
+]
+
+---
+# Globally Available Variable Map
+
+variable\_map(Parameter ID, Pointer to the Parameter in Memory)
+
+.pull-left[
+**Rcpp Interface** <br>Populates the variable map with pointers to all model parameters, including random effects.<br><br>
+**Information** <br>Stores the variable map, which is accessible across all C++ files. <br><br>
+**Distributions** <br>Accesses the variable map to compute likelihood contributions. 
+]
+
+.pull-right[
+**Prior Likelihood**<br>
+observed_value -> parameter 
+<br><br>
+**Random Effects Likelihood**<br>
+observed_value -> random effect parameter<br>
+expected_value -> derived quantity (or vector of 0s)
+<br><br>
+**Data Likelihood**<br>
+observed_value -> data vector<br>
+expected_value -> derived quantity 
+]
+---
+# Add Prior Likelihood to the Model
+
+```{r, eval = FALSE}
+library(FIMS)
+# Prepare the package data for being used in a FIMS model
+data("data_big")
+data_4_model <- FIMSFrame(data_big)
+
+# Set up the default configurations and parameters for the model
+default_parameters <- setup_default_parameters(data = data_4_model)
+
+# initialize model using the power user interface or setup_default_* functions
+
+slope_mean <- 1.5; slope_sd <- 3
+slope_prior <- methods::new(DnormDistribution)
+slope_prior$expected_values$resize(2)
+slope_prior$expected_values[1]$value <- slope_mean
+slope_prior$expected_values[2]$value <- slope_mean
+slope_prior$log_sd[1]$value <- log(slope_sd)
+slope_prior$set_distribution_links("prior",c(fleet1$slope$get_id(),
+                                             fleet2$slope$get_id()))
+```
+---
+# One Objective, Two Estimation Modes
+
+```{r workflow-code, eval=FALSE}
+# Build objective from FIMS/TMB ingredients
+FIMS::CreateTMBModel()
+parameters <- list(p = get_fixed(), re = get_random())
+obj <- TMB::MakeADFun(
+  data = list(),
+  parameters,
+  random = "re",
+  DLL = "FIMS",
+  silent = TRUE
+)
+
+# Frequentist path
+fit <- stats::nlminb(start = obj$par, objective = obj$fn, gradient = obj$gr)
+
+# Bayesian path (same objective)
+posterior <- SparseNUTS::sample_snuts(
+  obj = obj,
+  iter_warmup = 1000,
+  iter_sampling = 1000,
+  chains = 4
+)
+```
+
+---
+# Connecting Random Effects to TMB
+
+```{r, eval = FALSE}
+recruitment$log_devs[i]$set_estimation_type("random_effects")
+```
+
+In the Rcpp Interface, if a parameter's estimation type is set to "random_effects":
+- The parameter gets added to the global `random_effects_parameters` vector.
+- An R function returns the list of random effects parameters for a model.
+- The random effects list is passed into FIMS.cpp through MakeADFun and is linked
+   to the global `random_effects_parameters` vector.
+
+```{r, eval = FALSE}
+parameters <- list(
+    p = get_fixed(),
+    re = get_random()
+  )
+  obj <- TMB::MakeADFun(
+    data = list(), parameters, DLL = "FIMS",
+    silent = TRUE, map = map, random = "re"
+  )
+```
+
+---
+
+# Default FIMS Model
+
+```{r, eval = FALSE}
+library(FIMS)
+# Prepare the package data for being used in a FIMS model
+data("data_big")
+data_4_model <- FIMSFrame(data_big)
+
+# Set up the default configurations and parameters for the model
+default_parameters <- setup_default_parameters(
+  data = data_4_model
+)
+
+# run the model
+fit <- default_parameters |>
+  initialize_fims(data = data_4_model) |>
+  fit_fims(optimize = TRUE)
+```
+
+---
+# Recruitment Deviations are random effects by default
+
+```{r, echo = FALSE}
+library(FIMS)
+data("data_big")
+data_4_model <- FIMSFrame(data_big)
+
+# Default configurations and parameters for the model
+default_parameters <- 
+  setup_default_parameters(
+    data = data_4_model
+)
+options(width = 150)
+```
+
+
+```{r}
+
+default_parameters |> 
+  dplyr::filter(
+    label == "log_devs"
+  ) 
+```
+
+---
+# Change to fixed effect
+Estimate with constrained optimization (penalized likelihood)
+```{r, eval = FALSE}
+# set estimation_type of log_devs to fixed_effects
+default_parameters <- default_parameters |>
+  dplyr::mutate(
+    estimation_type = ifelse(label == "log_devs", 
+      "fixed_effects", estimation_type)
+  )
+# fix Recruitment Distribution log_sd to "constant"
+default_parameters <- default_parameters |>
+  dplyr::mutate(
+    estimation_type = ifelse(label == "log_sd" & 
+        module_name == "Recruitment", 
+      "constant", estimation_type)
+  )
+```
+---
+# Sparse parameterization of recruitment
+
+$$
+\begin{align}
+log\_r &\sim Normal(\widehat{log\_r}, \sigma_{r})\\
+\widehat{log\_r} &= log(BevertonHolt(SSB, parameters))
+\end{align}
+$$
+```{r, eval = FALSE}
+  default_parameters <- default_parameters |>
+  dplyr::filter(!(label == "log_devs" & module_name == "Recruitment")) |>
+  dplyr::rows_append(
+      tibble::tibble(
+      module_name = "Recruitment",
+      module_type = "BevertonHolt",
+      label = "log_r",
+      timing = 1:30,
+      value = rep(0,30),
+      estimation_status = "random_effects",
+      distribution_type = "process",
+      distribution = "Dnorm"
+    )
+  )
+```
+---
+# Upcoming User Interface Enhancements
+
+New helper functions to set random effects for any process (GitHub Issue [#1235](https://github.com/NOAA-FIMS/FIMS/issues/1235))
+<br>
+```{r, eval = FALSE}
+add_process(
+  module_name = “selectivity”,
+  fleet_name = “fleet1”,
+  specification_type = “semi_parametric”,
+  strucutre = “AR1”,
+  base_function = “logistic”,
+  logit_rho = 0)
+
+
+add_priors(
+    fleet = c(fleet1, fleet2),
+    module = selectivity,
+    slope ~ normal(1.5, 10),
+    inflection_point ~ normal(2, 10)
+)
+```
+---
+# Future FIMS Hierarchical Development Goals
+<br>
+.large[
+- Flexible priors via **automatic Jacobian** transformations (Draft PR [#1495](https://github.com/NOAA-FIMS/FIMS/pull/1495))
+<br><br>
+- Add a generic **ARn** distribution (Issue [#582](https://github.com/NOAA-FIMS/FIMS/issues/582))
+<br><br>
+- Add multivariate functionality 
+  - **GMRF** distribtion (Issue [#582](https://github.com/NOAA-FIMS/FIMS/issues/582))
+  - Ability to set **multivariate pointers**
+  <br><br>
+- Fully develop **non-parametric** and **semi-parametric** functionality for all time-varying parameters 
+  - Age-based selectivity Closed Issue [#1206](https://github.com/NOAA-FIMS/FIMS/issues/1206)
+<br><br>
+- Add OSA residuals (Issue [#546](https://github.com/NOAA-FIMS/FIMS/issues/546))
+]
+---
+# Summary
+<br>
+.large[
+- FIMS Random Effects and Priors are designed to be **generic**, **flexible**, and **extensible**
+  <br><br>
+- FIMS keep the biological math **separate** from the statistical likelihood 
+  <br><br>
+- The global **variable map** allows any **parameter** or **derived quantity** to be linked to random effect or prior distributions
+  <br><br>
+- One TMB object for both **MLE optimization** and **Bayesian MCMC**
+  <br><br> 
+- The current **default model** fits recruitment deviations as **random effects** with a Normal iid distribution
+]
+
+---
+# &#x1F44B; Thank you!
+
+<div style="text-align: center;">
+  <img src="static/FIMS_hexlogo.png" style="width: 100%; max-width: 300px;" />
+</div>
+
+&#x1F4E9; andrea.havron@noaa.gov
+
+
+
